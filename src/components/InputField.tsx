@@ -1,98 +1,34 @@
-// InputField.tsx
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import colors from '../../colors';
+import { responsiveFontSize } from 'react-native-responsive-dimensions';
 
-import React, { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  KeyboardType,
-} from "react-native";
-import colors from "../../colors";
-
-interface InputFieldProps {
-  label: string;
-  placeholder?: string;
-  errorMessage?: string;
-  disabled?: boolean;
-  isImage?: boolean;
-  imageSource?: string;
-  onPressImage?: () => void;
-  onChangeText?: (value: string) => void;
-  numeric?: boolean;
-  maxLength?: number;
-  imageName?: string;
-  keyboardType: KeyboardType;
-}
-
-const InputField: React.FC<InputFieldProps> = ({
+const InputField = ({
   label,
-  placeholder,
   errorMessage,
   disabled,
-  isImage,
-  imageSource,
-  imageName,
-  onPressImage,
   onChangeText,
-  numeric,
-  maxLength,
-  keyboardType,
+  keyboardType, // Added keyboardType prop
   ...rest
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const hasInput = rest.value && rest.value.toString().trim() !== "";
+  const hasInput = rest.value && rest.value.toString().trim() !== '';
 
   const handleFocus = () => {
     setIsFocused(true);
   };
 
   const handleBlur = () => {
-    if (!isImage && !hasInput) {
-      setIsFocused(false);
-    }
+    setIsFocused(false);
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        isFocused || hasInput || isImage ? styles.focusedContainer : null,
-      ]}
-    >
-      <Text
-        style={[
-          styles.label,
-          isFocused || hasInput || isImage ? styles.focusedLabel : null,
-        ]}
-      >
-        {label}
-      </Text>
-      {isImage ? (
-        <View style={{ flexDirection: "row" }}>
-          <TextInput
-            style={[styles.input, styles.disabledInput, { flex: 1 }]}
-            editable={false}
-            value={label}
-            {...rest}
-          />
-          <TouchableOpacity onPress={onPressImage}>
-            <ImageBackground
-              // source={require('../assets/images/no_image.webp')}
-              style={styles.image}
-              resizeMode="cover"
-            >
-              <Image
-                source={{ uri: imageSource }}
-                style={styles.image}
-                resizeMode="cover"
-              />
-            </ImageBackground>
-          </TouchableOpacity>
-        </View>
+    <View style={[styles.container, isFocused || hasInput ? styles.focusedContainer : null]}>
+      <Text style={[styles.label, isFocused || hasInput ? styles.focusedLabel : null]}>{label}</Text>
+      {rest.isImage ? (
+        <TouchableOpacity onPress={rest.onPressImage}>
+          <Image source={{ uri: rest.imageSource }} style={styles.image} resizeMode="cover" />
+        </TouchableOpacity>
       ) : (
         <TextInput
           style={[styles.input, disabled && styles.disabledInput]}
@@ -100,9 +36,7 @@ const InputField: React.FC<InputFieldProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChangeText={onChangeText}
-          keyboardType={keyboardType}
-          maxLength={maxLength}
-          placeholder={placeholder}
+          keyboardType={keyboardType || 'default'}
           {...rest}
         />
       )}
@@ -118,48 +52,42 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGrey,
     borderWidth: 2,
     paddingHorizontal: 10,
-    // paddingVertical: 5,
-    borderRadius: 8,
+    paddingVertical: 5,
+    borderRadius: 5,
   },
   focusedContainer: {
     borderColor: colors.grey,
   },
   label: {
-    // fontSize: responsiveFontSize(1.7),
-    fontWeight: "bold",
+    fontSize: responsiveFontSize(1.7),
+    fontWeight: 'bold',
     color: colors.black,
     backgroundColor: colors.white,
     paddingHorizontal: 3,
-    position: "absolute",
-    top: -10,
-    left: 16,
   },
   focusedLabel: {
-    position: "absolute",
-    top: -10,
-    left: 16,
-    // fontSize: responsiveFontSize(1.5),
+    position: 'absolute',
+    top: -8,
+    left: 10,
+    fontSize: responsiveFontSize(1.5),
     color: colors.black,
   },
   input: {
     color: colors.black,
     paddingTop: 10,
+    // width: '100%'
   },
   disabledInput: {
     color: colors.grey,
   },
   image: {
-    width: 35,
-    height: 35,
-    alignSelf: "flex-end",
-    // backgroundColor: colors.lightGrey
+    width: 50,
+    height: 50,
+    borderRadius: 5,
   },
   error: {
-    color: "red",
+    color: 'red',
     marginTop: 5,
-  },
-  imageName: {
-    color: colors.grey,
   },
 });
 

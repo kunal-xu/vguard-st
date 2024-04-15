@@ -1,33 +1,67 @@
-import React from "react";
-import { View, ScrollView } from "react-native";
-import GenerateOTP from "./src/pages/auth/GenerateOTP";
-import ValidateOTP from "./src/pages/auth/ValidateOTP";
-import LoginScreen from "./src/pages/auth/LoginScreen";
-import RegisterUser from "./src/pages/auth/RegisterUser";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  Alert,
+  PermissionsAndroid,
+  View
+} from 'react-native';
+import AppNavigator from './src/components/AppNavigator';
+import { AuthProvider } from './src/components/AuthContext';
+import notificationListener from './src/modules/notifications/pages/push_notification';
+import { FormProvider } from './src/components/FormContext';
 
-import { StatusBar } from "expo-status-bar";
-import InputField from "./src/components/InputField";
+async function requestAllPermissions() {
+  try {
+    const cameraPermission = PermissionsAndroid.PERMISSIONS.CAMERA;
+    const contactPermission = PermissionsAndroid.PERMISSIONS.READ_CONTACTS;
+    const locationPermission = PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION;
+    const notificationPermission = PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
 
-export default function App() {
-  return (
-    <SafeAreaProvider>
-      <SafeAreaView
-        mode="margin"
-        style={{ flex: 1}}
-      >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, backgroundColor: "white" }}
-        >
-          <View>
-            <StatusBar style="dark" hidden/>
-            <GenerateOTP />
-            {/* <ValidateOTP /> */}
-            {/* <LoginScreen /> */}
-            {/* <RegisterUser /> */}
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </SafeAreaProvider>
-  );
+    const granted = await PermissionsAndroid.requestMultiple([
+      cameraPermission,
+      contactPermission,
+      locationPermission,
+      notificationPermission
+    ]);
+
+    if (
+      granted[cameraPermission] === PermissionsAndroid.RESULTS.GRANTED &&
+      granted[contactPermission] === PermissionsAndroid.RESULTS.GRANTED &&
+      granted[locationPermission] === PermissionsAndroid.RESULTS.GRANTED &&
+      granted[notificationPermission] === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+    ) {
+      console.log('Camera, contact, and location permissions granted.');
+    } else {
+      Alert.alert(
+        'Permission denied',
+        'You must grant camera, contact, and location permissions to use this feature.',
+      );
+    }
+  } catch (error) {
+    console.error('Permission request error:', error);
+  }
 }
+
+const App = () => {
+
+  useEffect(() => {
+    requestAllPermissions();
+    notificationListener();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <FormProvider>
+        <AppNavigator />
+      </FormProvider>
+    </AuthProvider>
+  );
+};
+
+const styles = StyleSheet.create({
+  fullscreen: {
+    flex: 1,
+  },
+});
+
+export default App;
