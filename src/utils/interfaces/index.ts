@@ -9,6 +9,7 @@ import {
   StyleProp,
   TextInputFocusEventData,
 } from "react-native";
+import { STUser } from "../types/STUser";
 
 interface BankDetail {
   errorMessage: string | "";
@@ -163,7 +164,7 @@ export interface VguardRishtaUser {
 }
 
 export interface User {
-  stUserDetail: VguardRishtaUser;
+  stUserDetail: STUser;
   tokens: Tokens;
 }
 

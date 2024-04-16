@@ -1,52 +1,100 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ScanScreen from '../ScanScreen';
-import UploadError from '../UploadError';
-import UniqueCodeHistory from '../UniqueCodeHistory';
-import ProductRegistration from '../ProductRegistration';
 import colors from '../../../../../../../colors';
-import ProductRegistrationForm from '../ProductRegForm';
+import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import ProductRegistration from '../ProductRegistration';
+import ScanCode from '../ScanCode';
+import UniqueCodeHistory from '../UniqueCodeHistory';
+import ProductRegistrationForm from '../ProductRegistrationForm';
+import AddWarranty from '../AddWarranty';
+import ScanCodeReg from '../ScanCodeReg';
 
+const ScanStack: React.FC = () => {
+  type ScanStackParams = {
+    'Product Registratrion': undefined;
+    'Scan Code': undefined;
+    'Unique Code History': undefined;
+    'Scan In': undefined;
+    'Product Registration Form': undefined;
+    'Add Warranty': undefined;
+  };
 
-const ScanStack = () => {
-  const Stack = createNativeStackNavigator();
+  const Stack = createNativeStackNavigator<ScanStackParams>();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
+    <>
+      <Stack.Navigator
+        screenOptions={{
           headerStyle: {
-            backgroundColor: colors.yellow
+            backgroundColor: colors.yellow,
           },
-          headerShown: false
+          headerShown: false,
         }}>
-      <Stack.Screen name="Scan Code" component={ScanScreen} 
-        options={{
-          headerShown: true
-        }}
-      />         
-      <Stack.Screen name="Upload Scanning Error" component={UploadError} 
-        options={{
-          headerShown: true
-        }}
-      />         
-      <Stack.Screen name="Unique Code History" component={UniqueCodeHistory} 
-        options={{
-          headerShown: true
-        }}
-      />    
-               
-      <Stack.Screen name="Product Registration" component={ProductRegistration} 
-        options={{
-          headerShown: true
-        }}
-      />       
-       <Stack.Screen name="ProductRegForm" component={ProductRegistrationForm} 
-        options={{
-          headerShown: true
-        }}
-      />    
-    </Stack.Navigator>
-  ); 
+        <Stack.Screen
+          name="Scan Code"
+          component={ScanCode}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="Unique Code History"
+          component={UniqueCodeHistory}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="Product Registration Form"
+          component={ProductRegistrationForm}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="Add Warranty"
+          component={AddWarranty}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="Scan In"
+          component={ScanCodeReg}
+          options={{
+            headerShown: true,
+          }}
+        />
+      </Stack.Navigator>
+    </>
+  );
 };
+
+const styles = StyleSheet.create({
+  languageContainer: {
+    borderWidth: 1,
+    borderColor: colors.black,
+    paddingVertical: 2,
+    paddingHorizontal: 5,
+    borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  languagePickerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.white,
+  },
+  closeText: {
+    marginTop: 20,
+    color: colors.black,
+    backgroundColor: colors.yellow,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 5,
+    fontWeight: 'bold',
+  },
+});
 
 export default ScanStack;

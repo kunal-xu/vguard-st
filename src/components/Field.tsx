@@ -110,6 +110,7 @@ const Field = (props: FieldProps) => {
                 setSelectedValue(value);
 								(value: string) => handleInputChange(props.data as string, value)
               }}
+							
             >
               {items?.map((item, index) => {
                 return (

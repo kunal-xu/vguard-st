@@ -356,6 +356,8 @@ const NomineePage = ({ navigation }: NavigationProps) => {
       stUser.InvitationDate = state.InvitationDate;
       stUser.UpdatedOn = state.UpdatedOn;
       stUser.TaggedCategory = state.TaggedCategory;
+      stUser.pwd = state.pwd
+      console.log(stUser);
       const response = await registerNewUser(stUser);
       const responseData = response.data;
       setIsLoading(false);

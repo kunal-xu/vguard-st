@@ -2,8 +2,8 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import messaging from "@react-native-firebase/messaging";
 import { VguardRishtaUser } from "./interfaces";
 
-const BASE_URL = "http://192.168.9.191:5005/vguard/api";
-// const BASE_URL = 'http://34.93.239.251:5005/vguard/api';
+// const BASE_URL = "http://192.168.9.191:5005/vguard/api";
+const BASE_URL = 'http://34.93.239.251:5005/vguard/api';
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -36,6 +36,7 @@ async function createPostRequest(
     Accept: "application/json",
     "Content-Type": "application/json",
   };
+  // console.log(headers);
   const response: AxiosResponse = await api.post(relativeUrl, data, {
     headers,
   });
@@ -606,6 +607,7 @@ export function getSubProfessions(professionId: string) {
 
 export function logoutUser() {
   const path = "user/logoutUser";
+  
   return createPostRequest(path, {});
 }
 

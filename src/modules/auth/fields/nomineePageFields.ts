@@ -30,7 +30,7 @@ export const nomineePageFields = [
 		id: '9d242f22-8e19-4dcd-b1df-bf0b7c804d5e',
 		label: "strings:confirm_password",
 		type: "floatingLabelInput",
-		data: "bankAccNo",
+		data: "",
 		properties: {
 			keyboardType: "default",
 			staticLabel: true,

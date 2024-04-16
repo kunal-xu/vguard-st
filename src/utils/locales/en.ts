@@ -75,6 +75,9 @@ export default {
       current: 'Current',
       saving: 'Saving',
     },
+    
+    redeemable_points:"Redeemable\n Points",
+    login: "Already have an account? Sign in",
     otp_not_received: 'OTP Not Received ?',
     resend_otp: 'Resend OTP',
     maximum_otp_count: 'Resend OTP count exceeded.',
@@ -98,6 +101,7 @@ export default {
     enter_otp_description:
       'Please enter the 4-digit OTP\nreceived through SMS/IVR using\nmobile no.',
     new_user: 'New User',
+    direct_order: "Direct Order",
     rishta_id: 'Rishta ID',
     mobile_no: 'Mobile No.',
     user_image: 'User Image',
@@ -526,7 +530,6 @@ export default {
     is_shop_address_different: 'Shop address same as permanent address?',
     select_dealer_category: 'Please select dealer category',
     engagement: 'Engagement',
-    points_earnedn: 'Points Earned',
     usp_scheme_points: 'DUPS Scheme Points',
     select_dist: 'Select District',
     current_address_yes_no: {

@@ -36,7 +36,7 @@ interface LoginWithOtpProps {
 }
 
 const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
-  const { usernumber, jobprofession, preferedLanguage } = route.params;
+  const { usernumber } = route.params;
   const [otp, setOtp] = useState("");
   const [number, setnumber] = useState(usernumber);
   const [isPopupVisible, setIsPopupVisible] = useState(false);

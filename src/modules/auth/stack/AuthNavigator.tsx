@@ -29,7 +29,7 @@ const AuthNavigator = () => {
       <Stack.Screen name="loginwithotp" component={LoginWithOtp} />
       {/* <Stack.Screen name="registerwithotp" component={RegisterWithOtp} /> */}
       <Stack.Screen name="Kyc" component={Kyc} />
-      {/* <Stack.Screen name="forgotPassword" component={ForgotPassword} /> */}
+      <Stack.Screen name="forgotPassword" component={ForgotPassword} />
       <Stack.Screen name="loginWithNumber" component={LoginWithNumber} />
       {/* <Stack.Screen name="newUser" component={NewUser} /> */}
       {/* <Stack.Screen name="NewUserKyc" component={NewUserKyc} /> */}

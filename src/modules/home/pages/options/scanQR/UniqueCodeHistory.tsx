@@ -1,42 +1,49 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { responsiveFontSize } from 'react-native-responsive-dimensions';
-import colors from '../../../../../../colors';
-import Loader from '../../../../../components/Loader';
+
 import { getScanCodeHistory } from '../../../../../utils/apiservice';
 
-const UniqueCodeHistory = () => {
+import colors from '../../../../../../colors';
+import Loader from '../../../../../components/Loader';
+interface RedemptionHistoryItem {
+  scanDate: string;
+  couponCode: string;
+  scanStatus: string;
+}
+
+const UniqueCodeHistory: React.FC = () => {
   const { t } = useTranslation();
-  const [redemptionHistoryData, setRedemptionHistoryData] = useState([]);
   const [loader, showLoader] = useState(true);
+  const [redemptionHistoryData, setRedemptionHistoryData] = useState<RedemptionHistoryItem[]>([]);
+
   useEffect(() => {
     fetchRedemptionHistory();
-    showLoader(false);
   }, []);
 
   const fetchRedemptionHistory = async () => {
     try {
       const response = await getScanCodeHistory();
-      const responseData = await response.data;
-
+      const responseData: RedemptionHistoryItem[] = await response.data;
       setRedemptionHistoryData(responseData);
+      showLoader(false);
     } catch (error) {
       console.error('Error fetching redemption history data:', error);
     }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={[styles.item]}>
+  const renderItem = ({ item }: { item: RedemptionHistoryItem }) => (
+    <View style={styles.item}>
       <Text style={styles.text}>{item.scanDate}</Text>
-      <Text style={styles.text}>{item.copuonCode}</Text>
+      <Text style={styles.text}>{item.couponCode}</Text>
       <Text style={styles.status}>{item.scanStatus}</Text>
     </View>
   );
 
   return (
     <View style={styles.mainWrapper}>
-    <Loader isLoading={loader} />
+      <Loader isLoading={loader} />
       <FlatList
         data={redemptionHistoryData}
         renderItem={renderItem}
@@ -45,7 +52,7 @@ const UniqueCodeHistory = () => {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   header: {
@@ -87,7 +94,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     fontWeight: 'bold'
   }
-
 });
 
 export default UniqueCodeHistory;

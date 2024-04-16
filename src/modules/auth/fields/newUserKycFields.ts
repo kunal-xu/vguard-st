@@ -59,7 +59,6 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
-      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
@@ -78,7 +77,6 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
-      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
@@ -97,7 +95,6 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
-      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
@@ -263,7 +260,6 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
-      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,

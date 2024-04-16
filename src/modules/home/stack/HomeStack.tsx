@@ -68,7 +68,7 @@ const HomeStack = () => {
             headerShown: true
           })}
         />
-        <Stack.Screen name="Redemption History" component={RedemptionHistory}
+        {/* <Stack.Screen name="Redemption History" component={RedemptionHistory}
           options={{
             headerShown: true
           }}
@@ -77,12 +77,12 @@ const HomeStack = () => {
           options={{
             headerShown: true
           }}
-        />
+        /> */}
 
         <Stack.Screen name="Scan QR" component={ScanStack} />
         {/* <Stack.Screen name="Dashboard" component={DashboardStack} /> */}
         <Stack.Screen name="Redeem Products" component={RedeemStack} />
-        <Stack.Screen name="Update KYC" component={UpdateKYC}
+        {/* <Stack.Screen name="Update KYC" component={UpdateKYC}
           options={{
             headerShown: true
           }} />
@@ -119,7 +119,7 @@ const HomeStack = () => {
           options={{
             headerShown: false
           }}
-        />
+        />  */}
       </Stack.Navigator>
       <Modal
         animationType="slide"

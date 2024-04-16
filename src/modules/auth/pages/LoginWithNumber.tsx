@@ -114,6 +114,24 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
                 />
               </View>
             </View>
+            <View style={styles.updateAndForgot}>
+              {/* <TouchableOpacity
+                onPress={() => navigation.navigate("ReUpdateKycOTP")}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>
+                  {t("strings:update_kyc_capslock")}
+                </Text>
+              </TouchableOpacity> */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("login")}
+                style={styles.forgotPasswordContainer}
+              >
+                <Text style={[styles.forgotPassword]}>
+                  {t("strings:login")}
+                </Text>
+              </TouchableOpacity>
+            </View>
             <View>
               <Buttons
                 label={t("strings:send_otp")}
@@ -138,6 +156,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
                 {t("strings:lbl_otp_through_phone_call")}
               </Text>
             </TouchableOpacity>
+            
           </View>
         </View>
         <View>
@@ -159,6 +178,16 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+  },
+  forgotPasswordContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  forgotPassword: {
+    color: colors.grey,
+    fontWeight: "bold",
+    fontSize: 12,
+    textAlign: "right",
   },
   registerUser: {
     height: "100%",
@@ -204,11 +233,18 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     backgroundColor: colors.white,
-    marginBottom: 20,
+    marginBottom: 2,
     borderRadius: 5,
     shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,
     flexDirection: "row",
+    alignItems: "center",
+  },
+  updateAndForgot: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
     alignItems: "center",
   },
   icon: {
@@ -257,7 +293,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     gap: 20,
-    marginBottom: 50,
+    marginBottom: 30,
   },
   phone: {
     height: 50,
