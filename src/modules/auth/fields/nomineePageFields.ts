@@ -14,7 +14,7 @@ export const nomineePageFields = [
 		id: 'b7b2f51c-b036-4c10-9aa4-25d08386b01b',
 		label: "strings:enter_password",
 		type: "floatingLabelInput",
-		data: "bankAccNo",
+		data: "pwd",
 		properties: {
 			keyboardType: "default",
 			staticLabel: true,

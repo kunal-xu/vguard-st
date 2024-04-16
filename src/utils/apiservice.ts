@@ -3,7 +3,7 @@ import messaging from "@react-native-firebase/messaging";
 import { VguardRishtaUser } from "./interfaces";
 
 const BASE_URL = "http://192.168.9.191:5005/vguard/api";
-// const BASE_URL = 'http://34.93.239.251:5000/vguard/api';
+// const BASE_URL = 'http://34.93.239.251:5005/vguard/api';
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -70,17 +70,13 @@ const update_fcm_token = async () => {
 };
 
 export async function loginWithPassword(
-  userName: string,
-  password: string,
-  role: string,
-  professionId: string
+  username: string,
+  password: string
 ): Promise<AxiosResponse> {
-  const path = "user/userDetails/login";
+  const path = "user/login";
   const response: AxiosResponse = await createPostRequest(path, {
-    userName,
+    username,
     password,
-    role,
-    professionId,
   });
   if (response.status === 200) {
     api.defaults.headers.common[
@@ -365,7 +361,7 @@ export function userLoginDetails() {
 }
 
 export function registerNewUser(vguardRishtaUser: any) {
-  const path = "user/registerUser";
+  const path = "user/register";
   return createPostRequest(path, vguardRishtaUser);
 }
 

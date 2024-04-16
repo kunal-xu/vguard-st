@@ -108,6 +108,7 @@ const Field = (props: FieldProps) => {
               onValueChange={(value, index) => {
                 setRule(index);
                 setSelectedValue(value);
+								(value: string) => handleInputChange(props.data as string, value)
               }}
             >
               {items?.map((item, index) => {
@@ -145,7 +146,7 @@ const Field = (props: FieldProps) => {
       );
     case "dropDownPicker":
       properties = (props as DropDownPickerField).properties;
-			const [pincode, setPincode] = useState([]);
+			const [pincode, setPincode] = useState('');
 			const [open, setOpen] = useState(false);
 			const [suggestions, setSuggestions] = useState([]);
 			async function pincodeOptions(text: string) {
@@ -164,7 +165,28 @@ const Field = (props: FieldProps) => {
 				try {
 					if(text.length > 2) {
 						const response = await getDetailsByPinCode(text);
-						const pinCodeDetailsRes = response.data;
+						const pinCodeDetailsRes: any = response.data;
+						dispatch({
+							type: "UPDATE_FIELD",
+							payload: {
+								field: "currentState",
+								value: pinCodeDetailsRes["stateName"]
+							}
+						})
+						dispatch({
+							type: "UPDATE_FIELD",
+							payload: {
+								field: "currentDistrict",
+								value: pinCodeDetailsRes["distName"]
+							}
+						})
+						dispatch({
+							type: "UPDATE_FIELD",
+							payload: {
+								field: "currentCity",
+								value: pinCodeDetailsRes["cityName"]
+							}
+						})
 					}
 				} catch (error) {
 					console.log(error)

@@ -9,6 +9,7 @@ import { newUserFields } from '../fields/newUserFields';
 import Field from '../../../components/Field';
 import { NavigationProps } from '../../../utils/interfaces';
 import React from 'react';
+import { useForm } from '../../../components/FormContext';
 
 const NewUser = ({ navigation }: NavigationProps) => {
   // console.log('====================================');
@@ -44,6 +45,7 @@ const NewUser = ({ navigation }: NavigationProps) => {
   // const [permananetcityid, setpermananetcityid] = useState('');
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
+  const { state, dispatch } = useForm();
   // const [items, setItems] = useState([
   //   { label: 'Apple', value: 'apple' },
   //   { label: 'Banana', value: 'banana' }
@@ -307,6 +309,7 @@ const NewUser = ({ navigation }: NavigationProps) => {
             label="Next"
             onPress={() => {
               // validateFields();
+              console.log(state);
               navigation.navigate('Bank Details')
             }}
             variant="filled"

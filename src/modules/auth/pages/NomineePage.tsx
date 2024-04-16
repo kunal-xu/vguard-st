@@ -1,33 +1,48 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, TextInput, TouchableOpacity, PermissionsAndroid, Image, Alert, Linking } from 'react-native';
-import { height, width } from '../../../utils/dimensions';
-import { Avatar, Checkbox, Colors } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  TextInput,
+  TouchableOpacity,
+  PermissionsAndroid,
+  Image,
+  Alert,
+  Linking,
+} from "react-native";
+import { height, width } from "../../../utils/dimensions";
+import { Avatar, Checkbox, Colors } from "react-native-paper";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import Buttons from "../../../components/Buttons";
-import Permissions from 'react-native-permissions';
-import DatePicker from '../../../components/DatePicker';
-import { FloatingLabelInput } from 'react-native-floating-label-input';
-import { IconButton, } from 'react-native-paper';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import Permissions from "react-native-permissions";
+import DatePicker from "../../../components/DatePicker";
+import { FloatingLabelInput } from "react-native-floating-label-input";
+import { IconButton } from "react-native-paper";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import NeedHelp from "../../../components/NeedHelp";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Popup from '../../../components/Popup';
-import colors from '../../../../colors';
-import Loader from '../../../components/Loader';
-import { useTranslation } from 'react-i18next';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Popup from "../../../components/Popup";
+import colors from "../../../../colors";
+import Loader from "../../../components/Loader";
+import { useTranslation } from "react-i18next";
 import {
   responsiveHeight,
   responsiveWidth,
-  responsiveFontSize
+  responsiveFontSize,
 } from "react-native-responsive-dimensions";
 
-import { nomineePageFields } from '../fields/nomineePageFields';
-import Field from '../../../components/Field';
-import { NavigationProps } from '../../../utils/interfaces';
+import { nomineePageFields } from "../fields/nomineePageFields";
+import Field from "../../../components/Field";
+import { NavigationProps } from "../../../utils/interfaces";
+import { useForm } from "../../../components/FormContext";
+import { STUser } from "../../../utils/types/STUser";
+import { registerNewUser } from "../../../utils/apiservice";
 
 const NomineePage = ({ navigation }: NavigationProps) => {
-
+  const { state, dispatch } = useForm();
   const { t } = useTranslation();
   const [checked, setChecked] = useState(false);
   const [number, setnumber] = useState();
@@ -39,23 +54,21 @@ const NomineePage = ({ navigation }: NavigationProps) => {
 
   const [selectedbank, setselectedbank] = useState(null);
   const [allbankslist, setallbankslist] = useState(null);
-  const [bankid, setbankid] = useState('');
+  const [bankid, setbankid] = useState("");
   const [validateallfieldforbank, setvalidateallfieldforbank] = useState(false);
-  const [relationship, setrelationship] = useState('')
+  const [relationship, setrelationship] = useState("");
 
-
-  const [nomineename, setnomineename] = useState('');
-  const [nomineemobileno, setnomineemobileno] = useState('');
-  const [nomineeemail, setnomineeemail] = useState('');
-  const [nomineeaddress, setnomineeaddress] = useState('');
+  const [nomineename, setnomineename] = useState("");
+  const [nomineemobileno, setnomineemobileno] = useState("");
+  const [nomineeemail, setnomineeemail] = useState("");
+  const [nomineeaddress, setnomineeaddress] = useState("");
 
   const [nomineeselectedDate, setnomineeSelectedDate] = useState();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
+  const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDatenominee, setSelectedDatenominee] = useState();
-
 
   // const handleDateChange = (event, selectedDatenominee) => {
   //   if (event.type === 'set') {
@@ -64,102 +77,97 @@ const NomineePage = ({ navigation }: NavigationProps) => {
   //     // setnomineeSelectedDate(selectedDate);
   //     // setnomineeSelectedDate(selectedDate);
 
-
   //   }
   //   setShowDatePicker(false);
   // };
 
-  const handleShowDatePicker = () => {
-    setShowDatePicker(true);
-  };
+  // const handleShowDatePicker = () => {
+  //   setShowDatePicker(true);
+  // };
 
+  // const validateFields = async () => {
+  //   const BankDetailsAndNominee = {
+  //     accountnumber,
+  //     accountholdername,
+  //     chequeImage,
+  //     IFSC,
+  //     accounttype,
+  //     selectedbank,
+  //     nomineename,
+  //     nomineemobileno,
+  //     nomineeemail,
+  //     nomineeaddress,
+  //     relationship,
+  //     selectedDatenominee,
+  //     bankid,
+  //   }
+  //   const PreviewSummaryData = {
+  //     BankDetailsAndNominee,
+  //   }
+  //   setvalidateallfieldforbank(false)
 
+  //   const checkBankDetailsReq = () => {
+  //     if (
+  //       accountnumber ||
+  //       accountholdername ||
+  //       chequeImage != null ||
+  //       IFSC ||
+  //       accounttype ||
+  //       selectedbank
+  //     )
+  //       if (
+  //         accountnumber &&
+  //         accountholdername &&
+  //         chequeImage != null &&
+  //         IFSC &&
+  //         accounttype &&
+  //         selectedbank
+  //       )
+  //         return true;
+  //       else return false;
+  //     else return true;
+  //   };
 
+  //   const checkNomineeDetailsReq = () => {
+  //     if (
+  //       nomineename &&
+  //       selectedDatenominee &&
+  //       nomineemobileno &&
+  //       nomineeaddress &&
+  //       relationship
+  //     )
+  //       return true;
+  //     else return false;
+  //   };
 
+  //   // // Check for at least one field being entere
 
-  const validateFields = async () => {
-    const BankDetailsAndNominee = {
-      accountnumber,
-      accountholdername,
-      chequeImage,
-      IFSC,
-      accounttype,
-      selectedbank,
-      nomineename,
-      nomineemobileno,
-      nomineeemail,
-      nomineeaddress,
-      relationship,
-      selectedDatenominee,
-      bankid,
-    }
-    const PreviewSummaryData = {
-      BankDetailsAndNominee,
-    }
-    setvalidateallfieldforbank(false)
-
-    const checkBankDetailsReq = () => {
-      if (
-        accountnumber ||
-        accountholdername ||
-        chequeImage != null ||
-        IFSC ||
-        accounttype ||
-        selectedbank
-      )
-        if (
-          accountnumber &&
-          accountholdername &&
-          chequeImage != null &&
-          IFSC &&
-          accounttype &&
-          selectedbank
-        )
-          return true;
-        else return false;
-      else return true;
-    };
-
-    const checkNomineeDetailsReq = () => {
-      if (
-        nomineename &&
-        selectedDatenominee &&
-        nomineemobileno &&
-        nomineeaddress &&
-        relationship
-      )
-        return true;
-      else return false;
-    };
-
-    // // Check for at least one field being entere
-
-    if (checked) {
-      if (checkBankDetailsReq() && checkNomineeDetailsReq()) {
-        let pattern = /^[3-9][0-9]{9}$/
-        if (pattern.test(nomineemobileno)) {
-          const dataToStore = JSON.stringify(PreviewSummaryData);
-          await AsyncStorage.setItem("previewSummaryData", dataToStore);
-          navigation.navigate("PreviewSummary");
-        } else {
-          setIsPopupVisible(true);
-          setPopupMessage("Please enter valid mobile no.");
-        }
-      } else {
-        setIsPopupVisible(true);
-        let message = "";
-        if (checkBankDetailsReq() == false) {
-          message = "Please fill complete bank details";
-        } else {
-          message = "Please fill nominee details";
-        }
-        setPopupMessage(message);
-      }
-    } else {
-      setIsPopupVisible(true);
-      setPopupMessage("Please agree to terms and conditions.");
-    }
-  };
+  //   if (checked) {
+  //     if (checkBankDetailsReq() && checkNomineeDetailsReq()) {
+  //       let pattern = /^[3-9][0-9]{9}$/
+  //       if (pattern.test(nomineemobileno)) {
+  //         const dataToStore = JSON.stringify(PreviewSummaryData);
+  //         await AsyncStorage.setItem("previewSummaryData", dataToStore);
+  //         navigation.navigate("PreviewSummary");
+  //       } else {
+  //         setIsPopupVisible(true);
+  //         setPopupMessage("Please enter valid mobile no.");
+  //       }
+  //     } else {
+  //       setIsPopupVisible(true);
+  //       let message = "";
+  //       if (checkBankDetailsReq() == false) {
+  //         message = "Please fill complete bank details";
+  //       } else {
+  //         message = "Please fill nominee details";
+  //       }
+  //       setPopupMessage(message);
+  //     }
+  //   } else {
+  //     setIsPopupVisible(true);
+  //     setPopupMessage("Please agree to terms and conditions.");
+  //   }
+  // };
   const openTermsAndConditions = () => {
     // Add the URL of your terms and conditions page
     const termsAndConditionsURL = "https://vguardrishta.com/tnc_retailer.html";
@@ -217,18 +225,18 @@ const NomineePage = ({ navigation }: NavigationProps) => {
   //   }
   // };
 
-  let options = {
-    saveToPhotoes: true,
-    mediaType: 'photo',
-    saveToPhotos: true,
-    selectionLimit: 1,
-    quality: 0.5,
-    includeBase64: true,
-    storageOption: {
-      skipbackup: true,
-      path: 'images',
-    }
-  };
+  // let options = {
+  //   saveToPhotoes: true,
+  //   mediaType: 'photo',
+  //   saveToPhotos: true,
+  //   selectionLimit: 1,
+  //   quality: 0.5,
+  //   includeBase64: true,
+  //   storageOption: {
+  //     skipbackup: true,
+  //     path: 'images',
+  //   }
+  // };
 
   // const openCamera = async (documentType, onCapture) => {
   //   let photo;
@@ -263,7 +271,6 @@ const NomineePage = ({ navigation }: NavigationProps) => {
   //             }
   //           }
 
-
   //         }
   //       }
   //     );
@@ -284,27 +291,122 @@ const NomineePage = ({ navigation }: NavigationProps) => {
 
   //   }
   // }
-  const curr_date = new Date()
+  // const curr_date = new Date()
+
+  async function register() {
+    setIsLoading(true);
+    try {
+      const stUser: STUser = new STUser();
+      stUser.Name = state.Name;
+      stUser.DOB = state.DOB;
+      stUser.UniqueId = state.UniqueId;
+      stUser.RishtaID = state.RishtaID;
+      stUser.Contact = state.Contact;
+      stUser.MappedParentName = state.MappedParentName;
+      stUser.MappedParentId = state.MappedParentId;
+      stUser.STType = state.STType;
+      stUser.SEorPICCode = state.SEorPICCode;
+      stUser.SEorPICName = state.SEorPICName;
+      stUser.ResendInviteLinkFlag = state.ResendInviteLinkFlag;
+      stUser.ResendSMS = state.ResendSMS;
+      stUser.TaggedCategory = state.TaggedCategory;
+      stUser.ActivationStatus = state.ActivationStatus;
+      stUser.LoggedInDate = state.LoggedInDate;
+      stUser.BlockStatus = state.BlockStatus;
+      stUser.Aadhar = state.Aadhar;
+      stUser.AadharValidation = state.AadharValidation;
+      stUser.PAN = state.PAN;
+      stUser.PanValidation = state.PanValidation;
+      stUser.AddressDetail.currentAddressDoorNo = state.currentAddressDoorNo;
+      stUser.AddressDetail.currentAddressLine1 = state.currentAddressLine1;
+      stUser.AddressDetail.currentAddressLine2 = state.currentAddressLine2;
+      stUser.AddressDetail.currentAddressLine3 = state.currentAddressLine3;
+      stUser.AddressDetail.currentPincode = state.currentPincode;
+      stUser.AddressDetail.currentCity = state.currentCity;
+      stUser.AddressDetail.currentState = state.currentState;
+      stUser.AddressDetail.currentDistrict = state.currentDistrict;
+      stUser.BankDetail.errorMessage = state.errorMessage;
+      stUser.BankDetail.bankId = state.bankId;
+      stUser.BankDetail.bankAccNo = state.bankAccNo;
+      stUser.BankDetail.bankAccHolderName = state.bankAccHolderName;
+      stUser.BankDetail.bankAccType = state.bankAccType;
+      stUser.BankDetail.bankAccTypePos = state.bankAccTypePos;
+      stUser.BankDetail.bankNameAndBranch = state.bankNameAndBranch;
+      stUser.BankDetail.branchAddress = state.branchAddress;
+      stUser.BankDetail.bankIfsc = state.bankIfsc;
+      stUser.BankDetail.nomineeName = state.nomineeName;
+      stUser.BankDetail.nomineeDob = state.nomineeDob;
+      stUser.BankDetail.checkPhoto = state.checkPhoto;
+      stUser.BankDetail.nomineeMobileNo = state.nomineeMobileNo;
+      stUser.BankDetail.nomineeEmail = state.nomineeEmail;
+      stUser.BankDetail.nomineeAdd = state.nomineeAdd;
+      stUser.BankDetail.nomineeRelation = state.nomineeRelation;
+      stUser.BankDetail.nomineeAccNo = state.nomineeAccNo;
+      stUser.BankDetail.bankDataPresent = state.bankDataPresent;
+      stUser.PaytmDetail.upiId = state.upiId;
+      stUser.PaytmDetail.paytmNo = state.paytmNo;
+      stUser.PaytmDetail.upiVerified = state.upiVerified;
+      stUser.EmailId = state.EmailId;
+      stUser.Gender = state.Gender;
+      stUser.AlternateNumber = state.AlternateNumber;
+      stUser.Selfie = state.Selfie;
+      stUser.EarnedPoints = state.EarnedPoints;
+      stUser.RedeemedPoints = state.RedeemedPoints;
+      stUser.BalancePoints = state.BalancePoints;
+      stUser.InvitationDate = state.InvitationDate;
+      stUser.UpdatedOn = state.UpdatedOn;
+      stUser.TaggedCategory = state.TaggedCategory;
+      const response = await registerNewUser(stUser);
+      const responseData = response.data;
+      setIsLoading(false);
+      setIsPopupVisible(true);
+			setPopupMessage(responseData.message);
+      setTimeout(() => {
+        navigation.navigate("login");
+      }, 1200);
+    } catch (error) {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <SafeAreaView>
-      <ScrollView style={{ backgroundColor: "white" }} >
-        <View >
-          <View style={{ backgroundColor: 'transparent', height: height / 8, margin: 20, flexDirection: 'row', width: width / 2.1, justifyContent: 'space-evenly', alignItems: 'center', }}>
-            <Avatar.Image size={84} source={require('../../../assets/images/ac_icon.png')} />
-            <View style={{ margin: 20, flexDirection: 'column' }}>
-              <Text style={{ color: 'grey' }}>Contact</Text>
-              <Text style={{ color: 'grey' }}>Unique ID</Text>
-              <Text style={{ color: 'grey' }}>{number}</Text>
+      <ScrollView style={{ backgroundColor: "white" }}>
+        <View>
+          <View
+            style={{
+              backgroundColor: "transparent",
+              height: height / 8,
+              margin: 20,
+              flexDirection: "row",
+              width: width / 2.1,
+              justifyContent: "space-evenly",
+              alignItems: "center",
+            }}
+          >
+            <Avatar.Image
+              size={84}
+              source={require("../../../assets/images/ac_icon.png")}
+            />
+            <View style={{ margin: 20, flexDirection: "column" }}>
+              <Text style={{ color: "grey" }}>Contact</Text>
+              <Text style={{ color: "grey" }}>Unique ID</Text>
+              <Text style={{ color: "grey" }}>{number}</Text>
             </View>
           </View>
-          {isLoading == true ? <View style={{ flex: 1 }}>
-
-            <Loader isLoading={isLoading} />
-          </View> : null}
-          {isPopupVisible && (<Popup isVisible={isPopupVisible} onClose={() => setIsPopupVisible(false)}>
-            <Text>{popupMessage}</Text>
-            {/* // <Text>ICORRECT OTP</Text> */}
-          </Popup>
+          {isLoading == true ? (
+            <View style={{ flex: 1 }}>
+              <Loader isLoading={isLoading} />
+            </View>
+          ) : null}
+          {isPopupVisible && (
+            <Popup
+              isVisible={isPopupVisible}
+              onClose={() => setIsPopupVisible(false)}
+            >
+              <Text>{popupMessage}</Text>
+              {/* // <Text>ICORRECT OTP</Text> */}
+            </Popup>
           )}
           {nomineePageFields.map((field) => (
             <Field
@@ -550,13 +652,20 @@ const NomineePage = ({ navigation }: NavigationProps) => {
               of V-guard Rishta Loyalty Program and abide to follow them.
             </Text>
           </View> */}
-          <View style={{ display: 'flex', width: "100%", alignItems: 'center', marginVertical: 20 }}>
+          <View
+            style={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              marginVertical: 20,
+            }}
+          >
             <Buttons
               label="Submit"
-              onPress={() => validateFields()}
+              onPress={() => register()}
               variant="filled" // or any other variant you want to use
               width={350} // specify the width
-              icon={require('../../../assets/images/arrow.png')} // provide the path to your icon
+              icon={require("../../../assets/images/arrow.png")} // provide the path to your icon
               iconWidth={50} // specify the icon width
               iconHeight={20} // specify the icon height
               iconGap={10}
@@ -566,19 +675,18 @@ const NomineePage = ({ navigation }: NavigationProps) => {
             <NeedHelp />
           </View>
         </View>
-      </ScrollView >
-    </SafeAreaView >
-  )
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
-}
-
-export default NomineePage
+export default NomineePage;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   input: {
     padding: 5,
@@ -588,42 +696,41 @@ const styles = StyleSheet.create({
     borderColor: "#D3D3D3",
     margin: 20,
     marginTop: 5,
-    color: 'black',
+    color: "black",
     borderRadius: 5,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   smallContainer: {
     backgroundColor: colors.white,
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
-    gap: 10
+    gap: 10,
   },
   labelStyles: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     margin: 15,
   },
   textContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
   },
   blackDetail: {
     color: colors.black,
-    fontSize: 14
+    fontSize: 14,
   },
   smallDetail: {
     marginLeft: 10,
     color: colors.black,
-    fontSize: 14
+    fontSize: 14,
   },
   greyDetail: {
     color: colors.grey,
-    fontSize: 14
+    fontSize: 14,
   },
   floatingcontainerstyle: {
     width: width / 1.05,
-
-  }
-})
+  },
+});

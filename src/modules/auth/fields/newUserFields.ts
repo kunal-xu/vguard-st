@@ -6,7 +6,7 @@ export const newUserFields = [
     id: "6a615c7e-1c90-462f-a133-b6ca3200ab26",
     type: "floatingLabelInput",
     label: "strings:name",
-    data: "name",
+    data: "Name",
     properties: {
       staticLabel: true,
       maxLength: 30,
@@ -35,7 +35,7 @@ export const newUserFields = [
     id: "89ae9dd3-9a36-41bb-87b7-6121a0975fa7",
     type: "picker",
     items: ["Select Gender*", "Male", "Female", "Other"],
-    data: "genderPos",
+    data: "Gender",
     properties: {
       mode: "dropdown",
       style: {
@@ -49,7 +49,7 @@ export const newUserFields = [
     id: "eb764633-0acc-4458-92b2-66bc38a2ac88",
     type: "floatingLabelInput",
     label: "strings:lbl_date_of_birth",
-    data: "dob",
+    data: "DOB",
     properties: {
       staticLabel: true,
       maxLength: 30,
@@ -68,7 +68,7 @@ export const newUserFields = [
     id: "0098ec68-1e52-4c7b-a741-e303eea8e84c",
     label: "strings:contact_no",
     type: "floatingLabelInput",
-    data: "mobileNo",
+    data: "Contact",
     properties: {
       keyboardType: "number-pad",
       staticLabel: true,
@@ -151,7 +151,7 @@ export const newUserFields = [
     id: "284a95c8-84e1-418c-8d38-f8a6ebb72423",
     type: "floatingLabelInput",
     label: "strings:update_aadhar_voter_id_dl_manually",
-    data: "",
+    data: "Aadhar",
     properties: {
       staticLabel: true,
       maxLength: 30,
@@ -171,7 +171,7 @@ export const newUserFields = [
     id: "faf8b98e-a52f-4697-8f74-924e75343ee7",
     type: "floatingLabelInput",
     label: "strings:pan_card",
-    data: "",
+    data: "PAN",
     properties: {
       staticLabel: true,
       maxLength: 30,
@@ -190,7 +190,7 @@ export const newUserFields = [
     id: "080be0ca-e6b6-4c2d-ba4b-96e328228f0f",
     label: "strings:email",
     type: "floatingLabelInput",
-    data: "emailId",
+    data: "EmailId",
     properties: {
       keyboardType: "email-address",
       staticLabel: true,
@@ -204,12 +204,12 @@ export const newUserFields = [
   },
   {
     id: "32975062-9d16-46c6-b009-2e350f5e3146",
-    label: "strings:lbl_permanent_address_mandatory",
+    label: "strings:lbl_current_address_mandatory",
     type: "floatingLabelInput",
-    data: "currAddress",
+    data: "currentAddressDoorNo",
     properties: {
       keyboardType: "default",
-      maxLength: 128,
+      maxLength: 10,
       staticLabel: true,
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
@@ -221,9 +221,9 @@ export const newUserFields = [
   },
   {
     id: "96f46ac3-c2a6-4863-86b0-bb73c5ebb6b9",
-    label: "strings:lbl_street_locality",
+    label: "strings:lbl_current_address_line_1",
     type: "floatingLabelInput",
-    data: "currStreetAndLocality",
+    data: "currentAddressLine1",
     properties: {
       keyboardType: "default",
       maxLength: 128,
@@ -238,9 +238,26 @@ export const newUserFields = [
   },
   {
     id: "f515df31-b3c7-4c22-be1b-955d86b0e474",
-    label: "strings:lbl_landmark",
+    label: "strings:lbl_current_address_line_2",
     type: "floatingLabelInput",
-    data: "currLandmark",
+    data: "currentAddressLine2",
+    properties: {
+      keyboardType: "default",
+      maxLength: 60,
+      staticLabel: true,
+      containerStyles: styles.input,
+      labelStyles: styles.labelStyles,
+      inputStyles: {
+        color: "black",
+        paddingHorizontal: 10,
+      },
+    },
+  },
+  {
+    id: "e482c9f2-e595-4d62-a22e-45b0fcd4ed1f",
+    label: "strings:lbl_current_address_line_2",
+    type: "floatingLabelInput",
+    data: "currentAddressLine3",
     properties: {
       keyboardType: "default",
       maxLength: 60,
@@ -257,7 +274,7 @@ export const newUserFields = [
     id: "97fbf4f6-65e2-4209-881e-664e7b64b391",
     label: "auth:newuser:Secondpagepincode",
     type: "dropDownPicker",
-    data: "pinCode",
+    data: "currentPincode",
     properties: {
       mode: "BADGE",
       showBadgeDot: true,
@@ -318,7 +335,7 @@ export const newUserFields = [
     id: "579d9086-9d29-4ae4-8583-494b497d0af8",
     label: "strings:select_state",
     type: "floatingLabelInput",
-    data: "state",
+    data: "currentState",
     properties: {
       keyboardType: "default",
       staticLabel: true,
@@ -335,7 +352,7 @@ export const newUserFields = [
     id: "e5f652db-1c60-42cf-a990-b9e15b3b2e34",
     label: "strings:select_district",
     type: "floatingLabelInput",
-    data: "dist",
+    data: "currentDistrict",
     properties: {
       keyboardType: "default",
       staticLabel: true,
@@ -395,7 +412,7 @@ export const newUserFields = [
     id: "645354b2-fc70-4b66-858c-3e852c5f9c9f ",
     label: "strings:select_city",
     type: "floatingLabelInput",
-    data: "dist",
+    data: "currentCity",
     properties: {
       keyboardType: "default",
       staticLabel: true,

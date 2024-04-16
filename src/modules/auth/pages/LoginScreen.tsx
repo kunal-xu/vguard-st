@@ -87,7 +87,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
     showLoader(true);
 
     try {
-      const response = await loginWithPassword(username, password, Constants.INF_USER_TYPE, professionId);
+      const response = await loginWithPassword(username, password);
       showLoader(false);
       setIsPopupVisible(!isPopupVisible);
       const responseData = response.data;

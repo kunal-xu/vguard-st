@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,16 +8,21 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
-import colors from '../../../../colors';
-import Buttons from '../../../components/Buttons';
-import arrowIcon from '../../../assets/images/arrow.png';
-import { generateOtpForLogin, loginWithOtp, validateLoginOtp } from '../../../utils/apiservice';
-import Popup from '../../../components/Popup';
-import Loader from '../../../components/Loader';
-import { useAuth } from '../../../components/AuthContext';
-import { Constants } from '../../../utils/constants';
+} from "react-native";
+import { useTranslation } from "react-i18next";
+import colors from "../../../../colors";
+import Buttons from "../../../components/Buttons";
+import arrowIcon from "../../../assets/images/arrow.png";
+import {
+  generateOtpForLogin,
+  loginWithOtp,
+  validateLoginOtp,
+} from "../../../utils/apiservice";
+import Popup from "../../../components/Popup";
+import Loader from "../../../components/Loader";
+import { useAuth } from "../../../components/AuthContext";
+import { Constants } from "../../../utils/constants";
+import { useForm } from "../../../components/FormContext";
 
 interface LoginWithOtpProps {
   navigation: any;
@@ -32,14 +37,15 @@ interface LoginWithOtpProps {
 
 const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
   const { usernumber, jobprofession, preferedLanguage } = route.params;
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [number, setnumber] = useState(usernumber);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
+  const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [loader, showLoader] = useState(false);
   const { login, professionId } = useAuth();
+  const { state, dispatch } = useForm();
 
   const placeholderColor = colors.grey;
 
@@ -63,7 +69,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
       try {
         const body = {
           Contact: number,
-          OtpType
+          OtpType,
         };
         const validationResponse = await generateOtpForLogin(body);
         if (validationResponse.status === 200) {
@@ -80,13 +86,13 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
           }
           setCountdown(60);
         } else {
-          throw new Error("Something went wrong!")
+          throw new Error("Something went wrong!");
         }
       } catch (error: any) {
         showLoader(false);
         setIsPopupVisible(true);
         setPopupMessage(error.message);
-        console.error('Error during validation:', error);
+        console.error("Error during validation:", error);
       }
     } else {
       showLoader(false);
@@ -99,7 +105,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
     showLoader(true);
     if (!otp) {
       setIsPopupVisible(true);
-      setPopupMessage('Please Enter the OTP to proceed');
+      setPopupMessage("Please Enter the OTP to proceed");
       showLoader(false);
       return;
     }
@@ -111,24 +117,31 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
       const verificationResponse = await validateLoginOtp(body);
       if (verificationResponse.status === 200) {
         showLoader(false);
-        // const verificationResponseData = verificationResponse.data;
-        // login(verificationResponseData);
-      } else if(verificationResponse.status === 201) {
+        const verificationResponseData = verificationResponse.data;
+        login(verificationResponseData);
+      } else if (verificationResponse.status === 201) {
         showLoader(false);
         const verificationResponseData = verificationResponse.data;
-        
-        // navigation.navigate("Kyc");
-      }
-      else {
-        throw new Error("Something went wrong!")
+        const keys: string[] = Object.keys(verificationResponseData);
+        for (const key of keys) {
+          dispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: key,
+              value: verificationResponseData[key],
+            },
+          });
+        }
+        navigation.navigate("Kyc");
+      } else {
+        throw new Error("Something went wrong!");
       }
     } catch (error: any) {
       showLoader(false);
       setIsPopupVisible(true);
       setPopupMessage(error.response.data);
-      console.error('Error validating OTP:', error);
+      console.error("Error validating OTP:", error);
     }
-
 
     // validateLoginOtp(body)
     //   .then((verification) => {
@@ -168,12 +181,11 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
     //   });
   }
 
-
-  useEffect(() => { }, [otp, number]);
+  useEffect(() => {}, [otp, number]);
 
   const handleClose = async () => {
     setIsPopupVisible(false);
-  }
+  };
 
   const { t } = useTranslation();
 
@@ -194,19 +206,23 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
         ) : null}
         <View style={styles.mainWrapper}>
           <Image
-            source={require('../../../assets/images/rishta_retailer_logo.webp')}
+            source={require("../../../assets/images/rishta_retailer_logo.webp")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>
-            {t('strings:lbl_otp_verification')}
+            {t("strings:lbl_otp_verification")}
           </Text>
           <View style={styles.formContainer}>
             <View style={styles.containter}>
               <Text style={styles.textHeader}>
-                {t('strings:enter_otp_description')}
+                {t("strings:enter_otp_description")}
               </Text>
               <View style={styles.inputContainer}>
-                <Image style={styles.icon} resizeMode='contain' source={require('../../../assets/images/mobile_icon.png')} />
+                <Image
+                  style={styles.icon}
+                  resizeMode="contain"
+                  source={require("../../../assets/images/mobile_icon.png")}
+                />
                 <TextInput
                   style={styles.input}
                   value={number}
@@ -214,10 +230,14 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                 />
               </View>
               <View style={styles.inputContainer}>
-                <Image style={styles.icon} resizeMode='contain' source={require('../../../assets/images/lock_icon.png')} />
+                <Image
+                  style={styles.icon}
+                  resizeMode="contain"
+                  source={require("../../../assets/images/lock_icon.png")}
+                />
                 <TextInput
                   style={styles.input}
-                  placeholder={t('strings:enter_otp')}
+                  placeholder={t("strings:enter_otp")}
                   placeholderTextColor={placeholderColor}
                   keyboardType="number-pad"
                   value={otp}
@@ -228,7 +248,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
             </View>
             <View>
               <Buttons
-                label={t('strings:login_with_otp')}
+                label={t("strings:submit")}
                 variant="filled"
                 onPress={() => validateotp()}
                 width="100%"
@@ -238,17 +258,29 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                 icon={arrowIcon}
               />
             </View>
-            <View style={{ flexDirection: 'column', alignItems: 'center', marginTop: 30 }}>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
-                <Text style={styles.greyText}>{t('strings:otp_not_received')}</Text>
+            <View
+              style={{
+                flexDirection: "column",
+                alignItems: "center",
+                marginTop: 30,
+              }}
+            >
+              <View style={{ flexDirection: "row", gap: 10 }}>
+                <Text style={styles.greyText}>
+                  {t("strings:otp_not_received")}
+                </Text>
                 <TouchableOpacity onPress={() => getOTP("SMS")}>
-                  <Text style={{ color: colors.yellow }}>{t('strings:resend_otp')}</Text>
+                  <Text style={{ color: colors.yellow }}>
+                    {t("strings:resend_otp")}
+                  </Text>
                 </TouchableOpacity>
               </View>
-              <Text style={styles.greyText}>{t('strings:or')}</Text>
-              <View style={{ flexDirection: 'row', gap: 10 }}>
+              <Text style={styles.greyText}>{t("strings:or")}</Text>
+              <View style={{ flexDirection: "row", gap: 10 }}>
                 <TouchableOpacity onPress={() => getOTP("Voice")}>
-                  <Text style={{ color: colors.yellow }}>{t('strings:call_to_get_otp')}</Text>
+                  <Text style={{ color: colors.yellow }}>
+                    {t("strings:call_to_get_otp")}
+                  </Text>
                 </TouchableOpacity>
                 {countdown > 0 ? (
                   <Text style={styles.greyText}>in {countdown} seconds</Text>
@@ -260,10 +292,10 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
         <View>
           <View style={styles.footerContainer}>
             <Text style={styles.footergreyText}>
-              {t('strings:powered_by_v_guard')}
+              {t("strings:powered_by_v_guard")}
             </Text>
             <Image
-              source={require('../../../assets/images/group_910.png')}
+              source={require("../../../assets/images/group_910.png")}
               style={styles.imageVguard}
             />
           </View>
@@ -278,28 +310,28 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   registerUser: {
-    height: '100%',
+    height: "100%",
     backgroundColor: colors.white,
-    display: 'flex',
+    display: "flex",
   },
   mainWrapper: {
     padding: 30,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     flexGrow: 1,
   },
   textHeader: {
-    textAlign: 'center',
-    width: '80%',
+    textAlign: "center",
+    width: "80%",
     color: colors.grey,
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   mainHeader: {
     color: colors.black,
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     // marginBottom: 10
   },
   imageSaathi: {
@@ -312,7 +344,7 @@ const styles = StyleSheet.create({
     height: 36,
   },
   formContainer: {
-    width: '100%',
+    width: "100%",
     padding: 16,
     flex: 2,
   },
@@ -325,11 +357,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     marginBottom: 10,
     borderRadius: 5,
-    shadowColor: 'rgba(0, 0, 0, 0.8)',
+    shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%'
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
   },
   icon: {
     marginHorizontal: 10,
@@ -337,46 +369,46 @@ const styles = StyleSheet.create({
     height: 15,
   },
   or: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.black,
     marginBottom: 20,
     marginTop: 20,
   },
   footergreyText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 12,
     color: colors.grey,
     paddingBottom: 5,
   },
   footerContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
     backgroundColor: colors.lightGrey,
-    width: '100%',
+    width: "100%",
     paddingVertical: 10,
   },
   option: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     gap: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   radioButtons: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
     gap: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   containter: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     gap: 20,
     marginBottom: 50,
   },
@@ -389,10 +421,10 @@ const styles = StyleSheet.create({
     color: colors.grey,
   },
   otpPhone: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     paddingHorizontal: 50,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
 });
 

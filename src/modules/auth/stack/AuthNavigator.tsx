@@ -23,8 +23,8 @@ const AuthNavigator = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="splash" component={SplashScreen} />
       {/* <Stack.Screen name="category" component={CategorySelection} /> */}
-      {/* <Stack.Screen name="login" component={LoginScreen} /> */}
-      {/* <Stack.Screen name="Home" component={HomeStack} /> */}
+      <Stack.Screen name="login" component={LoginScreen} />
+      <Stack.Screen name="Home" component={HomeStack} />
       {/* <Stack.Screen name="register" component={RegisterUser} /> */}
       <Stack.Screen name="loginwithotp" component={LoginWithOtp} />
       {/* <Stack.Screen name="registerwithotp" component={RegisterWithOtp} /> */}

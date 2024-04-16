@@ -24,9 +24,35 @@ export class VguardRishtaUser {
   AadharValidation: string | null = null;
   PAN: string | null = null;
   PanValidation: string | null = null;
-  AddressDetail: AddressDetail = new AddressDetail();
-  BankDetail: BankDetail = new BankDetail();
-  PaytmDetail: PaytmDetail = new PaytmDetail();
+  currentAddressDoorNo: string | null = null;
+  currentAddressLine1: string | null = null;
+  currentAddressLine2: string | null = null;
+  currentAddressLine3: string | null = null;
+  currentPincode: string | null = null;
+  currentCity: string | null = null;
+  currentState: string | null = null;
+  currentDistrict: string | null = null;
+  errorMessage: string | null = null;
+  bankId: string | null = null;
+  bankAccNo: string | null = null;
+  bankAccHolderName: string | null = null;
+  bankAccType: string | null = null;
+  bankAccTypePos: string | null = null;
+  bankNameAndBranch: string | null = null;
+  branchAddress: string | null = null;
+  bankIfsc: string | null = null;
+  nomineeName: string | null = null;
+  nomineeDob: string | null = null;
+  checkPhoto: string | null = null;
+  nomineeMobileNo: string | null = null;
+  nomineeEmail: string | null = null;
+  nomineeAdd: string | null = null;
+  nomineeRelation: string | null = null;
+  nomineeAccNo: string | null = null;
+  bankDataPresent: number | null = null;
+  upiId: string | null = null;
+  paytmNo: string | null = null;
+  upiVerified: string | null = null;
   EmailId: string | null = null;
   Gender: string | null = null;
   AlternateNumber: string | null = null;
@@ -43,17 +69,4 @@ export class VguardRishtaUser {
   OtpType: string | null = null;
   Otp: string | null = null;
   pwd: string | null = null;
-
-  constructor(data?: Partial<VguardRishtaUser>) {
-    Object.assign(this, data);
-    if (data && data.BankDetail) {
-      this.BankDetail = new BankDetail(data.BankDetail);
-    }
-    if (data && data.PaytmDetail) {
-      this.PaytmDetail = new PaytmDetail(data.PaytmDetail);
-    }
-    if (data && data.AddressDetail) {
-      this.AddressDetail = new AddressDetail(data.AddressDetail);
-    }
-  }
 }
