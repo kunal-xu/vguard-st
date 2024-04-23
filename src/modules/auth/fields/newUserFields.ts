@@ -9,7 +9,6 @@ export const newUserFields = [
     data: "Name",
     properties: {
       staticLabel: true,
-      maxLength: 30,
       editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
@@ -52,7 +51,6 @@ export const newUserFields = [
     data: "DOB",
     properties: {
       staticLabel: true,
-      maxLength: 30,
       editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
@@ -154,7 +152,6 @@ export const newUserFields = [
     data: "Aadhar",
     properties: {
       staticLabel: true,
-      maxLength: 30,
       editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
@@ -166,7 +163,6 @@ export const newUserFields = [
       },
     },
   },
-
   {
     id: "faf8b98e-a52f-4697-8f74-924e75343ee7",
     type: "floatingLabelInput",
@@ -174,7 +170,6 @@ export const newUserFields = [
     data: "PAN",
     properties: {
       staticLabel: true,
-      maxLength: 30,
       editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
@@ -186,6 +181,18 @@ export const newUserFields = [
       },
     },
   },
+  // {
+  //   id: "c322d6ac-cfeb-46d4-a977-01d8c65b90da",
+  //   type: "Button",
+  //   properties: {
+  //     label: "Verify PAN for TDS%",
+  //     variant: "outlined",
+  //     width: 350,
+  //     onPress: () => {
+
+  //     }
+  //   }
+  // },
   {
     id: "080be0ca-e6b6-4c2d-ba4b-96e328228f0f",
     label: "strings:email",

@@ -20,6 +20,7 @@ import { NavigationProps } from '../../../utils/interfaces';
 import { newUserFields } from '../fields/newUserFields';
 import { newUserKycField } from '../fields/newUserKycFields';
 import Field from '../../../components/Field';
+import { useForm } from '../../../components/FormContext';
 const NewUserKyc = ({ navigation}: NavigationProps) => {
 	// const { userData } = route.params;
 	// console.log('==================%%%==================', userData.selectedCity);
@@ -482,6 +483,8 @@ const NewUserKyc = ({ navigation}: NavigationProps) => {
 	// 		setSchemes([...schemes, { schmename: '', resonforlikingschme: '' }]);
 	// 	}
 	// };
+
+	const {state} = useForm()
 	
 	return (
 		<SafeAreaView style={{ backgroundColor: "white" }}>
@@ -490,8 +493,8 @@ const NewUserKyc = ({ navigation}: NavigationProps) => {
 					<View style={{ backgroundColor: 'transparent', height: height / 8, margin: 20, flexDirection: 'row', width: width / 2, justifyContent: 'space-evenly', alignItems: 'center', padding: 20, marginLeft: 1}}>
 						<Avatar.Image  size={84} source={require('../../../assets/images/ac_icon.png')}/>
 						<View style={{flexDirection: 'column', padding: 8, height: height / 10, justifyContent: "center"}}>
-							<Text style={{ color: 'grey' }}>Contact</Text>
-							<Text style={{ color: 'grey' }}>Unique ID</Text>
+						<Text style={{ color: "grey" }}>Contact: {state.Contact}</Text>
+            <Text style={{ color: "grey" }}>Unique ID: {state.UniqueId}</Text>
 						</View>
 
 					</View>
@@ -1100,7 +1103,9 @@ const NewUserKyc = ({ navigation}: NavigationProps) => {
 					<View style={{ display: 'flex', width: "100%", alignItems: 'center', marginVertical: 20 }}>
 						<Buttons
 							label="Next"
-							onPress={() => navigation.navigate('Credentials')}
+							onPress={() => 	{
+								navigation.navigate('Credentials')
+							}}
 							variant="filled"
 							width={350}
 							icon={require('../../../assets/images/arrow.png')}

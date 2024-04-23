@@ -24,6 +24,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [responseCode, setResponseCode] = useState(0);
+  const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
 
   const showSnackbar = (message: string) => {
@@ -45,6 +46,10 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
         showLoader(false);
         const validationResponseData = validationResponse.data;
         setResponseCode(validationResponseData.code);
+        if(validationResponseData.entity === 1) {
+          
+          setResponseEntity(1);
+        }
         if (validationResponseData.code === 200) {
           const successMessage = validationResponseData.message;
           setIsPopupVisible(true);
@@ -71,6 +76,9 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { t } = useTranslation();
 
   const handleClose = () => {
+    if(responseCode === 400 && responseEntity === 1) {
+      navigation.navigate("leadform", { usernumber: number });
+    }
     if (responseCode === 200) {
       navigation.navigate("loginwithotp", { usernumber: number });
     }

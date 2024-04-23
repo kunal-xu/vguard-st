@@ -144,7 +144,6 @@ const HomeScreen = ({ navigation }) => {
 
             <TouchableOpacity
               onPress={() => navigation.navigate("Profile")}
-              disabled
             >
               <Text style={styles.viewProfile}>
                 {t("strings:view_profile")}
@@ -213,7 +212,7 @@ const HomeScreen = ({ navigation }) => {
           <View style={styles.row}>
             <CustomTouchableOption
               text="strings:direct_order"
-              // iconSource={require("../../../assets/images/ic_update_kyc.webp")}
+              iconSource={require("../../../assets/images/Group_575.png")}
               screenName="Update KYC"
               disabled={true}
             />

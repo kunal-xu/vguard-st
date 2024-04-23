@@ -153,7 +153,7 @@ export default {
     lbl_welcome: 'Welcome!',
     lbl_login_or_register: 'Login or register to continue',
     mobile_icon: 'Mobile Icon',
-    lbl_registered_mobile_number_login: 'Registered Mobile No./Rishta ID',
+    lbl_registered_mobile_number_login: 'Registered Mobile No.',
     login_via_otp: 'Login via OTP',
     log_in: 'Log In',
     enter_registered_mobile_no_rishta_id:

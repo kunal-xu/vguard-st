@@ -1,7 +1,3 @@
-import { BankDetail } from "./BankDetail";
-import { AddressDetail } from "./KycDetails";
-import { PaytmDetail } from "./PaytmDetail";
-
 export class VguardRishtaUser {
   Name: string | null = null;
   DOB: Date | null = null;

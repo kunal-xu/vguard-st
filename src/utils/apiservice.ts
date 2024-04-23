@@ -2,8 +2,8 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import messaging from "@react-native-firebase/messaging";
 import { VguardRishtaUser } from "./interfaces";
 
-// const BASE_URL = "http://192.168.9.191:5005/vguard/api";
-const BASE_URL = 'http://34.93.239.251:5005/vguard/api';
+const BASE_URL = "http://192.168.29.15:5005/vguard/api";
+// const BASE_URL = 'http://34.93.239.251:5005/vguard/api';
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -265,6 +265,26 @@ export function getCouponList() {
 
 export function updateanys(data: any) {
   const path = "user/updateanys";
+  return createPostRequest(path, data);
+}
+
+export function addLeadForm(data: any) {
+  const path = "user/addLead";
+  return createPostRequest(path, data);
+}
+
+export function getTDSPercentage(data: any) {
+  const path = "user/tdsChecks";
+  return createPostRequest(path, data);
+}
+
+export function verifyBank(data: any) {
+  const path = "user/verifyBankDetails";
+  return createPostRequest(path, data);
+}
+
+export function getVPAData(data: any) {
+  const path = "user/verifyVPA";
   return createPostRequest(path, data);
 }
 

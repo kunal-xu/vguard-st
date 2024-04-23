@@ -16,13 +16,14 @@ import RegisterWithOtp from '../pages/RegisterWithOtp';
 import ReUpdateKycOTP from '../pages/ReUpdateKycOTP';
 import ReUpdateKyc from '../pages/ReUpdateKyc';
 import PreviewReUpdateKyc from '../pages/PreviewReUpdateKyc';
+import LeadForm from '../pages/LeadForm';
 
 const AuthNavigator = () => {
   const Stack = createNativeStackNavigator();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="splash" component={SplashScreen} />
-      {/* <Stack.Screen name="category" component={CategorySelection} /> */}
+      <Stack.Screen name="category" component={CategorySelection} />
       <Stack.Screen name="login" component={LoginScreen} />
       <Stack.Screen name="Home" component={HomeStack} />
       {/* <Stack.Screen name="register" component={RegisterUser} /> */}
@@ -31,6 +32,7 @@ const AuthNavigator = () => {
       <Stack.Screen name="Kyc" component={Kyc} />
       <Stack.Screen name="forgotPassword" component={ForgotPassword} />
       <Stack.Screen name="loginWithNumber" component={LoginWithNumber} />
+      <Stack.Screen name="leadform" component={LeadForm} />
       {/* <Stack.Screen name="newUser" component={NewUser} /> */}
       {/* <Stack.Screen name="NewUserKyc" component={NewUserKyc} /> */}
       {/* <Stack.Screen name='NomineePage' component={NomineePage} /> */}

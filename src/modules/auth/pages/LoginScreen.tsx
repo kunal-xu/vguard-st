@@ -89,7 +89,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
     try {
       const response = await loginWithPassword(username, password);
       showLoader(false);
-      setIsPopupVisible(!isPopupVisible);
+      // setIsPopupVisible(!isPopupVisible);
       const responseData = response.data;
       login(responseData);
     } catch (error: any) {
@@ -118,7 +118,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
           </View>
           {loader && <Loader isLoading={loader} />}
           <Image
-            source={require("../../../assets/images/ic_rishta_logo.png")}
+            source={require("../../../assets/images/group_907.png")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>{t("strings:lbl_welcome")}</Text>
@@ -291,8 +291,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageSaathi: {
-    width: 127,
-    height: 98,
+    width: 135,
+    height: 130,
     marginBottom: 30,
   },
   imageVguard: {
@@ -304,6 +304,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
     flex: 2,
+    
   },
   validationMessage: {
     color: "red",

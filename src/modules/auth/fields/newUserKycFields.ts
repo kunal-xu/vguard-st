@@ -51,6 +51,16 @@ export const newUserKycField = [
       },
     },
   },
+  {
+    id: "c322d6ac-cfeb-46d4-a977-01d8c65b90da",
+    type: "Button",
+    label: "bank",
+    properties: {
+      label: "Get bank details",
+      variant: "outlined",
+      width: 350,
+    }
+  },
 	{
     id: "16e4be6a-11dc-48c1-b9a6-d6faf8cd9f23",
     type: "floatingLabelInput",
@@ -252,6 +262,16 @@ export const newUserKycField = [
       },
     },
   },
+  {
+    id: "9387f5d0-6538-4d6e-af3f-c336f4f0bf6f",
+    type: "Button",
+    label: "upi",
+    properties: {
+      label: "Verify UPI ID",
+      variant: "outlined",
+      width: 350,
+    }
+  },
 	{
     id: "85562c96-5712-41b0-8c6b-e89badded4bc",
     type: "floatingLabelInput",
@@ -260,6 +280,7 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
+      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,

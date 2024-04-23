@@ -109,7 +109,7 @@ const BottomTab = () => {
           //headerTitle: () => <CustomTabHeader handleLanguageButtonPress={handleLanguageButtonPress} route={route} />,
           headerShown: true
         })} />
-        <Tab.Screen name="Profile" component={() => <View />} options={({ route }) => ({
+        <Tab.Screen name="Profile" component={ProfileStack} options={({ route }) => ({
           //headerTitle: () => <CustomTabHeader handleLanguageButtonPress={handleLanguageButtonPress} route={route} />,
           headerShown: false
         })} />

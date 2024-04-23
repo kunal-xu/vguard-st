@@ -42,77 +42,57 @@ const Profile = ({ navigation }) => {
 
   useEffect(() => {
     AsyncStorage.getItem("USER").then((r) => {
-      const user = JSON.parse(r);
-      const data = {
-        userName: user?.name,
-        userCode: user?.userCode,
-        pointsBalance: user?.pointsSummary?.pointsBalance,
-        redeemedPoints: user?.pointsSummary?.redeemedPoints,
-        userImage: user?.kycDetails?.selfie,
-        userRole: user?.professionId,
-      };
-      setUserData(data);
-      getUserProfile()
-        .then((response) => response.data)
-        .then((responseData) => {
-          setData(responseData);
-        })
-        .catch((error) => {
-          console.error("Error fetching data:", error);
-        });
+      const user = JSON.parse(r as string);
+      setData(r)
+      
+      // getUserProfile()
+      //   .then((response) => response.data)
+      //   .then((responseData) => {
+      //     setData(responseData);
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error fetching data:", error);
+      //   });
     });
   }, []);
 
-  useEffect(() => {
-    if (userData.userRole && userData.userImage) {
-      const setProfileImg = async () => {
-        try {
-          const profileImage =  getImages(
-            userData.userImage,
-            "PROFILE",
-          );
-          console.log(profileImage)
-          setProfileImage(profileImage);
-        } catch (error) {
-          console.log("Error while fetching profile image:", error);
-        }
-      };
+  // useEffect(() => {
+  //   if (userData.userRole && userData.userImage) {
+  //     const setProfileImg = async () => {
+  //       try {
+  //         const profileImage =  getImages(
+  //           userData.userImage,
+  //           "PROFILE",
+  //         );
+  //         console.log(profileImage)
+  //         setProfileImage(profileImage);
+  //       } catch (error) {
+  //         console.log("Error while fetching profile image:", error);
+  //       }
+  //     };
 
-      setProfileImg();
-    }
-  }, [userData.userRole, userData.userImage]);
+  //     setProfileImg();
+  //   }
+  // }, [userData.userRole, userData.userImage]);
 
   const labels = [
-    "Preferred Language",
     "Gender",
     "Date of Birth",
     "Contact",
-    "WhatsApp",
     "Email",
-    "Permanent Address",
-    "Profession",
-    "Enrolled in Scheme",
-    "Name of the Scheme/Brand",
-    "Annual Business Potential",
-    "Selfie",
-    "ID Document",
-    "Pan Card",
+    "Aadhar",
+    "PAN",
     "Bank Details",
-    "Nominee Details",
   ];
   const renderField = (fieldName) => {
     const fieldMap = {
-      "Date of Birth": "dob",
-      Contact: "contactNo",
-      WhatsApp: "whatsappNo",
-      "Permanent Address": "permanentAddress",
-      "Enrolled in Scheme": "enrolledOtherSchemeYesNo",
-      "Annual Business Potential": "annualBusinessPotential",
-      "Preferred Language": "preferredLanguage",
-      Gender: "gender",
-      Email: "emailId",
-      Profession: "profession",
-      "Name of the Scheme/Brand":false
+      "Date of Birth": "DOB",
+      "Contact": "Contact",
+      "Gender": "Gender",
+      "Email": "EmailId",
+      "Aadhar": "Aadhar",
+      "PAN": "PAN",
+      "Bank Details": "BankDetail"
     };
 
     if (fieldName in fieldMap) {
@@ -127,30 +107,13 @@ const Profile = ({ navigation }) => {
       } else {
         return "";
       }
-    } else if (fieldName === "Selfie") {
-      if (data.kycDetails && data.kycDetails.selfie) {
-        return "Yes";
-      } else {
-        return "No";
-      }
-    } else if (fieldName === "ID Document") {
-      if (
-        data.kycDetails &&
-        data.kycDetails.aadharOrVoterOrDLFront &&
-        data.kycDetails.aadharOrVoterOrDlBack &&
-        data.kycDetails.aadharOrVoterOrDlNo
-      ) {
-        return "Yes";
-      } else {
-        return "No";
-      }
-    } else if (fieldName === "Pan Card") {
-      const hasPanDetails = data.kycDetails && data.kycDetails.panCardNo;
+    } else if (fieldName === "PAN") {
+      const hasPanDetails = data.PAN;
       return (
         <>
           <View>
             <View style={styles.databox}>
-              <Text style={styles.yesorno}>{hasPanDetails ? "Yes" : "No"}</Text>
+              <Text style={styles.yesorno}>{hasPanDetails ? data.PAN : "N/A"}</Text>
               {hasPanDetails && (
                 <TouchableOpacity
                   style={{ marginLeft: 5 }}
@@ -168,7 +131,7 @@ const Profile = ({ navigation }) => {
                 <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>Pan Card No: </Text>
                   <Text style={styles.dataSmall}>
-                    {data.kycDetails.panCardNo}
+                    {data.PAN}
                   </Text>
                 </View>
               </View>
@@ -177,7 +140,7 @@ const Profile = ({ navigation }) => {
         </>
       );
     } else if (fieldName === "Bank Details") {
-      const hasBankDetails = data.bankDetail && data.bankDetail.bankAccNo;
+      const hasBankDetails = data.BankDetail && data.BankDetail.bankAccNo;
       return (
         <>
           <View>
@@ -202,7 +165,7 @@ const Profile = ({ navigation }) => {
                 <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>Bank Acc No: </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail.bankAccNo}
+                    {data.BankDetail.bankAccNo}
                   </Text>
                 </View>
                 <View style={styles.smallDataRow}>
@@ -210,13 +173,13 @@ const Profile = ({ navigation }) => {
                     Bank Acc Holder Name:{" "}
                   </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail.bankAccHolderName}
+                    {data.BankDetail.bankAccHolderName}
                   </Text>
                 </View>
                 <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>Bank Acc Type: </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail.bankAccType}
+                    {data.BankDetail.bankAccType}
                   </Text>
                 </View>
                 <View style={styles.smallDataRow}>
@@ -224,7 +187,7 @@ const Profile = ({ navigation }) => {
                     Bank Name and Branch:{" "}
                   </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail.bankNameAndBranch}
+                    {data.BankDetail.bankNameAndBranch}
                   </Text>
                 </View>
                 <View style={styles.smallDataRow}>
@@ -232,7 +195,7 @@ const Profile = ({ navigation }) => {
                     IFSC code:{" "}
                   </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail.bankIfsc}
+                    {data.BankDetail.bankIfsc}
                   </Text>
                 </View>
               </View>
@@ -242,7 +205,7 @@ const Profile = ({ navigation }) => {
       );
     } else if (fieldName === "Nominee Details") {
       const hasNomineeDetails = () => {
-        if(data?.bankDetail?.nomineeDob || data?.bankDetail?.nomineeEmail || data?.bankDetail?.nomineeMobileNo ||  data?.bankDetail?.nomineeRelation)
+        if(data?.BankDetail?.nomineeDob || data?.BankDetail?.nomineeEmail || data?.BankDetail?.nomineeMobileNo ||  data?.BankDetail?.nomineeRelation)
         return true
        
       };
@@ -267,53 +230,53 @@ const Profile = ({ navigation }) => {
             </View>
             {showNomineeDetails && (
               <View style={styles.smallDataBox}>
-                { data?.bankDetail?.nomineeAccNo && <View style={styles.smallDataRow}>
+                { data?.BankDetail?.nomineeAccNo && <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>Nominee Acc No: </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail?.nomineeAccNo}
+                    {data.BankDetail?.nomineeAccNo}
                   </Text>
                 </View>}
-                { data?.bankDetail?.nomineeName && <View style={styles.smallDataRow}>
+                { data?.BankDetail?.nomineeName && <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>
                     Nominee Acc Holder Name:{" "}
                   </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail?.nomineeName}
+                    {data.BankDetail?.nomineeName}
                   </Text>
                 </View>}
-                { data?.bankDetail?.nomineeDob && <View style={styles.smallDataRow}>
+                { data?.BankDetail?.nomineeDob && <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>
                     Nominee Date of Birth:{" "}
                   </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail?.nomineeDob}
+                    {data.BankDetail?.nomineeDob}
                   </Text>
                 </View>}
-                { data?.bankDetail?.nomineeMobileNo && <View style={styles.smallDataRow}>
+                { data?.BankDetail?.nomineeMobileNo && <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>
                     Nominee Mobile Number:{" "}
                   </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail?.nomineeMobileNo}
+                    {data.BankDetail?.nomineeMobileNo}
                   </Text>
                 </View>}
-                { data?.bankDetail?.nomineeEmail &&  <View style={styles.smallDataRow}>
+                { data?.BankDetail?.nomineeEmail &&  <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>Nominee Email ID: </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail?.nomineeEmail}
+                    {data.BankDetail?.nomineeEmail}
                   </Text>
                 </View>}
-                { data?.bankDetail?.nomineeRelation &&  <View style={styles.smallDataRow}>
+                { data?.BankDetail?.nomineeRelation &&  <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>Nominee Relation: </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail?.nomineeRelation}
+                    {data.BankDetail?.nomineeRelation}
                   </Text>
                 </View>}
 
-                { data?.bankDetail?.nomineeAdd &&  <View style={styles.smallDataRow}>
+                { data?.BankDetail?.nomineeAdd &&  <View style={styles.smallDataRow}>
                   <Text style={styles.dataSmallLabel}>Nominee Address: </Text>
                   <Text style={styles.dataSmall}>
-                    {data.bankDetail?.nomineeAdd}
+                    {data.BankDetail?.nomineeAdd}
                   </Text>
                 </View>}
               </View>
@@ -347,16 +310,16 @@ const Profile = ({ navigation }) => {
             resizeMode="cover"
           />
         </View>
-        <TouchableHighlight
+        {/* <TouchableHighlight
           style={styles.button}
           onPress={() => navigation.navigate("Edit Profile")}
         >
           <Text style={styles.buttonText}>{t("strings:edit_profile")}</Text>
-        </TouchableHighlight>
+        </TouchableHighlight> */}
       </View>
       <View style={styles.profileText}>
-        <Text style={styles.textDetail}>{userData.userName}</Text>
-        <Text style={styles.textDetail}>{userData.userCode}</Text>
+        <Text style={styles.textDetail}>{data.Name}</Text>
+        <Text style={styles.textDetail}>{data.RishtaID}</Text>
         <TouchableOpacity onPress={openEVisitingCard}>
           <Text style={styles.viewProfile}>{t("strings:view_e_card")}</Text>
         </TouchableOpacity>

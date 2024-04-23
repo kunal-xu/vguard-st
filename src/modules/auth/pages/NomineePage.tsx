@@ -391,9 +391,8 @@ const NomineePage = ({ navigation }: NavigationProps) => {
               source={require("../../../assets/images/ac_icon.png")}
             />
             <View style={{ margin: 20, flexDirection: "column" }}>
-              <Text style={{ color: "grey" }}>Contact</Text>
-              <Text style={{ color: "grey" }}>Unique ID</Text>
-              <Text style={{ color: "grey" }}>{number}</Text>
+            <Text style={{ color: "grey" }}>Contact: {state.Contact}</Text>
+            <Text style={{ color: "grey" }}>Unique ID: {state.UniqueId}</Text>
             </View>
           </View>
           {isLoading == true ? (

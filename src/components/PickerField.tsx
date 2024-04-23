@@ -46,7 +46,7 @@ const PickerField = ({
 					dropdownIconColor={disabled ? '#ffffff' : '#87CEEB'}
 					dropdownIconRippleColor={disabled ? '#ffffff' : '#87CEEB'}
 				>
-					<Picker.item key={"select"} label="Select" value="select" />
+					<Picker.Item key={"select"} label="Select" value="select" />
 					{items.map((item) => (
 						<Picker.Item key={item.value} label={item.label} value={item.value} />
 					))}

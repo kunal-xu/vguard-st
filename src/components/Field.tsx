@@ -9,13 +9,20 @@ import {
 } from "react-native-floating-label-input";
 import DatePicker from "./DatePicker";
 import { useTranslation } from "react-i18next";
-import { DatePickerProps } from "../utils/interfaces";
+import { ButtonsProps, DatePickerProps } from "../utils/interfaces";
 import { height } from "../utils/dimensions";
 import { useState } from "react";
 import { useForm } from "./FormContext";
 import { VguardRishtaUser } from "../utils/types/VguardRishtaUser";
 import React from "react";
-import { getDetails, getDetailsByPinCode, getPincodeList } from "../utils/apiservice";
+import {
+  getDetails,
+  getDetailsByPinCode,
+  getPincodeList,
+  verifyBank,
+  getVPAData
+} from "../utils/apiservice";
+import Buttons from "./Buttons";
 
 interface RuleItem {
   id: number;
@@ -108,9 +115,9 @@ const Field = (props: FieldProps) => {
               onValueChange={(value, index) => {
                 setRule(index);
                 setSelectedValue(value);
-								(value: string) => handleInputChange(props.data as string, value)
+                (value: string) =>
+                  handleInputChange(props.data as string, value);
               }}
-							
             >
               {items?.map((item, index) => {
                 return (
@@ -147,70 +154,72 @@ const Field = (props: FieldProps) => {
       );
     case "dropDownPicker":
       properties = (props as DropDownPickerField).properties;
-			const [pincode, setPincode] = useState('');
-			const [open, setOpen] = useState(false);
-			const [suggestions, setSuggestions] = useState([]);
-			async function pincodeOptions(text: string) {
-				try {
-					if(text.length > 2) {
-						const response = await getPincodeList(text);
-						const pinCodeRes = response.data;
-						if(pinCodeRes.length > 0) setSuggestions(pinCodeRes);
-					}
-				} catch (error) {
-					console.log(error)
-				}
-			}
-			async function pinCodeDetails(text: string, pinCode: string) {
-				setPincode(pinCode);
-				try {
-					if(text.length > 2) {
-						const response = await getDetailsByPinCode(text);
-						const pinCodeDetailsRes: any = response.data;
-						dispatch({
-							type: "UPDATE_FIELD",
-							payload: {
-								field: "currentState",
-								value: pinCodeDetailsRes["stateName"]
-							}
-						})
-						dispatch({
-							type: "UPDATE_FIELD",
-							payload: {
-								field: "currentDistrict",
-								value: pinCodeDetailsRes["distName"]
-							}
-						})
-						dispatch({
-							type: "UPDATE_FIELD",
-							payload: {
-								field: "currentCity",
-								value: pinCodeDetailsRes["cityName"]
-							}
-						})
-					}
-				} catch (error) {
-					console.log(error)
-				}
-			}
+      const [pincode, setPincode] = useState("");
+      const [open, setOpen] = useState(false);
+      const [suggestions, setSuggestions] = useState([]);
+      async function pincodeOptions(text: string) {
+        try {
+          if (text.length > 2) {
+            const response = await getPincodeList(text);
+            const pinCodeRes = response.data;
+            if (pinCodeRes.length > 0) setSuggestions(pinCodeRes);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      async function pinCodeDetails(text: string, pinCode: string) {
+        setPincode(pinCode);
+        try {
+          if (text.length > 2) {
+            const response = await getDetailsByPinCode(text);
+            const pinCodeDetailsRes: any = response.data;
+            dispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "currentState",
+                value: pinCodeDetailsRes["stateName"],
+              },
+            });
+            dispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "currentDistrict",
+                value: pinCodeDetailsRes["distName"],
+              },
+            });
+            dispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "currentCity",
+                value: pinCodeDetailsRes["cityName"],
+              },
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
       return (
         <DropDownPicker
           {...properties}
           loading={true}
-					placeholder={pincode === null ? 'Search Pincode' : `Searched Pincode: ${pincode}`}
+          placeholder={
+            pincode === null ? "Search Pincode" : `Searched Pincode: ${pincode}`
+          }
           open={open}
-					setOpen={setOpen}
+          setOpen={setOpen}
           items={suggestions.map((item: any) => ({
             label: item.pinCode,
             value: item.pinCode,
-						id: item.pinCodeId
+            id: item.pinCodeId,
           }))}
           onChangeSearchText={(text) => {
-						pincodeOptions(text)
+            pincodeOptions(text);
           }}
-					onSelectItem={(item: any) => {
-						pinCodeDetails(item.id.toString() as string, item.value.toString())
-					}}
+          onSelectItem={(item: any) => {
+            pinCodeDetails(item.id.toString() as string, item.value.toString());
+          }}
         />
       );
     case "datePicker":
@@ -220,6 +229,92 @@ const Field = (props: FieldProps) => {
           <DatePicker {...properties} />
         </View>
       );
+    case "Button":
+      properties = props.properties;
+      const type = props.label;
+      if (type === "bank") {
+        async function getBankDetails() {
+          try {
+            const response = await verifyBank({
+              UniqueId: state.UniqueId,
+              BankDetail: {
+                bankAccNo: state.bankAccNo,
+                bankIfsc: state.bankIfsc,
+              },
+            });
+            const responseData = response.data;
+            if (responseData.code === 200) {
+              dispatch({
+                type: "UPDATE_FIELD",
+                payload: {
+                  field: "bankAccHolderName",
+                  value: responseData.message,
+                },
+              });
+              dispatch({
+                type: "UPDATE_FIELD",
+                payload: {
+                  field: "bankNameAndBranch",
+                  value: responseData.entity,
+                },
+              });
+              dispatch({
+                type: "UPDATE_FIELD",
+                payload: {
+                  field: "branchAddress",
+                  value: responseData.status,
+                },
+              });
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        return (
+          <View
+            style={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              marginVertical: 10,
+            }}
+          >
+            <Buttons {...properties} onPress={getBankDetails} />
+          </View>
+        );
+      }
+      if (type === "upi") {
+        async function getVPA() {
+          try {
+            const response = await getVPAData({
+              UniqueId: state.UniqueId,
+            })
+            
+            const responseData = response.data;
+            dispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "upiId",
+                value: responseData.entity,
+              },
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
+        return (
+          <View
+            style={{
+              display: "flex",
+              width: "100%",
+              alignItems: "center",
+              marginVertical: 10,
+            }}
+          >
+            <Buttons {...properties} onPress={getVPA} />
+          </View>
+        );
+      }
     default:
       return null;
   }

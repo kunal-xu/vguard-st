@@ -134,6 +134,9 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
         }
         navigation.navigate("Kyc");
       } else {
+        showLoader(false);
+        setIsPopupVisible(true);
+        setPopupMessage("Wrong OTP. Please try again!");
         throw new Error("Something went wrong!");
       }
     } catch (error: any) {
@@ -206,7 +209,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
         ) : null}
         <View style={styles.mainWrapper}>
           <Image
-            source={require("../../../assets/images/rishta_retailer_logo.webp")}
+            source={require("../../../assets/images/group_907.png")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>

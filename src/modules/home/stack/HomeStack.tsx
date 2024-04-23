@@ -115,11 +115,12 @@ const HomeStack = () => {
             headerShown: true
           }}
         />
+        */}
         <Stack.Screen name="Profile" component={ProfileStack}
           options={{
             headerShown: false
           }}
-        />  */}
+        />  
       </Stack.Navigator>
       <Modal
         animationType="slide"
