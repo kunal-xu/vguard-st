@@ -3,19 +3,22 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import Notification from '../../notifications/pages/Notification';
 import Profile from '../../profile/pages/Profile';
-import BottomTabBar from '../../../components/BottomTabBar';
+
 import HomeStack from '../../home/stack/HomeStack';
 import ContactPage from '../../contact/pages/ContactPage';
 import colors from '../../../../colors';
 import ProfileStack from '../../profile/stack/ProfileStack';
-import LogoutConfirmationPopup from '../../../components/LogoutConfirmationPopup';
-import { useAuth } from '../../../components/AuthContext'
 import { View, Text, Image, StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert, Modal } from 'react-native'
 import { responsiveFontSize } from 'react-native-responsive-dimensions';
 import { useTranslation } from 'react-i18next';
-import LanguagePicker from '../../../components/LanguagePicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import BottomTabBar from '../../../components/BottomTabBar';
+import LogoutConfirmationPopup from '../../../components/LogoutConfirmationPopup';
+import { useAuth } from '../../../hooks/useAuth';
+import LanguagePicker from '../../../components/LanguagePicker';
 
 const CustomTabHeader = ({ route, handleLanguageButtonPress  }) => {
   const { t, i18n } = useTranslation();
@@ -52,10 +55,10 @@ const BottomTab = () => {
   useEffect(() => {
     const fetchStoredLanguage = async () => {
       try {
-        const storedLanguage = await AsyncStorage.getItem('language') || i18n.language;
-        setSelectedLanguage(storedLanguage);
-        i18n.changeLanguage(storedLanguage);
-        console.log('Language changed:', storedLanguage);
+        // const storedLanguage = await AsyncStorage.getItem('language') || i18n.language;
+        // setSelectedLanguage(storedLanguage);
+        // i18n.changeLanguage(storedLanguage);
+        // console.log('Language changed:', storedLanguage);
       } catch (error) {
         console.error('Error fetching language from AsyncStorage:', error);
       }

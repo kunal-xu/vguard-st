@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, Dimensions } from 'react-native';
-import Carousel from 'react-native-snap-carousel';
+// import Carousel from 'react-native-snap-carousel';
 import colors from '../../colors';
 
 const ReusableCarousel = ({
@@ -37,7 +37,7 @@ const ReusableCarousel = ({
 
 	return (
 		<View style={{ height: carouselHeight }}>
-			<Carousel
+			{/* <Carousel
 				data={data}
 				renderItem={renderItem}
 				sliderWidth={screenWidth}
@@ -45,7 +45,7 @@ const ReusableCarousel = ({
 				loop={true}
 				onSnapToItem={index => setActiveIndex(index)}
 				firstItem={activeIndex}
-			/>
+			/> */}
 		</View>
 	);
 };

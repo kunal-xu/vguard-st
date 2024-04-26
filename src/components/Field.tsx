@@ -12,17 +12,16 @@ import { useTranslation } from "react-i18next";
 import { ButtonsProps, DatePickerProps } from "../utils/interfaces";
 import { height } from "../utils/dimensions";
 import { useState } from "react";
-import { useForm } from "./FormContext";
 import { VguardRishtaUser } from "../utils/types/VguardRishtaUser";
 import React from "react";
 import {
-  getDetails,
   getDetailsByPinCode,
   getPincodeList,
   verifyBank,
   getVPAData
 } from "../utils/apiservice";
 import Buttons from "./Buttons";
+import { useData } from "../hooks/useData";
 
 interface RuleItem {
   id: number;
@@ -76,9 +75,9 @@ type FieldProps =
 const Field = (props: FieldProps) => {
   const { type } = props;
   const { t } = useTranslation();
-  const { state, dispatch } = useForm();
-  const handleInputChange = (field: string, value: string | number) => {
-    dispatch({
+  const { formState, formDispatch } = useData();
+  const handleFormInputChange = (field: string, value: string | number) => {
+    formDispatch({
       type: "UPDATE_FIELD",
       payload: { field, value },
     });
@@ -91,9 +90,9 @@ const Field = (props: FieldProps) => {
         <FloatingLabelInput
           {...properties}
           value={
-            state[props.data as keyof VguardRishtaUser] as string | undefined
+            formState[props.data as keyof VguardRishtaUser] as string | undefined
           }
-          onChangeText={(text) => handleInputChange(props.data as string, text)}
+          onChangeText={(text) => handleFormInputChange(props.data as string, text)}
           label={t(props.label || "")}
         />
       );
@@ -116,7 +115,7 @@ const Field = (props: FieldProps) => {
                 setRule(index);
                 setSelectedValue(value);
                 (value: string) =>
-                  handleInputChange(props.data as string, value);
+                  handleFormInputChange(props.data as string, value);
               }}
             >
               {items?.map((item, index) => {
@@ -136,7 +135,6 @@ const Field = (props: FieldProps) => {
                   ...linkItem.properties,
                   editable: rule.editable,
                 };
-                console.log(linkItem.properties);
                 return (
                   <Field
                     id={linkItem.id}
@@ -174,21 +172,21 @@ const Field = (props: FieldProps) => {
           if (text.length > 2) {
             const response = await getDetailsByPinCode(text);
             const pinCodeDetailsRes: any = response.data;
-            dispatch({
+            formDispatch({
               type: "UPDATE_FIELD",
               payload: {
                 field: "currentState",
                 value: pinCodeDetailsRes["stateName"],
               },
             });
-            dispatch({
+            formDispatch({
               type: "UPDATE_FIELD",
               payload: {
                 field: "currentDistrict",
                 value: pinCodeDetailsRes["distName"],
               },
             });
-            dispatch({
+            formDispatch({
               type: "UPDATE_FIELD",
               payload: {
                 field: "currentCity",
@@ -244,21 +242,21 @@ const Field = (props: FieldProps) => {
             });
             const responseData = response.data;
             if (responseData.code === 200) {
-              dispatch({
+              formDispatch({
                 type: "UPDATE_FIELD",
                 payload: {
                   field: "bankAccHolderName",
                   value: responseData.message,
                 },
               });
-              dispatch({
+              formDispatch({
                 type: "UPDATE_FIELD",
                 payload: {
                   field: "bankNameAndBranch",
                   value: responseData.entity,
                 },
               });
-              dispatch({
+              formDispatch({
                 type: "UPDATE_FIELD",
                 payload: {
                   field: "branchAddress",
@@ -291,7 +289,7 @@ const Field = (props: FieldProps) => {
             })
             
             const responseData = response.data;
-            dispatch({
+            formDispatch({
               type: "UPDATE_FIELD",
               payload: {
                 field: "upiId",

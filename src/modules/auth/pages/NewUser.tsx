@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { height, width } from '../../../utils/dimensions';
-import { Avatar, } from 'react-native-paper';
+import { Avatar } from 'react-native-paper';
 import Buttons from "../../../components/Buttons";
 import Loader from '../../../components/Loader';
 import Popup from '../../../components/Popup';
 import { newUserFields } from '../fields/newUserFields';
-import Field from '../../../components/Field';
 import { NavigationProps } from '../../../utils/interfaces';
 import React from 'react';
-import { useForm } from '../../../components/FormContext';
+
+import Field from '../../../components/Field';
+import { FormContextProps, useData } from '../../../hooks/useData';
 
 const NewUser = ({ navigation }: NavigationProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
-  const { state, dispatch } = useForm();
+  const { formState } = useData() as FormContextProps;
   // const maximum_date = new Date(new Date().getFullYear() - 18, new Date().getMonth(), new Date().getDate());
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
@@ -43,7 +44,6 @@ const NewUser = ({ navigation }: NavigationProps) => {
               onClose={() => setIsPopupVisible(false)}
             >
               <Text>{popupMessage}</Text>
-              {/* // <Text>ICORRECT OTP</Text> */}
             </Popup>
           )}
           <Avatar.Image
@@ -58,8 +58,8 @@ const NewUser = ({ navigation }: NavigationProps) => {
               height: height / 10,
             }}
           >
-            <Text style={{ color: "grey" }}>Contact: {state.Contact}</Text>
-            <Text style={{ color: "grey" }}>Unique ID: {state.UniqueId}</Text>
+            <Text style={{ color: "grey" }}>Contact: {formState.Contact}</Text>
+            <Text style={{ color: "grey" }}>Unique ID: {formState.UniqueId}</Text>
           </View>
         </View>
         {newUserFields.map(field => (
@@ -87,7 +87,6 @@ const NewUser = ({ navigation }: NavigationProps) => {
             label="Next"
             onPress={() => {
               // validateFields();
-              console.log(state);
               navigation.navigate('Bank Details')
             }}
             variant="filled"

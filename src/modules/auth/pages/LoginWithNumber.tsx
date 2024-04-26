@@ -10,7 +10,7 @@ import {
   Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import Snackbar from "react-native-snackbar";
+
 import colors from "../../../../colors";
 import Buttons from "../../../components/Buttons";
 import arrowIcon from "../../../assets/images/arrow.png";
@@ -27,12 +27,12 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
 
-  const showSnackbar = (message: string) => {
-    Snackbar.show({
-      text: message,
-      duration: Snackbar.LENGTH_SHORT,
-    });
-  };
+  // const showSnackbar = (message: string) => {
+  //   Snackbar.show({
+  //     text: message,
+  //     duration: Snackbar.LENGTH_SHORT,
+  //   });
+  // };
 
   async function getOTP(OtpType: string) {
     showLoader(true);
@@ -67,7 +67,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
       }
     } else {
       showLoader(false);
-      showSnackbar("Please enter your mobile number");
+      // showSnackbar("Please enter your mobile number");
     }
   }
 

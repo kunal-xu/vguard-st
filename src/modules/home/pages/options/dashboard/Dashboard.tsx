@@ -57,19 +57,19 @@ const Dashboard = () => {
     setShow(false);
   };
 
-  useEffect(() => {
-    AsyncStorage.getItem('USER').then(r => {
-      const user = JSON.parse(r);
-      console.log(user);
-      const data = {
-        userName: user.name,
-        userCode: user.userCode,
-        userImage: user.kycDetails.selfie,
-        userRole: user.professionId      
-      };
-      setUserData(data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   AsyncStorage.getItem('USER').then(r => {
+  //     const user = JSON.parse(r);
+  //     console.log(user);
+  //     const data = {
+  //       userName: user.name,
+  //       userCode: user.userCode,
+  //       userImage: user.kycDetails.selfie,
+  //       userRole: user.professionId      
+  //     };
+  //     setUserData(data);
+  //   });
+  // }, []);
 
   useEffect(() => {
     if (userData.userRole && userData.userImage) {

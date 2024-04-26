@@ -6,9 +6,10 @@ import {
   View
 } from 'react-native';
 import AppNavigator from './src/components/AppNavigator';
-import { AuthProvider } from './src/components/AuthContext';
 import notificationListener from './src/modules/notifications/pages/push_notification';
-import { FormProvider } from './src/components/FormContext';
+
+import { AuthProvider } from './src/hooks/useAuth';
+import { DataProvider } from './src/hooks/useData';
 
 async function requestAllPermissions() {
   try {
@@ -28,7 +29,7 @@ async function requestAllPermissions() {
       granted[cameraPermission] === PermissionsAndroid.RESULTS.GRANTED &&
       granted[contactPermission] === PermissionsAndroid.RESULTS.GRANTED &&
       granted[locationPermission] === PermissionsAndroid.RESULTS.GRANTED &&
-      granted[notificationPermission] === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN
+      granted[notificationPermission] === PermissionsAndroid.RESULTS.GRANTED
     ) {
       console.log('Camera, contact, and location permissions granted.');
     } else {
@@ -51,9 +52,9 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <FormProvider>
+      <DataProvider>
         <AppNavigator />
-      </FormProvider>
+      </DataProvider>
     </AuthProvider>
   );
 };

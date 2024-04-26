@@ -16,7 +16,7 @@ import {
 } from "react-native-responsive-dimensions";
 import colors from "../../../../colors";
 import { getFile, getUserProfile } from "../../../utils/apiservice";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { useTranslation } from "react-i18next";
 import { getImages } from "../../../utils/FileUtils";
 
@@ -40,10 +40,10 @@ const Profile = ({ navigation }) => {
   });
   const [profileImage, setProfileImage] = useState("");
 
-  useEffect(() => {
-    AsyncStorage.getItem("USER").then((r) => {
-      const user = JSON.parse(r as string);
-      setData(r)
+  // useEffect(() => {
+    // AsyncStorage.getItem("USER").then((r) => {
+    //   const user = JSON.parse(r as string);
+    //   setData(r)
       
       // getUserProfile()
       //   .then((response) => response.data)
@@ -53,8 +53,8 @@ const Profile = ({ navigation }) => {
       //   .catch((error) => {
       //     console.error("Error fetching data:", error);
       //   });
-    });
-  }, []);
+    // });
+  // }, []);
 
   // useEffect(() => {
   //   if (userData.userRole && userData.userImage) {
@@ -83,6 +83,7 @@ const Profile = ({ navigation }) => {
     "Aadhar",
     "PAN",
     "Bank Details",
+    "TDS Slab"
   ];
   const renderField = (fieldName) => {
     const fieldMap = {
@@ -310,12 +311,12 @@ const Profile = ({ navigation }) => {
             resizeMode="cover"
           />
         </View>
-        {/* <TouchableHighlight
+        <TouchableHighlight
           style={styles.button}
           onPress={() => navigation.navigate("Edit Profile")}
         >
           <Text style={styles.buttonText}>{t("strings:edit_profile")}</Text>
-        </TouchableHighlight> */}
+        </TouchableHighlight>
       </View>
       <View style={styles.profileText}>
         <Text style={styles.textDetail}>{data.Name}</Text>
@@ -423,7 +424,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.yellow,
     paddingHorizontal: responsiveWidth(5),
     paddingVertical: responsiveHeight(1),
-    shadowColor: "rgba(0, 0, 0, 0.8)",
+    shadowColor: colors.lightYellow,
     elevation: 5,
     borderRadius: 5,
   },

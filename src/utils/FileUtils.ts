@@ -1,6 +1,6 @@
 import { File, FileOptions } from "buffer";
 import { sendFile } from "./apiservice";
-import { imageBaseUrl } from "./constants";
+const imageBaseUrl = ""
 
 export async function sendImage(
   file: File,

@@ -24,9 +24,9 @@ import {
   sendCustomerData,
   validateMobile,
 } from '../../../../../utils/apiservice';
-import Snackbar from 'react-native-snackbar';
+
 import { CustomerData } from '../../../../../utils/modules/CustomerData';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 import DropDownPicker from 'react-native-dropdown-picker';
 import colors from '../../../../../../colors';
@@ -211,11 +211,11 @@ const ProductRegistrationForm: React.FC<{ navigation: any }> = ({ navigation }) 
           setPopupVisible(true);
           setPopupContent(result.message);
         } else {
-          AsyncStorage.setItem('CUSTOMER_DETAILS', JSON.stringify(postData)).then(
-            r => {
-              navigation.navigate('Scan In');
-            },
-          );
+          // AsyncStorage.setItem('CUSTOMER_DETAILS', JSON.stringify(postData)).then(
+          //   r => {
+          //     navigation.navigate('Scan In');
+          //   },
+          // );
         }
         showLoader(false);
         return response;
@@ -230,13 +230,13 @@ const ProductRegistrationForm: React.FC<{ navigation: any }> = ({ navigation }) 
   const getDetails = async () => {
     showLoader(true);
     try {
-      if (contactNo.length !== 10) {
-        Snackbar.show({
-          text: 'Contact number must be 10 digits',
-          duration: Snackbar.LENGTH_SHORT,
-        });
-        return;
-      }
+      // if (contactNo.length !== 10) {
+      //   Snackbar.show({
+      //     text: 'Contact number must be 10 digits',
+      //     duration: Snackbar.LENGTH_SHORT,
+      //   });
+      //   return;
+      // }
 
       const response = await getCustDetByMobile(contactNo);
 
@@ -283,24 +283,24 @@ const ProductRegistrationForm: React.FC<{ navigation: any }> = ({ navigation }) 
     }
   };
 
-  useEffect(() => {
-    getLocation().then(r => (location = r));
-    AsyncStorage.getItem('USER').then(r => {
-      const user = JSON.parse(r || '');
+  // useEffect(() => {
+  //   getLocation().then(r => (location = r));
+  //   AsyncStorage.getItem('USER').then(r => {
+  //     const user = JSON.parse(r || '');
       
-      setAddedBy(user.contactNo);
-      setCustomerFormData({
-        ...customerFormData,
-        dealerName: user.name,
-        dealerAddress: user.currentAddress,
-        dealerCity: user.currCity,
-        dealerContactNo: user.contactNo,
-        dealerDistrict: user.currDist,
-        dealerPincode: user.currPinCode.toString(),
-        dealerState: user.currState,
-      });
-    });
-  }, []);
+  //     setAddedBy(user.contactNo);
+  //     setCustomerFormData({
+  //       ...customerFormData,
+  //       dealerName: user.name,
+  //       dealerAddress: user.currentAddress,
+  //       dealerCity: user.currCity,
+  //       dealerContactNo: user.contactNo,
+  //       dealerDistrict: user.currDist,
+  //       dealerPincode: user.currPinCode.toString(),
+  //       dealerState: user.currState,
+  //     });
+  //   });
+  // }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>

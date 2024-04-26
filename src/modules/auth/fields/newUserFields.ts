@@ -181,18 +181,18 @@ export const newUserFields = [
       },
     },
   },
-  // {
-  //   id: "c322d6ac-cfeb-46d4-a977-01d8c65b90da",
-  //   type: "Button",
-  //   properties: {
-  //     label: "Verify PAN for TDS%",
-  //     variant: "outlined",
-  //     width: 350,
-  //     onPress: () => {
+  {
+    id: "c322d6ac-cfeb-46d4-a977-01d8c65b90da",
+    type: "Button",
+    properties: {
+      label: "Verify PAN for TDS%",
+      variant: "outlined",
+      width: 350,
+      onPress: () => {
 
-  //     }
-  //   }
-  // },
+      }
+    }
+  },
   {
     id: "080be0ca-e6b6-4c2d-ba4b-96e328228f0f",
     label: "strings:email",
@@ -372,49 +372,6 @@ export const newUserFields = [
       },
     },
   },
-  // {
-  //   id: "8e135577-2ee3-40af-aeab-a423d24abee5",
-  //   label: "strings:select_city",
-  //   type: "text",
-  //   properties: {
-  //     color: "black",
-  //     left: 20,
-  //     marginBottom: 2,
-  //   },
-  // },
-  // {
-  //   id: "0d664fe1-f053-4848-ae5b-a9e86d74161f",
-  //   type: "picker",
-  //   items: [],
-  //   data: "city",
-  //   properties: {
-  //     mode: "model",
-  //     style: {
-  //       color: "black",
-  //       borderWidth: 1.5,
-  //       borderColor: "#D3D3D3",
-  //     },
-  //   },
-  //   links: [
-  //     {
-  //       id: "a1de071a-9874-4fc1-bfb9-22b81125567b",
-  //       label: "strings:lbl_city_mandatory",
-  //       type: "floatingLabelInput",
-  //       data: "otherCity",
-  //       properties: {
-  //         keyboardType: "default",
-  //         maxLength: 128,
-  //         staticLabel: true,
-  //         containerStyles: styles.input,
-  //         labelStyles: styles.labelStyles,
-  //         inputStyles: {
-  //           color: "black",
-  //           paddingHorizontal: 10,
-  //         },
-  //       },
-  //     },
-  //   ],
-  // },
   {
     id: "645354b2-fc70-4b66-858c-3e852c5f9c9f ",
     label: "strings:select_city",

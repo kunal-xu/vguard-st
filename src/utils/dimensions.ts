@@ -1,4 +1,3 @@
-import {Dimensions, View, Text} from 'react-native';
-import React from 'react';
+import {Dimensions, ScaledSize} from 'react-native';
 
-export const {height, width} = Dimensions.get('screen');
+export const {height, width}: ScaledSize = Dimensions.get('screen');

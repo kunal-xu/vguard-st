@@ -11,18 +11,13 @@ import {
   ToastAndroid,
 } from 'react-native';
 import React, { useState, useEffect, useTransition } from 'react';
-
 import { responsiveFontSize } from 'react-native-responsive-dimensions';
 import { useTranslation } from 'react-i18next';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-
-
 import arrowIcon from '../../../../../assets/images/arrow.png';
 import { sendCustomerData, sendFile } from '../../../../../utils/apiservice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { CustomerData } from '../../../../../utils/modules/CustomerData';
+import {CustomerData} from '../../../../../utils/interfaces/index'
 import { Props } from 'react-native-paper';
-
 import RewardBox from '../../../../../components/ScratchCard';
 import Popup from '../../../../../components/Popup';
 import getLocation from '../../../../../utils/geolocation';
@@ -96,7 +91,7 @@ const AddWarranty = ({ navigation }) => {
         const formattedDate = today.toLocaleDateString('en-US');
         setPurchaseDate(formattedDate);
 
-        const couponResponse = await AsyncStorage.getItem('COUPON_RESPONSE');
+        // const couponResponse = await AsyncStorage.getItem('COUPON_RESPONSE');
         if (couponResponse) {
           const parsedCouponResponse = JSON.parse(couponResponse);
           console.log(parsedCouponResponse)

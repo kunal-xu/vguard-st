@@ -1,5 +1,5 @@
 {
-  "name": "vguardST",
+  "name": "V-Guard Rishta ST App",
   "version": "0.1",
   "private": true,
   "scripts": {
@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@notifee/react-native": "7.8.2",
-    "@react-native-async-storage/async-storage": "^1.19.3",
     "@react-native-community/datetimepicker": "^7.6.1",
     "@react-native-firebase/app": "^18.7.3",
     "@react-native-firebase/messaging": "^18.7.3",
@@ -37,6 +36,7 @@
     "react-native-geocoding": "^0.5.0",
     "react-native-geolocation-service": "^5.3.1",
     "react-native-image-picker": "^7.1.0",
+    "react-native-mmkv": "^2.12.2",
     "react-native-modal-datetime-picker": "^17.1.0",
     "react-native-month-year-picker": "^1.9.0",
     "react-native-paper": "^4.12.5",

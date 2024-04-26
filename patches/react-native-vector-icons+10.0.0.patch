@@ -8271,7 +8271,7 @@ index 0000000..b183b53
 +++ b/node_modules/react-native-vector-icons/android/build/intermediates/lint_model_metadata/debug/lint-model-metadata.properties
 @@ -0,0 +1,2 @@
 +mavenArtifactId=react-native-vector-icons
-+mavenGroupId=vguardIMP
++mavenGroupId=vguardST
 \ No newline at end of file
 diff --git a/node_modules/react-native-vector-icons/android/build/intermediates/lint_model_metadata/release/lint-model-metadata.properties b/node_modules/react-native-vector-icons/android/build/intermediates/lint_model_metadata/release/lint-model-metadata.properties
 new file mode 100644
@@ -8280,7 +8280,7 @@ index 0000000..b183b53
 +++ b/node_modules/react-native-vector-icons/android/build/intermediates/lint_model_metadata/release/lint-model-metadata.properties
 @@ -0,0 +1,2 @@
 +mavenArtifactId=react-native-vector-icons
-+mavenGroupId=vguardIMP
++mavenGroupId=vguardST
 \ No newline at end of file
 diff --git a/node_modules/react-native-vector-icons/android/build/intermediates/local_aar_for_lint/debug/out.aar b/node_modules/react-native-vector-icons/android/build/intermediates/local_aar_for_lint/debug/out.aar
 new file mode 100644

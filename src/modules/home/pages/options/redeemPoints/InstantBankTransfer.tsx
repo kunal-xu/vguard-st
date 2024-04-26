@@ -7,9 +7,9 @@ import { useTranslation } from 'react-i18next';
 import Buttons from '../../../../../components/Buttons';
 import arrowIcon from '../../../../../assets/images/arrow.png';
 import { bankTransfer, getany, getBanks, getFile, sendFile, updateBank } from '../../../../../utils/apiservice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import Snackbar from 'react-native-snackbar';
+
 import { Picker } from '@react-native-picker/picker';
 import Popup from '../../../../../components/Popup';
 import {  useNavigation } from '@react-navigation/native';
@@ -55,7 +55,7 @@ const InstantBankTransfer = () => {
 
 
     const getUserRoleFromAsyncStorage = async () => {
-      const userRole = await AsyncStorage.getItem("userRole");
+      // const userRole = await AsyncStorage.getItem("userRole");
       setUserRole(userRole);
       getBankDetailsAndCallFileUri();
       getBankDetail().then((result) => {
@@ -263,18 +263,18 @@ const InstantBankTransfer = () => {
                 }
             })
             .then(data => {
-                showSnackbar(data.message);
+                // showSnackbar(data.message);
             })
             .catch(error => {
                 console.error('API Error:', error);
             });
     }
-    const showSnackbar = (message) => {
-        Snackbar.show({
-            text: message,
-            duration: Snackbar.LENGTH_SHORT,
-        });
-    };
+    // const showSnackbar = (message) => {
+    //     Snackbar.show({
+    //         text: message,
+    //         duration: Snackbar.LENGTH_SHORT,
+    //     });
+    // };
 
     const handleClose = () => {
         setUpdateBank(false)

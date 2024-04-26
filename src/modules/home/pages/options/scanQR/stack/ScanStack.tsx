@@ -7,7 +7,6 @@ import ScanCode from '../ScanCode';
 import UniqueCodeHistory from '../UniqueCodeHistory';
 import ProductRegistrationForm from '../ProductRegistrationForm';
 import AddWarranty from '../AddWarranty';
-import ScanCodeReg from '../ScanCodeReg';
 
 const ScanStack: React.FC = () => {
   type ScanStackParams = {
@@ -30,27 +29,27 @@ const ScanStack: React.FC = () => {
           },
           headerShown: false,
         }}>
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Scan Code"
           component={ScanCode}
           options={{
             headerShown: true,
           }}
-        />
-        <Stack.Screen
+        /> */}
+        {/* <Stack.Screen
           name="Unique Code History"
           component={UniqueCodeHistory}
           options={{
             headerShown: true,
           }}
-        />
-        <Stack.Screen
+        /> */}
+        {/* <Stack.Screen
           name="Product Registration Form"
           component={ProductRegistrationForm}
           options={{
             headerShown: true,
           }}
-        />
+        /> */}
         <Stack.Screen
           name="Add Warranty"
           component={AddWarranty}
@@ -58,13 +57,13 @@ const ScanStack: React.FC = () => {
             headerShown: true,
           }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Scan In"
           component={ScanCodeReg}
           options={{
             headerShown: true,
           }}
-        />
+        /> */}
       </Stack.Navigator>
     </>
   );

@@ -726,8 +726,8 @@ export function validateMobile(mobileNumber: string, dealerCategory: string) {
   return createGetRequest(path);
 }
 
-export function validateRetailerCoupon(couponData: any) {
-  const path = "coupon/validateRetailerCoupon";
+export function validateSTCoupon(couponData: any) {
+  const path = "coupon/validateSTCoupon";
   console.log(path);
   console.log(couponData);
   return createPostRequest(path, couponData);

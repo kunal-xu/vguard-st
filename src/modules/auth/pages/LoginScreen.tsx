@@ -11,22 +11,23 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import colors from "../../../../colors";
-import Buttons from "../../../components/Buttons";
+
 import arrowIcon from "../../../assets/images/arrow.png";
-import { useAuth } from "../../../components/AuthContext";
+
 import Popup from "../../../components/Popup";
-import Snackbar from "react-native-snackbar";
-import Loader from "../../../components/Loader";
+
 import { Linking } from "react-native";
 import selectedTickImage from "../../../assets/images/tick_1.png";
 import notSelectedTickImage from "../../../assets/images/tick_1_notSelected.png";
-import LanguagePicker from "../../../components/LanguagePicker";
 import language from "../../../assets/images/language.png";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { loginWithPassword } from "../../../utils/apiservice";
 import { NavigationProps } from "../../../utils/interfaces";
-import { Constants } from "../../../utils/constants";
 import React from "react";
+import Buttons from "../../../components/Buttons";
+import { useAuth } from "../../../hooks/useAuth";
+import Loader from "../../../components/Loader";
+import LanguagePicker from "../../../components/LanguagePicker";
 
 const LoginScreen = ({ navigation }: NavigationProps) => {
   const { t, i18n } = useTranslation();
@@ -51,12 +52,12 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
     setShowLanguagePicker(false);
   };
 
-  const showSnackbar = (message: string) => {
-    Snackbar.show({
-      text: message,
-      duration: Snackbar.LENGTH_SHORT,
-    });
-  };
+  // const showSnackbar = (message: string) => {
+  //   Snackbar.show({
+  //     text: message,
+  //     duration: Snackbar.LENGTH_SHORT,
+  //   });
+  // };
 
   const handleTermsPress = () => {
     setSelectedOption(!selectedOption);
@@ -75,12 +76,12 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
 
   const handleLogin = async () => {
     if (!username.trim().length || !password.trim().length) {
-      showSnackbar('Please enter a username and password.');
+      // showSnackbar('Please enter a username and password.');
       return;
     }
 
     if (selectedOption === false) {
-      showSnackbar(t('strings:please_accept_terms'));
+      // showSnackbar(t('strings:please_accept_terms'));
       return;
     }
 

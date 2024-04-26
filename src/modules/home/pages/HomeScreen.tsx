@@ -12,7 +12,7 @@ import {
   BackHandler,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+
 import colors from "../../../../colors";
 import { useTranslation } from "react-i18next";
 import AuthNavigator from "../../auth/stack/AuthNavigator";
@@ -26,6 +26,7 @@ import NeedHelp from "../../../components/NeedHelp";
 import { getFile, getUser } from "../../../utils/apiservice";
 import { useFocusEffect } from "@react-navigation/native";
 import { getImages } from "../../../utils/FileUtils";
+
 // import { checkAppVersion } from "../../common/services/AppUpdate";
 // import { APP_URL } from "../../../utils/constants";
 
@@ -46,25 +47,25 @@ const HomeScreen = ({ navigation }) => {
   });
   const [LoggedInUser, setLoggedInUser] = useState(null);
 
-  useEffect(() => {
-    if (!LoggedInUser) {
-      AsyncStorage.getItem("USER").then((r) => {
-        const value = JSON.parse(r);
-        setLoggedInUser(value);
-        const user = {
-          userName: value.Name,
-          userCode: value.RishtaID,
+  // useEffect(() => {
+  //   if (!LoggedInUser) {
+  //     AsyncStorage.getItem("USER").then((r) => {
+  //       const value = JSON.parse(r);
+  //       setLoggedInUser(value);
+  //       const user = {
+  //         userName: value.Name,
+  //         userCode: value.RishtaID,
           
-          userRole: 10,
-          totalPointsEarned: 0,
-          redeemablePoints: 0,
-          redeemedPoints: 0,
-          tdsKitty: 0,
-        };
-        setUserData(user);
-      });
-    }
-  }, [LoggedInUser]);
+  //         userRole: 10,
+  //         totalPointsEarned: 0,
+  //         redeemablePoints: 0,
+  //         redeemedPoints: 0,
+  //         tdsKitty: 0,
+  //       };
+  //       setUserData(user);
+  //     });
+  //   }
+  // }, [LoggedInUser]);
 
   // const getUser1 = () => {
   //   getUser().then((res) => {
@@ -155,7 +156,6 @@ const HomeScreen = ({ navigation }) => {
           <Pressable
             onPress={() => navigation.navigate("Unique Code History")}
             style={styles.leftPoint}
-            disabled
           >
             <Text style={styles.greyText}>{t("strings:points_earned")}</Text>
 
@@ -174,7 +174,6 @@ const HomeScreen = ({ navigation }) => {
           <Pressable
             onPress={() => navigation.navigate("Redemption History")}
             style={styles.middlePoint}
-            disabled
           >
             <Text style={styles.greyText}>{t("strings:points_redeemed")}</Text>
             <Text style={styles.point}>
@@ -191,11 +190,12 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.dashboard}>
           <View style={styles.row}>
             <CustomTouchableOption
-              text="strings:scan_code"
+              text="strings:scan_out"
               iconSource={require("../../../assets/images/ic_scan_code.png")}
               screenName="Scan QR"
               disabled={false}
             />
+            
             <CustomTouchableOption
               text="strings:redeem_points"
               iconSource={require("../../../assets/images/ic_redeem_points.webp")}
@@ -249,27 +249,7 @@ const HomeScreen = ({ navigation }) => {
               disabled={true}
             />
           </View>
-          <View style={styles.row}>
-            <CustomTouchableOption
-              text="strings:update_bank"
-              iconSource={require("../../../assets/images/ic_raise_ticket.webp")}
-              screenName="Update Bank"
-              disabled={true}
-            />
-            <CustomTouchableOption
-              text="strings:tds_certificate"
-              iconSource={require("../../../assets/images/tds_ic.png")}
-              screenName="TDS Certificate"
-              disabled={true}
-            />
-            <CustomTouchableOption
-              text="strings:engagement"
-              iconSource={require("../../../assets/images/elink.png")}
-              screenName="Engagement"
-              disabled={true}
-            />
-          </View>
-          <View style={styles.lastrow}>
+          {/* <View style={styles.lastrow}>
             <TouchableOpacity
               style={[styles.oval]}
               onPress={() =>
@@ -288,12 +268,7 @@ const HomeScreen = ({ navigation }) => {
 
               <Text style={[styles.nav]}>Instruction Manual</Text>
             </TouchableOpacity>
-            {/* <CustomTouchableOption
-              text="dashboard:options:manual"
-              iconSource={require('../../../assets/images/ic_instruction_manual.jpeg')}
-              screenName="manual"
-            /> */}
-          </View>
+          </View> */}
         </View>
         <NeedHelp />
       </View>

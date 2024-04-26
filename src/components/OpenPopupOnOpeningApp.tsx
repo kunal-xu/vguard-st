@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, Text, Linking, Image, View, Modal, Dimensions } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import colors from '../../colors';
 import { responsiveFontSize } from 'react-native-responsive-dimensions';
 
@@ -19,14 +19,14 @@ const OpenPopupOnOpeningApp = () => {
         getDetails();
     }, []);
     useEffect(() => {
-        getImageSize()
-            .then(({ width, height }) => {
-                setImageWidth(width);
-                setImageHeight(height);
-            })
-            .catch(error => {
-                console.error("Error:", error.message);
-            });
+        // getImageSize()
+        //     .then(({ width, height }) => {
+        //         setImageWidth(width);
+        //         setImageHeight(height);
+        //     })
+        //     .catch(error => {
+        //         console.error("Error:", error.message);
+        //     });
 
         if (userData.imgPath != "") {
             setModalVisible(true);
@@ -34,16 +34,16 @@ const OpenPopupOnOpeningApp = () => {
     }, [userData.imgPath]);
 
     const getDetails = async () => {
-        await AsyncStorage.getItem('USER').then(r => {
-            const value = JSON.parse(r);
-            const welcomeBanner = value?.welcomeBanner || {};
-            setUserData({
-                videoPath: welcomeBanner.videoPath || "",
-                imgPath: welcomeBanner.imgPath || "",
-                vdoText: welcomeBanner.vdoText || "",
-                textMessage: welcomeBanner.textMessage || "Welcome!",
-            });
-        });
+        // await AsyncStorage.getItem('USER').then(r => {
+        //     const value = JSON.parse(r);
+        //     const welcomeBanner = value?.welcomeBanner || {};
+        //     setUserData({
+        //         videoPath: welcomeBanner.videoPath || "",
+        //         imgPath: welcomeBanner.imgPath || "",
+        //         vdoText: welcomeBanner.vdoText || "",
+        //         textMessage: welcomeBanner.textMessage || "Welcome!",
+        //     });
+        // });
     }
 
     const getImageSize = async () => {

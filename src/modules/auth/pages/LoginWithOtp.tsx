@@ -20,9 +20,9 @@ import {
 } from "../../../utils/apiservice";
 import Popup from "../../../components/Popup";
 import Loader from "../../../components/Loader";
-import { useAuth } from "../../../components/AuthContext";
 import { Constants } from "../../../utils/constants";
 import { useForm } from "../../../components/FormContext";
+import { useAuth } from "../../../hooks/useAuth";
 
 interface LoginWithOtpProps {
   navigation: any;
@@ -44,7 +44,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [loader, showLoader] = useState(false);
-  const { login, professionId } = useAuth();
+  const { login } = useAuth();
   const { state, dispatch } = useForm();
 
   const placeholderColor = colors.grey;

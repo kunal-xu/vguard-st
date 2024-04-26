@@ -29,7 +29,7 @@ const ProfileStack = () => {
           ),
         }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Edit Profile"
         component={EditProfile}
         options={{
@@ -42,7 +42,7 @@ const ProfileStack = () => {
             />
           ),
         }}
-      /> */}
+      />
     </Stack.Navigator>
   );
 };
