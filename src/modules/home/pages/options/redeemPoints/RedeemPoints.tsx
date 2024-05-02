@@ -4,7 +4,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import colors from '../../../../../../colors';
 import {useTranslation} from 'react-i18next';
 import CustomTouchableOption from '../../../../../components/CustomTouchableOption';
@@ -13,10 +13,10 @@ import {
   responsiveWidth,
 } from 'react-native-responsive-dimensions';
 import NeedHelp from '../../../../../components/NeedHelp';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import ReusableCarousel from '../../../../../components/ReusableCarousel';
 import { getUser } from '../../../../../utils/apiservice';
 import { useFocusEffect } from '@react-navigation/native';
+import { useData } from '../../../../../hooks/useData';
 
 const RedeemPoints = ({navigation}) => {
   const {t} = useTranslation();
@@ -29,27 +29,24 @@ const RedeemPoints = ({navigation}) => {
       imageUrl: require('../../../../../assets/images/banner_redeem_ppoints.webp'),
     },
   ];
-  const [pointData, setPointData] = useState({
-    pointsBalance: '',
-    redeemedPoints: '',
-    numberOfScan: '',
-  });
-
-  const getUser1 = () => {
-    getUser().then((res) => {
-      setPointData({
-        pointsBalance: res?.data?.pointsSummary?.pointsBalance,
-        redeemedPoints: res?.data?.pointsSummary?.redeemedPoints,
-        numberOfScan: res?.data?.pointsSummary?.numberOfScan,
-      });
-    });
-  };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      getUser1()
-    }, [])
-  );
+  
+  const { state, dispatch } = useData();
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await getUser();
+        const responseData = response.data;
+        dispatch({
+          type: "GET_ALL_FIELDS",
+          payload: {
+            value: responseData,
+          },
+        });
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    })();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -59,21 +56,21 @@ const RedeemPoints = ({navigation}) => {
         </View>
         <View style={styles.points}>
           <View style={styles.leftPoint}>
-            <Text style={styles.greyText}>{t('strings:points_balance')}</Text>
+            <Text style={styles.greyText}>{t('strings:redeemable_points')}</Text>
 
             <Text style={styles.point}>
-              {pointData.pointsBalance ? pointData.pointsBalance : 0}
+              { Number(state.RedeemablePoints)?.toFixed(1) ||  0 }
             </Text>
           </View>
           <View style={styles.middlePoint}>
             <Text style={styles.greyText}>{t('strings:points_redeemed')}</Text>
             <Text style={styles.point}>
-              {pointData.redeemedPoints ? pointData.redeemedPoints : 0}
+              {  Number(state.RedeemedPoints)?.toFixed(1) ||  0}
             </Text>
           </View>
           <View style={styles.rightPoint}>
-            <Text style={styles.greyText}>{t('strings:number_of_scans')}</Text>
-            <Text style={styles.point}>{pointData.numberOfScan}</Text>
+            <Text style={styles.greyText}>{t('strings:tds_deducted')}</Text>
+            <Text style={styles.point}>{ Number(state.DeductedTDS)?.toFixed(1) || 0}</Text>
           </View>
         </View>
         <View style={styles.dashboard}>
@@ -87,6 +84,7 @@ const RedeemPoints = ({navigation}) => {
               text="strings:paytm_transfer"
               iconSource={require('../../../../../assets/images/ic_paytm_transfer.webp')}
               screenName="Paytm Transfer"
+              disabled={true}
             />
             <CustomTouchableOption
               text="UPI Transfer"
@@ -127,6 +125,7 @@ const styles = StyleSheet.create({
   },
   mainWrapper: {
     padding: 15,
+    paddingTop:0
   },
   profileDetails: {
     display: 'flex',
@@ -152,13 +151,14 @@ const styles = StyleSheet.create({
   },
   carousel: {
     backgroundColor: colors.white,
+    marginLeft:-15
   },
   points: {
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     gap: 5,
-    marginTop: 30,
+    // marginTop: 30,
   },
   leftPoint: {
     width: responsiveWidth(30),
@@ -167,14 +167,18 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 50,
     borderBottomLeftRadius: 50,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingBottom:20,
+    paddingTop:20,
   },
   middlePoint: {
     width: responsiveWidth(30),
     height: 100,
     backgroundColor: colors.lightYellow,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingBottom:20,
+    paddingTop:20
   },
   rightPoint: {
     width: responsiveWidth(30),
@@ -183,20 +187,23 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 50,
     borderBottomRightRadius: 50,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingBottom:20,
+    paddingTop:20
   },
   greyText: {
     width: '80%',
     color: colors.grey,
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: responsiveFontSize(1.7),
+    fontSize: responsiveFontSize(1.5),
     marginBottom: 10,
   },
   point: {
     fontWeight: 'bold',
     color: colors.black,
-    fontSize: responsiveFontSize(1.7),
+    fontSize: responsiveFontSize(2),
+    textAlign:'center',
   },
   dashboard: {
     display: 'flex',

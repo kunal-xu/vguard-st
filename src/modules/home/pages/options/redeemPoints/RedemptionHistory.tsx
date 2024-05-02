@@ -9,11 +9,11 @@ const RedemptionHistory = () => {
   const { t } = useTranslation();
   const [redemptionHistoryData, setRedemptionHistoryData] = useState([]);
   useEffect(() => {
-    getRedemptionHistory('')
-      .then(response => response.data)
-      .then(responseData => {
+    getRedemptionHistory("")
+      .then(response =>{
+     let responseData = response;
+     console.log(">>>>>responseData",responseData)
         setRedemptionHistoryData(responseData);
-        console.log("<><<><<><>><", responseData, "<><<<><><><><><><<><");
       })
       .catch(error => {
         console.error('Error fetching data:', error);
@@ -22,19 +22,54 @@ const RedemptionHistory = () => {
 
   const renderItem = ({ item }) => (
     <View style={[styles.item]}>
-      <Text style={[styles.text, item.orderStatus === 'In Process' ? styles.activeText : styles.inactiveText]}>
-        {item.transactDate}
-      </Text>
-      <View style={styles.detail}>
-        <Text style={[styles.text, item.orderStatus === 'In Process' ? styles.activeText : styles.inactiveText]}>
-          {item.productName}
+      {item.transactDate && (
+        <Text
+          style={[
+            styles.text,
+            item.orderStatus === "In Process"
+              ? styles.activeText
+              : styles.inactiveText,
+          ]}
+        >
+          {item.transactDate}
         </Text>
-        <Text style={[styles.smalltext]}>{t('strings:points')}: {item.points}</Text>
-        <Text style={[styles.smalltext]}>{t('strings:mobile_no')}: {item.mobileNumber}</Text>
+      )}
+      <View style={styles.detail}>
+        {item.productName && (
+          <Text
+            style={[
+              styles.text2,
+              item.orderStatus === "In Process"
+                ? styles.activeText
+                : styles.inactiveText,
+            ]}
+          >
+            {item.productName}
+          </Text>
+        )}
+        {item.points && (
+          <Text style={[styles.smalltext]}>
+            {t("strings:points")}: {item.points}
+          </Text>
+        )}
+        {item.mobileNumber && (
+          <Text style={[styles.smalltext]}>
+            {t("strings:mobile_no")}: {item.mobileNumber}
+          </Text>
+        )}
       </View>
-      <Text style={[styles.status, item.orderStatus === 'In Process' ? styles.activeItem : styles.inactiveItem]}>
-        {item.orderStatus}
-      </Text>
+      {item.orderStatus && (
+        <Text
+          style={[
+            styles.status,
+            item.orderStatus === "In Process"
+              ? styles.activeItem
+              : styles.inactiveItem,
+          ]}
+        >
+          {item.orderStatus}
+        </Text>
+      )}
     </View>
   );
 
@@ -91,6 +126,10 @@ const styles = StyleSheet.create({
     width: '20%',
     fontSize: responsiveFontSize(1.5),
   },
+  text2:{
+    width: '90%',
+    fontSize: responsiveFontSize(1.5),
+  },
   smalltext: {
     fontSize: responsiveFontSize(1.5),
     flexGrow: 1,
@@ -100,6 +139,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     width: '40%',
     flexDirection: 'column',
+
   },
   activeItem: {
     backgroundColor: colors.yellow,

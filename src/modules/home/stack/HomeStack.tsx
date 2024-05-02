@@ -18,7 +18,7 @@ import colors from "../../../../colors";
 import { CustomTabHeader } from "../../common/services/BottomTab";
 import RedemptionHistory from "../pages/options/redeemPoints/RedemptionHistory";
 import UniqueCodeHistory from "../pages/options/scanQR/UniqueCodeHistory";
-import { useTranslation } from "react-i18next";
+
 import {
   View,
   Text,
@@ -35,23 +35,6 @@ import LanguagePicker from "../../../components/LanguagePicker";
 const HomeStack = () => {
   const Stack = createNativeStackNavigator();
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState("");
-  const { i18n } = useTranslation();
-
-  // useEffect(() => {
-  //   const fetchStoredLanguage = async () => {
-  //     try {
-  //       // const storedLanguage = (await AsyncStorage.getItem('language')) || i18n.language;
-  //       // setSelectedLanguage(storedLanguage);
-  //       // i18n.changeLanguage(storedLanguage);
-  //       // console.log('Language changed:', storedLanguage);
-  //     } catch (error) {
-  //       console.error("Error fetching language from AsyncStorage:", error);
-  //     }
-  //   };
-
-  //   fetchStoredLanguage();
-  // }, [i18n]);
 
   const handleLanguageButtonPress = () => {
     setShowLanguagePicker(true);
@@ -70,7 +53,7 @@ const HomeStack = () => {
           headerShown: false,
         }}
       >
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={({ route }) => ({
@@ -96,12 +79,12 @@ const HomeStack = () => {
           options={{
             headerShown: true,
           }}
-        /> */}
+        />
 
         <Stack.Screen name="Scan QR" component={ScanStack} />
-        {/* <Stack.Screen name="Dashboard" component={DashboardStack} /> */}
-        {/* <Stack.Screen name="Redeem Products" component={RedeemStack} /> */}
-        {/* <Stack.Screen name="schemes" component={SchemesStack} />
+        <Stack.Screen name="Dashboard" component={DashboardStack} />
+        <Stack.Screen name="Redeem Products" component={RedeemStack} />
+        <Stack.Screen name="schemes" component={SchemesStack} />
         <Stack.Screen name="info" component={InfoStack} />
         <Stack.Screen
           name="Welfare"
@@ -139,15 +122,15 @@ const HomeStack = () => {
           options={{
             headerShown: true,
           }}
-        /> */}
+        />
 
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Profile"
           component={ProfileStack}
           options={{
             headerShown: false,
           }}
-        /> */}
+        />
       </Stack.Navigator>
       <Modal
         animationType="slide"

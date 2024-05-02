@@ -1,9 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import messaging from "@react-native-firebase/messaging";
-import { VguardRishtaUser } from "./interfaces";
 
-const BASE_URL = "http://192.168.29.15:5005/vguard/api";
-// const BASE_URL = 'http://34.93.239.251:5005/vguard/api';
+// const BASE_URL = "http://192.168.148.248:5005/vguard/api";
+const BASE_URL = 'https://infra.4test.info/vguard/api';
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -18,7 +17,7 @@ export async function newTokens(token: string) {
   try {
     const path = "user/refreshAccessToken";
     const response: AxiosResponse = await createPostRequest(path, {
-      refreshToken: token,
+      incomingRefreshToken: token,
     });
     const { accessToken, refreshToken } = response.data;
     api.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
@@ -76,8 +75,8 @@ export async function loginWithPassword(
 ): Promise<AxiosResponse> {
   const path = "user/login";
   const response: AxiosResponse = await createPostRequest(path, {
-    username,
-    password,
+    Contact: username,
+    Password: password,
   });
   if (response.status === 200) {
     api.defaults.headers.common[
@@ -106,11 +105,6 @@ export async function loginWithOtp(
     ] = `Bearer ${response.data.tokens.accessToken}`;
   }
   return response;
-}
-
-export function getUsers(filter: string) {
-  const path = "user/";
-  return createPostRequest(path, filter);
 }
 
 export function getFile(uuid: String, imageRelated: String, userRole: String) {
@@ -278,13 +272,13 @@ export function getTDSPercentage(data: any) {
   return createPostRequest(path, data);
 }
 
-export function verifyBank(data: any) {
-  const path = "user/verifyBankDetails";
+export function getBankDetail(data: any) {
+  const path = "user/getBankDetails";
   return createPostRequest(path, data);
 }
 
 export function getVPAData(data: any) {
-  const path = "user/verifyVPA";
+  const path = "user/getVPA";
   return createPostRequest(path, data);
 }
 
@@ -372,7 +366,7 @@ export function updateLogoutStatus() {
 }
 
 export function getUser() {
-  const path = "user/userDetails";
+  const path = "user/profile";
   return createGetRequest(path);
 }
 
@@ -626,14 +620,9 @@ export function getSubProfessions(professionId: string) {
 }
 
 export function logoutUser() {
-  const path = "user/logoutUser";
+  const path = "user/logout";
   
   return createPostRequest(path, {});
-}
-
-export function logOut(userId: number) {
-  const path = "user/logout";
-  return createPostRequest(path, { userId });
 }
 
 export function getDetailsByPinCode(pinCode: string) {
@@ -726,8 +715,8 @@ export function validateMobile(mobileNumber: string, dealerCategory: string) {
   return createGetRequest(path);
 }
 
-export function validateSTCoupon(couponData: any) {
-  const path = "coupon/validateSTCoupon";
+export function validateCoupon(couponData: any) {
+  const path = "coupon/validateCoupon";
   console.log(path);
   console.log(couponData);
   return createPostRequest(path, couponData);

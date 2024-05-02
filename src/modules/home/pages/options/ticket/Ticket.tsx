@@ -20,7 +20,6 @@ import {
 import colors from '../../../../../../colors';
 import NeedHelp from '../../../../../components/NeedHelp';
 import Buttons from '../../../../../components/Buttons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sendTicket, getTicketTypes } from '../../../../../utils/apiservice';
 import { Picker } from '@react-native-picker/picker';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
@@ -64,19 +63,19 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [loader, showLoader] = useState(true);
 
   useEffect(() => {
-    AsyncStorage.getItem('USER').then((r) => {
-      const user = JSON.parse(r);
-      const data = {
-        userName: user.name,
-        userCode: user.userCode,
-        pointsBalance: user.pointsSummary.pointsBalance,
-        redeemedPoints: user.pointsSummary.redeemedPoints,
-        userImage: user.kycDetails.selfie,
-        userRole: user.professionId,
-        userId: user.contactNo
-      };
-      setUserData(data);
-    });
+    // AsyncStorage.getItem('USER').then((r) => {
+    //   const user = JSON.parse(r);
+    //   const data = {
+    //     userName: user.name,
+    //     userCode: user.userCode,
+    //     pointsBalance: user.pointsSummary.pointsBalance,
+    //     redeemedPoints: user.pointsSummary.redeemedPoints,
+    //     userImage: user.kycDetails.selfie,
+    //     userRole: user.professionId,
+    //     userId: user.contactNo
+    //   };
+    //   setUserData(data);
+    // });
     getTicketTypes()
       .then((response) => response.data)
       .then((data) => {

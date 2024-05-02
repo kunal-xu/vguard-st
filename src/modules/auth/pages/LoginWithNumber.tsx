@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  ToastAndroid,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 
@@ -27,16 +28,10 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
 
-  // const showSnackbar = (message: string) => {
-  //   Snackbar.show({
-  //     text: message,
-  //     duration: Snackbar.LENGTH_SHORT,
-  //   });
-  // };
-
   async function getOTP(OtpType: string) {
+    const numberRegex = /^[6789]\d{9}$/;
     showLoader(true);
-    if (number.trim().length) {
+    if (number.trim().length && numberRegex.test(number.trim())) {
       try {
         const body = {
           Contact: number,
@@ -67,7 +62,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
       }
     } else {
       showLoader(false);
-      // showSnackbar("Please enter your mobile number");
+      ToastAndroid.show("Invalid number format.", ToastAndroid.LONG);
     }
   }
 
@@ -96,7 +91,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
         <Loader isLoading={loader} />
         <View style={styles.mainWrapper}>
           <Image
-            source={require("../../../assets/images/ic_rishta_logo.png")}
+            source={require("../../../assets/images/ic_rishta_logo.jpg")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>{t("strings:lbl_welcome")}</Text>
@@ -221,8 +216,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageSaathi: {
-    width: 127,
-    height: 98,
+    width: 216,
+    height: 116,
     marginBottom: 30,
   },
   imageVguard: {

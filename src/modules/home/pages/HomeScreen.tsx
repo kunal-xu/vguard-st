@@ -8,8 +8,6 @@ import {
   Linking,
   Pressable,
   ImageBackground,
-  Alert,
-  BackHandler,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 
@@ -24,103 +22,33 @@ import {
 } from "react-native-responsive-dimensions";
 import NeedHelp from "../../../components/NeedHelp";
 import { getFile, getUser } from "../../../utils/apiservice";
-import { useFocusEffect } from "@react-navigation/native";
 import { getImages } from "../../../utils/FileUtils";
+import { useData } from "../../../hooks/useData";
 
 // import { checkAppVersion } from "../../common/services/AppUpdate";
 // import { APP_URL } from "../../../utils/constants";
 
 const HomeScreen = ({ navigation }) => {
-  const baseURL = "https://www.vguardrishta.com/img/appImages/Profile/";
-
   const { t } = useTranslation();
   const [profileImage, setProfileImage] = useState("");
-  const [userData, setUserData] = useState({
-    userName: null,
-    userCode: null,
-    totalPointsEarned: 0,
-    redeemablePoints: 0,
-    redeemedPoints: 0,
-    tdsKitty: 0,
-    userImage: null,
-    userRole: 10,
-  });
   const [LoggedInUser, setLoggedInUser] = useState(null);
-
-  // useEffect(() => {
-  //   if (!LoggedInUser) {
-  //     AsyncStorage.getItem("USER").then((r) => {
-  //       const value = JSON.parse(r);
-  //       setLoggedInUser(value);
-  //       const user = {
-  //         userName: value.Name,
-  //         userCode: value.RishtaID,
-          
-  //         userRole: 10,
-  //         totalPointsEarned: 0,
-  //         redeemablePoints: 0,
-  //         redeemedPoints: 0,
-  //         tdsKitty: 0,
-  //       };
-  //       setUserData(user);
-  //     });
-  //   }
-  // }, [LoggedInUser]);
-
-  // const getUser1 = () => {
-  //   getUser().then((res) => {
-  //     setUserData((prev) => ({
-  //       ...prev,
-  //       totalPointsEarned: res.otalPointsEarned,
-  //       redeemablePoints: res?.pointsSummary?.redeemablePoints,
-  //       redeemedPoints: res?.pointsSummary?.redeemedPoints,
-  //       tdsKitty:res?.pointsSummary?.tdsKitty,
-  //       userImage: res?.kycDetails?.selfie,
-  //     }));
-  //   });
-  // };
-
-  // async function checkApp(){
-  //   const result = await checkAppVersion()
-  //   if(!result)  Alert.alert(
-  //     "Update Required",
-  //     t("strings:update"),
-  //     [
-  //       {
-  //         text: "Update Now",
-  //         onPress: () => {
-  //           BackHandler.exitApp()
-  //           Linking.openURL(
-  //             APP_URL
-  //           );
-  //         },
-  //       },
-  //     ],
-  //     { cancelable: false }
-  //   );
-
-  // }
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     //checkApp();
-  //     getUser1();
-  //   }, [])
-  // );
-
-  // useEffect(() => {
-  //   if (userData.userRole && userData.userImage) {
-  //     // const getImage = async () => {
-  //     //   try {
-  //     //     const profileImage = getImages(userData.userImage, "PROFILE");
-  //     //     setProfileImage(profileImage);
-  //     //   } catch (error) {
-  //     //     console.log("Error while fetching profile image:", error);
-  //     //   }
-  //     // };
-  //     // getImage();
-  //   }
-  // // }, [userData.userRole, userData.userImage]);
+  const { state, dispatch } = useData();
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await getUser();
+        const responseData = response.data;
+        dispatch({
+          type: "GET_ALL_FIELDS",
+          payload: {
+            value: responseData,
+          },
+        });
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    })();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -133,19 +61,19 @@ const HomeScreen = ({ navigation }) => {
               resizeMode="contain"
             >
               <Image
-                source={{ uri: profileImage }}
+                source={{
+                  uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp?pid=ImgGn",
+                }}
                 style={{ width: "100%", height: "100%", borderRadius: 100 }}
                 resizeMode="contain"
               />
             </ImageBackground>
           </View>
           <View style={styles.profileText}>
-            <Text style={styles.textDetail}>{userData.userName}</Text>
-            <Text style={styles.textDetail}>{userData.userCode}</Text>
+            <Text style={styles.textDetail}>{state.Name}</Text>
+            <Text style={styles.textDetail}>{state.RishtaID}</Text>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Profile")}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
               <Text style={styles.viewProfile}>
                 {t("strings:view_profile")}
               </Text>
@@ -160,15 +88,15 @@ const HomeScreen = ({ navigation }) => {
             <Text style={styles.greyText}>{t("strings:points_earned")}</Text>
 
             <Text style={styles.point}>
-              {Number(userData.totalPointsEarned)?.toFixed(1) || 0}
+              {Number(state.EarnedPoints)?.toFixed(1) || 0}
             </Text>
           </Pressable>
-          <Pressable style={styles.middlePoint} disabled>
+          <Pressable style={styles.middlePoint}>
             <Text style={styles.greyText}>
               {t("strings:redeemable_points")}
             </Text>
             <Text style={styles.point}>
-              {Number(userData.redeemablePoints)?.toFixed(1) || 0}
+              {Number(state.RedeemablePoints)?.toFixed(1) || 0}
             </Text>
           </Pressable>
           <Pressable
@@ -177,13 +105,13 @@ const HomeScreen = ({ navigation }) => {
           >
             <Text style={styles.greyText}>{t("strings:points_redeemed")}</Text>
             <Text style={styles.point}>
-              {Number(userData.redeemedPoints)?.toFixed(1) || 0}
+              {Number(state.RedeemedPoints)?.toFixed(1) || 0}
             </Text>
           </Pressable>
-          <Pressable disabled style={styles.rightPoint}>
+          <Pressable style={styles.rightPoint}>
             <Text style={styles.greyText}>{"TDS \nKitty"}</Text>
             <Text style={styles.point}>
-              {Number(userData.tdsKitty)?.toFixed(1) || 0}
+              {Number(state.TDSKitty)?.toFixed(1) || 0}
             </Text>
           </Pressable>
         </View>
@@ -195,7 +123,7 @@ const HomeScreen = ({ navigation }) => {
               screenName="Scan QR"
               disabled={false}
             />
-            
+
             <CustomTouchableOption
               text="strings:redeem_points"
               iconSource={require("../../../assets/images/ic_redeem_points.webp")}
@@ -206,7 +134,7 @@ const HomeScreen = ({ navigation }) => {
               text="strings:dashboard"
               iconSource={require("../../../assets/images/ic_dashboard.webp")}
               screenName="Dashboard"
-              disabled={true}
+              disabled={false}
             />
           </View>
           <View style={styles.row}>
@@ -220,19 +148,19 @@ const HomeScreen = ({ navigation }) => {
               text="strings:scheme_offers"
               iconSource={require("../../../assets/images/ic_scheme_offers.png")}
               screenName="schemes"
-              disabled={true}
+              disabled={false}
             />
             <CustomTouchableOption
               text="strings:info_desk"
               iconSource={require("../../../assets/images/ic_vguard_info.webp")}
               screenName="info"
-              disabled={true}
+              disabled={false}
             />
           </View>
           <View style={styles.row}>
             <CustomTouchableOption
               text="strings:welfare"
-              iconSource={require("../../../assets/images/ic_welfare.webp")}
+              iconSource={require("../../../assets/images/training_info.png")}
               screenName="Welfare"
               disabled={true}
             />
@@ -240,16 +168,16 @@ const HomeScreen = ({ navigation }) => {
               text="strings:what_s_new"
               iconSource={require("../../../assets/images/ic_whats_new.webp")}
               screenName="new"
-              disabled={true}
+              disabled={false}
             />
             <CustomTouchableOption
               text="strings:raise_ticket"
               iconSource={require("../../../assets/images/ic_raise_ticket.webp")}
               screenName="ticket"
-              disabled={true}
+              disabled={false}
             />
           </View>
-          {/* <View style={styles.lastrow}>
+          <View style={styles.lastrow}>
             <TouchableOpacity
               style={[styles.oval]}
               onPress={() =>
@@ -268,7 +196,7 @@ const HomeScreen = ({ navigation }) => {
 
               <Text style={[styles.nav]}>Instruction Manual</Text>
             </TouchableOpacity>
-          </View> */}
+          </View>
         </View>
         <NeedHelp />
       </View>

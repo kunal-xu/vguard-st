@@ -17,15 +17,12 @@ export class STUser {
   SEorPICName: string | null = null;
   SalesOffice: string | null = null;
   ResendInviteLinkFlag: boolean | null = null;
-  ResendSMS: boolean | null = null;
-  TaggedCategory: string | null = null;
+  ResendSMS: boolean | null = null
   ActivationStatus: number | null = null;
   LoggedInDate: Date | null = null;
   BlockStatus: number | null = null;
   Aadhar: string | null = null;
-  AadharValidation: string | null = null;
   PAN: string | null = null;
-  PanValidation: string | null = null;
   AddressDetail: AddressDetail = new AddressDetail();
   BankDetail: BankDetail = new BankDetail();
   PaytmDetail: PaytmDetail = new PaytmDetail();
@@ -39,6 +36,7 @@ export class STUser {
   BalancePoints: string | null = null;
   RedeemablePoints: string | null = null;
   DeductedTDS: string | null = null;
+  TDSSlab: string | null = null;
   TDSKitty: string | null = null;
   NumberOfScans: string | null = null;
   InvitationDate: Date | null = null;

@@ -183,15 +183,10 @@ export const newUserFields = [
   },
   {
     id: "c322d6ac-cfeb-46d4-a977-01d8c65b90da",
-    type: "Button",
-    properties: {
-      label: "Verify PAN for TDS%",
-      variant: "outlined",
-      width: 350,
-      onPress: () => {
-
-      }
-    }
+    type: "floatingLabelInputWithButton",
+    label: "strings:tds_slab",
+    data: "TDSSlab",
+    source: "tds",
   },
   {
     id: "080be0ca-e6b6-4c2d-ba4b-96e328228f0f",
@@ -213,7 +208,7 @@ export const newUserFields = [
     id: "32975062-9d16-46c6-b009-2e350f5e3146",
     label: "strings:lbl_current_address_mandatory",
     type: "floatingLabelInput",
-    data: "currentAddressDoorNo",
+    data: "AddressDetail.currentAddressDoorNo",
     properties: {
       keyboardType: "default",
       maxLength: 10,
@@ -230,7 +225,7 @@ export const newUserFields = [
     id: "96f46ac3-c2a6-4863-86b0-bb73c5ebb6b9",
     label: "strings:lbl_current_address_line_1",
     type: "floatingLabelInput",
-    data: "currentAddressLine1",
+    data: "AddressDetail.currentAddressLine1",
     properties: {
       keyboardType: "default",
       maxLength: 128,
@@ -247,7 +242,7 @@ export const newUserFields = [
     id: "f515df31-b3c7-4c22-be1b-955d86b0e474",
     label: "strings:lbl_current_address_line_2",
     type: "floatingLabelInput",
-    data: "currentAddressLine2",
+    data: "AddressDetail.currentAddressLine2",
     properties: {
       keyboardType: "default",
       maxLength: 60,
@@ -262,9 +257,9 @@ export const newUserFields = [
   },
   {
     id: "e482c9f2-e595-4d62-a22e-45b0fcd4ed1f",
-    label: "strings:lbl_current_address_line_2",
+    label: "strings:lbl_current_address_line_3",
     type: "floatingLabelInput",
-    data: "currentAddressLine3",
+    data: "AddressDetail.currentAddressLine3",
     properties: {
       keyboardType: "default",
       maxLength: 60,
@@ -281,8 +276,9 @@ export const newUserFields = [
     id: "97fbf4f6-65e2-4209-881e-664e7b64b391",
     label: "auth:newuser:Secondpagepincode",
     type: "dropDownPicker",
-    data: "currentPincode",
+    data: "AddressDetail.currentPincode",
     properties: {
+      loading: true,
       mode: "BADGE",
       showBadgeDot: true,
       searchable: true,
@@ -334,7 +330,7 @@ export const newUserFields = [
         alignSelf: "center",
         bottom: 10,
         margintop: 50,
-        borderColor: "#D3D3D3",
+        borderColor: "#D3D3D3", 
       },
     },
   },
@@ -342,7 +338,7 @@ export const newUserFields = [
     id: "579d9086-9d29-4ae4-8583-494b497d0af8",
     label: "strings:select_state",
     type: "floatingLabelInput",
-    data: "currentState",
+    data: "AddressDetail.currentState",
     properties: {
       keyboardType: "default",
       staticLabel: true,
@@ -359,7 +355,7 @@ export const newUserFields = [
     id: "e5f652db-1c60-42cf-a990-b9e15b3b2e34",
     label: "strings:select_district",
     type: "floatingLabelInput",
-    data: "currentDistrict",
+    data: "AddressDetail.currentDistrict",
     properties: {
       keyboardType: "default",
       staticLabel: true,
@@ -376,7 +372,7 @@ export const newUserFields = [
     id: "645354b2-fc70-4b66-858c-3e852c5f9c9f ",
     label: "strings:select_city",
     type: "floatingLabelInput",
-    data: "currentCity",
+    data: "AddressDetail.currentCity",
     properties: {
       keyboardType: "default",
       staticLabel: true,

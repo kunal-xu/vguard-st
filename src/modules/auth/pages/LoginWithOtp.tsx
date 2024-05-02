@@ -7,7 +7,6 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import colors from "../../../../colors";
@@ -15,14 +14,13 @@ import Buttons from "../../../components/Buttons";
 import arrowIcon from "../../../assets/images/arrow.png";
 import {
   generateOtpForLogin,
-  loginWithOtp,
   validateLoginOtp,
 } from "../../../utils/apiservice";
 import Popup from "../../../components/Popup";
 import Loader from "../../../components/Loader";
-import { Constants } from "../../../utils/constants";
-import { useForm } from "../../../components/FormContext";
 import { useAuth } from "../../../hooks/useAuth";
+import { useData } from "../../../hooks/useData";
+import { STUser } from "../../../utils/types";
 
 interface LoginWithOtpProps {
   navigation: any;
@@ -45,7 +43,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
   const [countdown, setCountdown] = useState(60);
   const [loader, showLoader] = useState(false);
   const { login } = useAuth();
-  const { state, dispatch } = useForm();
+  const { state, dispatch } = useData();
 
   const placeholderColor = colors.grey;
 
@@ -115,23 +113,25 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
         Otp: otp,
       };
       const verificationResponse = await validateLoginOtp(body);
+      const verificationResponseData = verificationResponse.data;
       if (verificationResponse.status === 200) {
         showLoader(false);
-        const verificationResponseData = verificationResponse.data;
         login(verificationResponseData);
       } else if (verificationResponse.status === 201) {
         showLoader(false);
-        const verificationResponseData = verificationResponse.data;
         const keys: string[] = Object.keys(verificationResponseData);
         for (const key of keys) {
           dispatch({
             type: "UPDATE_FIELD",
             payload: {
-              field: key,
+              field: key as keyof STUser,
+              subfield: undefined,
               value: verificationResponseData[key],
             },
           });
         }
+        setIsPopupVisible(true);
+        setPopupMessage(verificationResponseData.message);
         navigation.navigate("Kyc");
       } else {
         showLoader(false);
@@ -142,46 +142,8 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
     } catch (error: any) {
       showLoader(false);
       setIsPopupVisible(true);
-      setPopupMessage(error.response.data);
-      console.error("Error validating OTP:", error);
+      setPopupMessage(error.response.data.message);
     }
-
-    // validateLoginOtp(body)
-    //   .then((verification) => {
-    //     const verificationData = verification.data;
-    //     if (
-    //       successMessage ===
-    //       'OTP verified successfully, please proceed with the registration.'
-    //     ) {
-    //       setPopupMessage(successMessage);
-    //       setIsPopupVisible(true);
-
-    //       loginWithOtp(number, otp)
-    //         .then((response) => {
-    //           if (response.status === 200) {
-    //             return response.data;
-    //           } else {
-    //             throw new Error('Error logging in with OTP');
-    //           }
-    //         })
-    //         .then((r) => {
-    //           login(r);
-    //           showLoader(false);
-    //         })
-    //         .catch((error) => {
-    //           console.error('Error logging in with OTP:', error);
-    //           showLoader(false);
-    //         });
-    //     } else {
-    //       setIsPopupVisible(true);
-    //       setPopupMessage(verification.data.message);
-    //       showLoader(false);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error validating OTP:', error);
-    //     showLoader(false);
-    //   });
   }
 
   useEffect(() => {}, [otp, number]);

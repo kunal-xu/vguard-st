@@ -3,7 +3,7 @@ export class BankDetail {
   bankId: string | null = null;
   bankAccNo: string | null = null;
   bankAccHolderName: string | null = null;
-  bankAccType: string | null = null;
+  bankAccType: string = "Savings";
   bankAccTypePos: string | null = null;
   bankNameAndBranch: string | null = null;
   branchAddress: string | null = null;

@@ -33,11 +33,11 @@ const SchemesStack = () => {
           headerShown: true
         }}
       />                                             
-      <Stack.Screen name="Special Combo Offers" component={SpecialCombo} 
+      {/* <Stack.Screen name="Special Combo Offers" component={SpecialCombo} 
         options={{
           headerShown: true
         }}
-      />       
+      /> */}
       <Stack.Screen name="Product Wise Offers Table" component={ProductWiseOfferTable}
         options={{
           headerShown: true

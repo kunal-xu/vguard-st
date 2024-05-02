@@ -1,5 +1,13 @@
 import { Picker, PickerProps } from "@react-native-picker/picker";
-import { StyleProp, StyleSheet, Text, TextStyle, View } from "react-native";
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextStyle,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import DropDownPicker, {
   DropDownPickerProps,
 } from "react-native-dropdown-picker";
@@ -12,16 +20,28 @@ import { useTranslation } from "react-i18next";
 import { ButtonsProps, DatePickerProps } from "../utils/interfaces";
 import { height } from "../utils/dimensions";
 import { useState } from "react";
-import { VguardRishtaUser } from "../utils/types/VguardRishtaUser";
 import React from "react";
 import {
   getDetailsByPinCode,
   getPincodeList,
-  verifyBank,
-  getVPAData
+  getBankDetail,
+  getVPAData,
+  getTDSPercentage,
 } from "../utils/apiservice";
 import Buttons from "./Buttons";
 import { useData } from "../hooks/useData";
+import {
+  AddressDetail,
+  BankDetail,
+  CouponRedeemResponse,
+  PaytmDetail,
+  ProductDetail,
+  RegisterCustomerDetails,
+  STUser,
+  WelcomeBanner,
+} from "../utils/types";
+import Popup from "./Popup";
+import Loader from "./Loader";
 
 interface RuleItem {
   id: number;
@@ -42,6 +62,7 @@ interface BaseFieldProps {
   hasLink?: boolean;
   links?: BaseFieldProps[];
   rules?: Rules;
+  source?: string;
 }
 
 interface FloatingLabelInputField extends BaseFieldProps {
@@ -70,29 +91,89 @@ type FieldProps =
   | PickerField
   | DatePickerField
   | TextField
-  | BaseFieldProps;
+  | BaseFieldProps
+  | ButtonsProps;
 
 const Field = (props: FieldProps) => {
-  const { type } = props;
+  const { type, source } = props;
   const { t } = useTranslation();
-  const { formState, formDispatch } = useData();
-  const handleFormInputChange = (field: string, value: string | number) => {
-    formDispatch({
-      type: "UPDATE_FIELD",
-      payload: { field, value },
-    });
+  const { state, dispatch, customerState, customerDispatch } = useData();
+
+  const handleFormInputChange = (
+    field: keyof STUser,
+    subfield:
+      | keyof (AddressDetail | BankDetail | PaytmDetail | WelcomeBanner)
+      | string
+      | undefined,
+    value: string | number
+  ) => {
+    if (subfield) {
+      dispatch({
+        type: "UPDATE_SUB_FIELD",
+        payload: { field, subfield, value },
+      });
+    } else {
+      dispatch({
+        type: "UPDATE_FIELD",
+        payload: { field, value },
+      });
+    }
   };
+
+  const handleCustomerInputChange = (
+    field: keyof RegisterCustomerDetails,
+    subfield: keyof (CouponRedeemResponse | ProductDetail) | string | undefined,
+    value: string | number
+  ) => {
+    if (subfield) {
+      customerDispatch({
+        type: "UPDATE_SUB_FIELD",
+        payload: { field, subfield, value },
+      });
+    } else {
+      customerDispatch({
+        type: "UPDATE_FIELD",
+        payload: { field, value },
+      });
+    }
+  };
+
   let properties;
   switch (type) {
     case "floatingLabelInput":
       properties = (props as FloatingLabelInputField).properties;
+
+      const [field, subfield] = props.data?.split(".") as [
+        keyof STUser,
+        keyof (AddressDetail | BankDetail | PaytmDetail | WelcomeBanner)
+      ];
+
+      const [customerField, customerSubfield] = props.data?.split(".") as [
+        keyof RegisterCustomerDetails,
+        keyof (CouponRedeemResponse | ProductDetail)
+      ];
       return (
         <FloatingLabelInput
           {...properties}
           value={
-            formState[props.data as keyof VguardRishtaUser] as string | undefined
+            source && source === "customer"
+              ? customerState[customerField] && customerSubfield
+                ? (customerState[customerField][customerSubfield] as string)
+                : (customerState[customerField] as string)
+              : state[field] && subfield
+              ? (state[field][subfield] as string)
+              : (state[field] as string)
           }
-          onChangeText={(text) => handleFormInputChange(props.data as string, text)}
+          onChangeText={
+            source && source === "customer"
+              ? (text) =>
+                  handleCustomerInputChange(
+                    customerField,
+                    customerSubfield,
+                    text
+                  )
+              : (text) => handleFormInputChange(field, subfield, text)
+          }
           label={t(props.label || "")}
         />
       );
@@ -114,8 +195,11 @@ const Field = (props: FieldProps) => {
               onValueChange={(value, index) => {
                 setRule(index);
                 setSelectedValue(value);
-                (value: string) =>
-                  handleFormInputChange(props.data as string, value);
+                handleFormInputChange(
+                  props.data as keyof STUser,
+                  undefined,
+                  value
+                );
               }}
             >
               {items?.map((item, index) => {
@@ -166,33 +250,32 @@ const Field = (props: FieldProps) => {
           console.log(error);
         }
       }
-      async function pinCodeDetails(text: string, pinCode: string) {
+      async function pinCodeDetails(
+        text: string,
+        pinCode: string,
+        source?: string
+      ) {
         setPincode(pinCode);
         try {
           if (text.length > 2) {
             const response = await getDetailsByPinCode(text);
             const pinCodeDetailsRes: any = response.data;
-            formDispatch({
-              type: "UPDATE_FIELD",
-              payload: {
-                field: "currentState",
-                value: pinCodeDetailsRes["stateName"],
-              },
-            });
-            formDispatch({
-              type: "UPDATE_FIELD",
-              payload: {
-                field: "currentDistrict",
-                value: pinCodeDetailsRes["distName"],
-              },
-            });
-            formDispatch({
-              type: "UPDATE_FIELD",
-              payload: {
-                field: "currentCity",
-                value: pinCodeDetailsRes["cityName"],
-              },
-            });
+            const stateName: string = pinCodeDetailsRes["stateName"];
+            const distName: string = pinCodeDetailsRes["distName"];
+            const cityName: string = pinCodeDetailsRes["cityName"];
+            if (source && source === "customer") {
+              handleCustomerInputChange("state", undefined, stateName);
+              handleCustomerInputChange("district", undefined, distName);
+              handleCustomerInputChange("city", undefined, cityName);
+            } else {
+              handleFormInputChange("AddressDetail", "currentState", stateName);
+              handleFormInputChange(
+                "AddressDetail",
+                "currentDistrict",
+                distName
+              );
+              handleFormInputChange("AddressDetail", "currentCity", cityName);
+            }
           }
         } catch (error) {
           console.log(error);
@@ -201,7 +284,6 @@ const Field = (props: FieldProps) => {
       return (
         <DropDownPicker
           {...properties}
-          loading={true}
           placeholder={
             pincode === null ? "Search Pincode" : `Searched Pincode: ${pincode}`
           }
@@ -216,7 +298,24 @@ const Field = (props: FieldProps) => {
             pincodeOptions(text);
           }}
           onSelectItem={(item: any) => {
-            pinCodeDetails(item.id.toString() as string, item.value.toString());
+            pinCodeDetails(
+              item.id.toString() as string,
+              item.value.toString(),
+              source
+            );
+            if (source && source === "customer") {
+              handleCustomerInputChange(
+                "pinCode",
+                undefined,
+                item.value.toString()
+              );
+            } else {
+              handleFormInputChange(
+                "AddressDetail",
+                "currentPincode",
+                item.value.toString()
+              );
+            }
           }}
         />
       );
@@ -233,36 +332,30 @@ const Field = (props: FieldProps) => {
       if (type === "bank") {
         async function getBankDetails() {
           try {
-            const response = await verifyBank({
+            const response = await getBankDetail({
               UniqueId: state.UniqueId,
               BankDetail: {
-                bankAccNo: state.bankAccNo,
-                bankIfsc: state.bankIfsc,
+                bankAccNo: state.BankDetail.bankAccNo,
+                bankIfsc: state.BankDetail.bankIfsc,
               },
             });
-            const responseData = response.data;
-            if (responseData.code === 200) {
-              formDispatch({
-                type: "UPDATE_FIELD",
-                payload: {
-                  field: "bankAccHolderName",
-                  value: responseData.message,
-                },
-              });
-              formDispatch({
-                type: "UPDATE_FIELD",
-                payload: {
-                  field: "bankNameAndBranch",
-                  value: responseData.entity,
-                },
-              });
-              formDispatch({
-                type: "UPDATE_FIELD",
-                payload: {
-                  field: "branchAddress",
-                  value: responseData.status,
-                },
-              });
+            const responseData: BankDetail = response.data;
+            if (responseData.bankDataPresent === 1) {
+              handleFormInputChange(
+                "BankDetail",
+                "bankAccHolderName",
+                responseData.bankAccHolderName as string
+              );
+              handleFormInputChange(
+                "BankDetail",
+                "bankNameAndBranch",
+                responseData.bankNameAndBranch as string
+              );
+              handleFormInputChange(
+                "BankDetail",
+                "branchAddress",
+                responseData.branchAddress as string
+              );
             }
           } catch (error) {
             console.log(error);
@@ -286,16 +379,14 @@ const Field = (props: FieldProps) => {
           try {
             const response = await getVPAData({
               UniqueId: state.UniqueId,
-            })
-            
-            const responseData = response.data;
-            formDispatch({
-              type: "UPDATE_FIELD",
-              payload: {
-                field: "upiId",
-                value: responseData.entity,
-              },
             });
+
+            const responseData: PaytmDetail = response.data;
+            handleFormInputChange(
+              "PaytmDetail",
+              "upiId",
+              responseData.upiId as string
+            );
           } catch (error) {
             console.log(error);
           }
@@ -313,6 +404,88 @@ const Field = (props: FieldProps) => {
           </View>
         );
       }
+    case "floatingLabelInputWithButton":
+      const [isPopupVisible, setIsPopupVisible] = useState(false);
+      const [loader, showLoader] = useState(false);
+      const [popupContent, setPopupContent] = useState("");
+      const togglePopup = () => {
+        setIsPopupVisible(!isPopupVisible);
+      };
+    
+      async function tds() {
+        showLoader(true);
+        try {
+          const response = await getTDSPercentage({
+            UniqueId: state.UniqueId
+          });
+          showLoader(false);
+          const responseData = response.data;
+          setIsPopupVisible(true);
+          setPopupContent(responseData.message);
+          dispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "TDSSlab",
+              subfield: undefined,
+              value: responseData.code === 1 ? 10 : 20
+            }
+          })
+        } catch (error: any) {
+          showLoader(false);
+          setIsPopupVisible(true);
+          setPopupContent(error.response.data.message)
+        }
+      }
+
+      async function vpa() {
+        showLoader(true);
+        try {
+          const response = await getVPAData({
+            UniqueId: state.UniqueId
+          });
+          showLoader(false);
+          const responseData = response.data;
+          setIsPopupVisible(true);
+          setPopupContent(responseData.message);
+          dispatch({
+            type: "UPDATE_SUB_FIELD",
+            payload: {
+              field: "PaytmDetail",
+              subfield: "upiId",
+              value: responseData.entity
+            }
+          })
+        } catch (error: any) {
+          showLoader(false);
+          setIsPopupVisible(true);
+          setPopupContent(error.response.data.message)
+        }
+      }
+
+      return (
+        <View style={styles.container}>
+          {loader && <Loader isLoading={loader} />}
+          {isPopupVisible && (
+          <Popup isVisible={isPopupVisible} onClose={togglePopup}>
+            <Text style={{ fontWeight: "bold" }}>
+              {popupContent || "Incorrect Username or Password"}
+            </Text>
+          </Popup>
+        )}
+          <Text style={styles.label}>{t(props.label || "")}</Text>
+          <View style={styles.inputContainer}>
+            <TextInput style={styles.input} value={source === "tds" ? (state.TDSSlab as string) : (state.PaytmDetail.upiId as string)} />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                source === "tds" ? tds() : vpa();
+              }}
+            >
+              <Text style={styles.buttonText}>Verify</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
     default:
       return null;
   }
@@ -330,5 +503,42 @@ const styles = StyleSheet.create({
     marginTop: 0,
     borderWidth: 1.5,
     borderColor: "#D3D3D3",
+  },
+  container: {
+    padding: 5,
+    margin: 20,
+    marginTop: 5,
+    color: "#D3D3D3",
+    borderRadius: 5,
+    borderColor: "#D3D3D3",
+    borderWidth: 1.5,
+    bottom: -5,
+  },
+  label: {
+    backgroundColor: "transparent",
+    color: "#333",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+
+    // backgroundColor: "yellow"
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: 10,
+    color: "black",
+  },
+  button: {
+    backgroundColor: "blue",
+    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginLeft: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });

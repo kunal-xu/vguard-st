@@ -31,11 +31,11 @@ const RedeemStack = () => {
       options={{
           headerShown: true
         }} />                
-      <Stack.Screen name="Paytm Transfer" component={PaytmTransfer} 
+      {/* <Stack.Screen name="Paytm Transfer" component={PaytmTransfer} 
         options={{
           headerShown: true
         }}
-      />                
+      />                 */}
       <Stack.Screen name="redeemproducts" component={RedeemProducts} 
         options={{
           headerShown: true
@@ -70,7 +70,7 @@ const RedeemStack = () => {
         options={{
           headerShown: true
         }}
-      />                
+      /> 
     </Stack.Navigator>
   );
 };

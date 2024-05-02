@@ -164,7 +164,7 @@ export interface VguardRishtaUser {
 }
 
 export interface User {
-  stUserDetail: STUser;
+  stUser: STUser;
   tokens: Tokens;
 }
 

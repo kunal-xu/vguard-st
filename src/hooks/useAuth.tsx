@@ -6,10 +6,10 @@ import React, {
   ReactNode,
   Dispatch,
   SetStateAction,
-} from 'react';
-import { User } from '../utils/interfaces';
-import { api, logoutUser, newTokens } from '../utils/apiservice';
-import { storage } from '../..';
+} from "react";
+import { User } from "../utils/interfaces";
+import { api, logoutUser, newTokens } from "../utils/apiservice";
+import { storage } from "../..";
 
 interface AuthContextProps {
   setIsUserAuthenticated: Dispatch<SetStateAction<boolean>>;
@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   const login = async (user: User) => {
-    storage.set('refreshToken', JSON.stringify(user.tokens.refreshToken));
+    storage.set("refreshToken", JSON.stringify(user.tokens.refreshToken));
     setIsUserAuthenticated(true);
   };
 
@@ -42,7 +42,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       storage.clearAll();
       setIsUserAuthenticated(false);
     } catch (error) {
-      console.error('Error while logging out:', error);
+      console.error("Error while logging out:", error);
     }
   };
 
@@ -50,20 +50,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     (async () => {
       try {
         const refreshToken: string = storage.getString(
-          'refreshToken',
+          "refreshToken"
         ) as string;
         if (refreshToken) {
           const refreshTokenData = JSON.parse(refreshToken);
           const { accessToken, newRefreshToken } = await newTokens(
-            refreshTokenData,
+            refreshTokenData
           );
-          storage.set('refreshToken', JSON.stringify(newRefreshToken));
+          storage.set("refreshToken", JSON.stringify(newRefreshToken));
           api.defaults.headers.common[
-            'Authorization'
+            "Authorization"
           ] = `Bearer ${accessToken}`;
           setIsUserAuthenticated(true);
         } else {
-          throw new Error('No data in storage');
+          throw new Error("No data in storage");
         }
       } catch (error: any) {
         console.log(error.message);
@@ -85,10 +85,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   //           return api.request(error.config);
   //         }
   //         if (error.response.status === 404) {
-  
+
   //           const userData: VguardRishtaUser = JSON.parse(user);
   //           const response = await logOut(userData.userId);
-  
+
   //           setIsUserAuthenticated(false);
   //         }
   //         return Promise.reject(error);
@@ -112,7 +112,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         logout,
         showPopup,
         setShowPopup,
-      }}>
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -121,7 +122,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

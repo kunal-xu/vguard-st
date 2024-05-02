@@ -7,15 +7,13 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
+  ToastAndroid,
 } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import colors from "../../../../colors";
-
 import arrowIcon from "../../../assets/images/arrow.png";
-
 import Popup from "../../../components/Popup";
-
 import { Linking } from "react-native";
 import selectedTickImage from "../../../assets/images/tick_1.png";
 import notSelectedTickImage from "../../../assets/images/tick_1_notSelected.png";
@@ -28,9 +26,10 @@ import Buttons from "../../../components/Buttons";
 import { useAuth } from "../../../hooks/useAuth";
 import Loader from "../../../components/Loader";
 import LanguagePicker from "../../../components/LanguagePicker";
+import { useData } from "../../../hooks/useData";
 
 const LoginScreen = ({ navigation }: NavigationProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [loader, showLoader] = useState(false);
   const placeholderColor = colors.grey;
@@ -39,11 +38,12 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
   const [selectedOption, setSelectedOption] = useState(true);
   const [popupContent, setPopupContent] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const { login, professionId } = useAuth();
-  
+  const { login } = useAuth();
+  const { dispatch } = useData();
+
   const pkg = require("../../../../package.json");
   const version = pkg.version;
-  
+
   const handleLanguageButtonPress = () => {
     setShowLanguagePicker(true);
   };
@@ -51,13 +51,6 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
   const handleCloseLanguagePicker = () => {
     setShowLanguagePicker(false);
   };
-
-  // const showSnackbar = (message: string) => {
-  //   Snackbar.show({
-  //     text: message,
-  //     duration: Snackbar.LENGTH_SHORT,
-  //   });
-  // };
 
   const handleTermsPress = () => {
     setSelectedOption(!selectedOption);
@@ -76,12 +69,15 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
 
   const handleLogin = async () => {
     if (!username.trim().length || !password.trim().length) {
-      // showSnackbar('Please enter a username and password.');
+      ToastAndroid.show(
+        "Please enter a username and password.",
+        ToastAndroid.SHORT
+      );
       return;
     }
 
     if (selectedOption === false) {
-      // showSnackbar(t('strings:please_accept_terms'));
+      ToastAndroid.show(t("strings:please_accept_terms"), ToastAndroid.SHORT);
       return;
     }
 
@@ -90,14 +86,19 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
     try {
       const response = await loginWithPassword(username, password);
       showLoader(false);
-      // setIsPopupVisible(!isPopupVisible);
       const responseData = response.data;
+      dispatch({
+        type: "GET_ALL_FIELDS",
+        payload: {
+          value: responseData.stUser,
+        },
+      });
       login(responseData);
     } catch (error: any) {
       showLoader(false);
       setIsPopupVisible(!isPopupVisible);
       setPopupContent(error.message);
-      console.error('Login error:', error.message);
+      console.error("Login error:", error.message);
     }
   };
 
@@ -119,7 +120,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
           </View>
           {loader && <Loader isLoading={loader} />}
           <Image
-            source={require("../../../assets/images/group_907.png")}
+            source={require("../../../assets/images/ic_rishta_logo.jpg")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>{t("strings:lbl_welcome")}</Text>
@@ -292,8 +293,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   imageSaathi: {
-    width: 135,
-    height: 130,
+    width: 216,
+    height: 116,
     marginBottom: 30,
   },
   imageVguard: {
@@ -305,7 +306,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
     flex: 2,
-    
   },
   validationMessage: {
     color: "red",

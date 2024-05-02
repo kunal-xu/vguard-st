@@ -22,7 +22,6 @@ import { useTranslation } from 'react-i18next';
 import Buttons from '../../../../../components/Buttons';
 import arrowIcon from '../../../../../assets/images/arrow.png';
 import { getBanks, getFile, getany, sendFile, updateBank } from '../../../../../utils/apiservice';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Snackbar from 'react-native-snackbar';
 import { Picker } from '@react-native-picker/picker';
@@ -68,15 +67,6 @@ const Bank = () => {
   };
 
   useEffect(() => {
-
-
-    const getUserRoleFromAsyncStorage = async () => {
-      const userRole = await AsyncStorage.getItem('userRole');
-      setUserRole(userRole);
-    };
-
-   
-
     getBankDetailsAndCallFileUri();
 
     getBanks()
@@ -129,18 +119,6 @@ const Bank = () => {
     }
   };
 
-  const getFileUri = async selectedImageName => {
-    try {
-      const UserRole = await AsyncStorage.getItem('userRole');
-      const response = await getFile(selectedImageName, 'CHEQUE', UserRole);
-      //console.log(response, 'file');
-      setSelectedImage(response.url);
-      return response;
-    } catch (error) {
-      //console.error('Error getting file:', error);
-      throw error;
-    }
-  };
   const handleImagePickerPress = () => {
     setShowImagePickerModal(true);
   };

@@ -1,76 +1,151 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { VguardRishtaUser } from '../utils/types/VguardRishtaUser';
-import { STUser } from '../utils/types';
+import React, { createContext, useContext, useReducer, ReactNode } from "react";
+import {
+  AddressDetail,
+  BankDetail,
+  CouponRedeemResponse,
+  PaytmDetail,
+  ProductDetail,
+  RegisterCustomerDetails,
+  STUser,
+  WelcomeBanner,
+} from "../utils/types";
 
-type FormAction = {
-  type: 'UPDATE_FIELD';
-  payload: { field: string; value: string | number | object };
+type Action = {
+  type:
+    | "UPDATE_FIELD"
+    | "UPDATE_SUB_FIELD"
+    | "CLEAR_ALL_FIELDS"
+    | "GET_ALL_FIELDS";
+  payload: {
+    field?: keyof STUser;
+    subfield?:
+      | keyof (AddressDetail | BankDetail | PaytmDetail | WelcomeBanner)
+      | string;
+    value?: string | number | object | STUser;
+  };
 };
 
-type ProfileAction = {
-  type: 'UPDATE_FIELD';
-  payload: { value: STUser };
+type CustomerAction = {
+  type:
+    | "UPDATE_FIELD"
+    | "UPDATE_SUB_FIELD"
+    | "CLEAR_ALL_FIELDS"
+    | "GET_ALL_FIELDS";
+  payload: {
+    field?: keyof RegisterCustomerDetails;
+    subfield?: keyof (CouponRedeemResponse | ProductDetail) | string;
+    value?: string | number | object | RegisterCustomerDetails;
+  };
 };
 
-const vru = new VguardRishtaUser();
+
+export interface ContextProps {
+  state: STUser;
+  dispatch: React.Dispatch<Action>;
+  customerState: RegisterCustomerDetails;
+  customerDispatch: React.Dispatch<CustomerAction>;
+}
 
 const stUser = new STUser();
+const rcd = new RegisterCustomerDetails();
 
-export interface FormContextProps {
-  formState: VguardRishtaUser;
-  formDispatch: React.Dispatch<FormAction>;
-}
-
-export interface ProfileContextProps {
-  profileState: STUser;
-  profileDispatch: React.Dispatch<ProfileAction>;
-}
-
-const DataContext = createContext<FormContextProps | ProfileContextProps | undefined>({
-  formState: vru,
-  formDispatch: () => {},
-  profileState: stUser,
-  profileDispatch: () => {},
+const DataContext = createContext<ContextProps | undefined>({
+  state: stUser,
+  dispatch: () => {},
+  customerState: rcd,
+  customerDispatch: () => {},
 });
 
-const formReducer = (state: VguardRishtaUser, action: FormAction): VguardRishtaUser => {
+const reducer = (state: STUser, action: Action): STUser => {
   switch (action.type) {
-    case 'UPDATE_FIELD':
+    case "UPDATE_FIELD":
+      if (action.payload.field) {
+        return {
+          ...state,
+          [action.payload.field]: action.payload.value,
+        };
+      } else {
+        return state;
+      }
+    case "UPDATE_SUB_FIELD":
+      if (action.payload.field && action.payload.subfield) {
+        return {
+          ...state,
+          [action.payload.field]: {
+            ...(state[action.payload.field] as object),
+            [action.payload.subfield]: action.payload.value,
+          },
+        };
+      } else {
+        return state;
+      }
+    case "CLEAR_ALL_FIELDS":
+      return new STUser();
+    case "GET_ALL_FIELDS":
       return {
         ...state,
-        [action.payload.field]: action.payload.value,
+        ...(action.payload.value as STUser),
       };
     default:
       return state;
   }
 };
 
-const profileReducer = (state: STUser, action: ProfileAction): STUser => {
+const customerReducer = (
+  state: RegisterCustomerDetails,
+  action: CustomerAction
+): RegisterCustomerDetails => {
   switch (action.type) {
-    case 'UPDATE_FIELD':
+    case "UPDATE_FIELD":
+      if (action.payload.field) {
+        return {
+          ...state,
+          [action.payload.field]: action.payload.value,
+        };
+      } else {
+        return state;
+      }
+    case "UPDATE_SUB_FIELD":
+      if (action.payload.field && action.payload.subfield) {
+        return {
+          ...state,
+          [action.payload.field]: {
+            ...(state[action.payload.field] as object),
+            [action.payload.subfield]: action.payload.value,
+          },
+        };
+      } else {
+        return state;
+      }
+    case "CLEAR_ALL_FIELDS":
+      return new RegisterCustomerDetails();
+    case "GET_ALL_FIELDS":
       return {
         ...state,
-        ...action.payload.value,
+        ...(action.payload.value as STUser),
       };
     default:
       return state;
   }
 };
 
-export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [formState, formDispatch] = useReducer(formReducer, vru);
-  const [profileState, profileDispatch] = useReducer(profileReducer, stUser);
+export const DataProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [state, dispatch] = useReducer(reducer, stUser);
+  const [customerState, customerDispatch] = useReducer(customerReducer, rcd);
+
   return (
-    <DataContext.Provider value={{ formState, formDispatch, profileState, profileDispatch }}>
+    <DataContext.Provider value={{ state, dispatch, customerState, customerDispatch }}>
       {children}
     </DataContext.Provider>
   );
 };
 
 export const useData = () => {
-  const context = useContext(DataContext);
-  if (!context) {
-    throw new Error('useData must be used within a DataProvider');
+  const { state, dispatch, customerState, customerDispatch } = useContext(DataContext) as ContextProps;
+  if (!state || !dispatch || !customerState || !customerDispatch) {
+    throw new Error("useData must be used within a DataProvider");
   }
-  return context;
+  return { state, dispatch, customerState, customerDispatch };
 };

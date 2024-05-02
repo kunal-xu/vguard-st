@@ -2,19 +2,15 @@ import React, {useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import colors from '../../../../../../../colors';
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import ProductRegistration from '../ProductRegistration';
 import ScanCode from '../ScanCode';
 import UniqueCodeHistory from '../UniqueCodeHistory';
-import ProductRegistrationForm from '../ProductRegistrationForm';
 import AddWarranty from '../AddWarranty';
+
 
 const ScanStack: React.FC = () => {
   type ScanStackParams = {
-    'Product Registratrion': undefined;
     'Scan Code': undefined;
     'Unique Code History': undefined;
-    'Scan In': undefined;
-    'Product Registration Form': undefined;
     'Add Warranty': undefined;
   };
 
@@ -29,27 +25,20 @@ const ScanStack: React.FC = () => {
           },
           headerShown: false,
         }}>
-        {/* <Stack.Screen
+        <Stack.Screen
           name="Scan Code"
           component={ScanCode}
           options={{
             headerShown: true,
           }}
-        /> */}
-        {/* <Stack.Screen
+        />
+        <Stack.Screen
           name="Unique Code History"
           component={UniqueCodeHistory}
           options={{
             headerShown: true,
           }}
-        /> */}
-        {/* <Stack.Screen
-          name="Product Registration Form"
-          component={ProductRegistrationForm}
-          options={{
-            headerShown: true,
-          }}
-        /> */}
+        />
         <Stack.Screen
           name="Add Warranty"
           component={AddWarranty}
@@ -57,13 +46,6 @@ const ScanStack: React.FC = () => {
             headerShown: true,
           }}
         />
-        {/* <Stack.Screen
-          name="Scan In"
-          component={ScanCodeReg}
-          options={{
-            headerShown: true,
-          }}
-        /> */}
       </Stack.Navigator>
     </>
   );

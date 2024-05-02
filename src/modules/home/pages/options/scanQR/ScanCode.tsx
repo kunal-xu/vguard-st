@@ -19,12 +19,11 @@ import { useNavigation } from "@react-navigation/native";
 import cameraIcon from "../../../../../assets/images/ic_scan_code.png";
 import arrowIcon from "../../../../../assets/images/arrow.png";
 import RewardIcon from "../../../../../assets/images/ic_gift_banner.png";
-
 import {
   getBonusPoints,
   sendCouponPin,
   sendScanInCoupon,
-  validateSTCoupon,
+  validateCoupon,
 } from "../../../../../utils/apiservice";
 import { scanQR } from "react-native-simple-qr-reader";
 import colors from "../../../../../../colors";
@@ -55,7 +54,7 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
   const [isOkPopupVisible, setOkPopupVisible] = useState(false);
   const [isPinPopupVisible, setPinPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
-  const [loader, showLoader] = useState(true);
+  const [loader, showLoader] = useState(false);
   const [okPopupContent, setOkPopupContent] = useState<OkPopupContent>({
     text: "",
     okAction: null,
@@ -117,25 +116,29 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
     category: "Customer",
   });
 
-  var USER: any = null;
-  var CouponResponse: any;
-
-  // useEffect(() => {
-  //   AsyncStorage.getItem('USER').then(r => {
-  //     USER = JSON.parse(r || '');
-  //     setUserData(USER);
-  //     setCouponData(prevData => ({
-  //       ...prevData,
-  //       from: 'APP',
-  //       userMobileNumber: USER?.Contact,
-  //       userCode: USER?.RishtaID,
-  //     }));
-  //   });
-  //   showLoader(false);
-  // }, []);
+  async function isValidBarcode(
+    CouponData: any,
+    isAirCooler: number,
+    pinFourDigit: string,
+    isPinRequired: number,
+    dealerCategory: any
+  ) {
+    var result = null;
+    CouponData.isAirCooler = isAirCooler;
+    if (dealerCategory) {
+      CouponData.dealerCategory = dealerCategory;
+    }
+    if (pinFourDigit == "") {
+      result = await validateCoupon(CouponData);
+      return result;
+    } else {
+      CouponData.pin = pinFourDigit;
+      result = await validateCoupon(CouponData);
+      return result;
+    }
+  }
 
   const getUserLocation = () => {
-    showLoader(true);
     getLocation()
       .then((position) => {
         if (position != null) {
@@ -173,34 +176,34 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
         return;
       }
       var apiResponse;
-
-      apiResponse = await isValidBarcode(CouponData, 0, "", 0, null);
-      const r = await apiResponse.data;
-      // const result = await AsyncStorage.setItem(
-      //   "COUPON_RESPONSE",
-      //   JSON.stringify(r)
-      // );
-      CouponResponse = r;
-      if (r.errorCode == 1) {
+      try {
+        apiResponse = await isValidBarcode(CouponData, 0, "", 0, null);
+        const r = await apiResponse.data;
+        if (r.errorCode == 1) {
+          showLoader(false);
+          setQrcode("");
+          setOkPopupVisible(true);
+          setOkPopupContent({
+            text: t("strings:valid_coupon_please_proceed_to_prod_regi"),
+            okAction: () => navigation.navigate("Add Warranty"),
+          });
+        } else if (r.errorCode == 2) {
+          setPinPopupVisible(true);
+          showLoader(false);
+        } else if (r.errorMsg && r.errorMsg != "") {
+          setPopupVisible(true);
+          setPopupContent(r.errorMsg);
+          showLoader(false);
+          // setPinPopupVisible(true);
+        } else {
+          setPopupVisible(true);
+          setPopupContent(t("strings:something_wrong"));
+          showLoader(false);
+        }
+      } catch (error) {
         showLoader(false);
-        setQrcode("");
-        setOkPopupVisible(true);
-        setOkPopupContent({
-          text: t("strings:valid_coupon_please_proceed_to_prod_regi"),
-          okAction: () => navigation.navigate("Add Warranty"),
-        });
-      } else if (r.errorCode == 2) {
-        setPinPopupVisible(true);
-        showLoader(false);
-      } else if (r.errorMsg && r.errorMsg != "") {
-        setPopupVisible(true);
-        setPopupContent(r.errorMsg);
-        showLoader(false);
-        // setPinPopupVisible(true);
-      } else {
         setPopupVisible(true);
         setPopupContent(t("strings:something_wrong"));
-        showLoader(false);
       }
     } else {
       setPopupVisible(true);
@@ -476,75 +479,52 @@ const styles = StyleSheet.create({
   },
 });
 
-async function isValidBarcode(
-  CouponData: any,
-  isAirCooler: number,
-  pinFourDigit: string,
-  isPinRequired: number,
-  dealerCategory: any
-) {
-  var result = null;
-  CouponData.isAirCooler = isAirCooler;
-  if (dealerCategory) {
-    CouponData.dealerCategory = dealerCategory;
-  }
-  if (pinFourDigit == "") {
-    // result = await captureSale(CouponData);
-    result = await validateSTCoupon(CouponData);
-    return result;
-  } else {
-    CouponData.pin = pinFourDigit;
-    result = await validateSTCoupon(CouponData);
-    return result;
-  }
-}
-
 export default ScanCode;
 
 // var couponPoints = r.couponPoints;
-//           var basePoints = r.basePoints;
-//           // var couponPoints = "100";
-//           // var basePoints = "200";
-//           basePoints ? (basePoints = `Base Points: ${basePoints}`) : null;
+// var basePoints = r.basePoints;
+// var couponPoints = "100";
+// var basePoints = "200";
+// basePoints ? (basePoints = `Base Points: ${basePoints}`) : null;
 
-//           setScratchCardProps({
-//             rewardImage: {
-//               width: 100,
-//               height: 100,
-//               resourceLocation: require('../../../../../../assets/images/ic_rewards_gift.png'),
-//             },
-//             rewardResultText: {
-//               color: colors.black,
-//               fontSize: 16,
-//               textContent: 'YOU WON',
-//               fontWeight: '700',
-//             },
-//             text1: {
-//               color: colors.black,
-//               fontSize: 16,
-//               textContent: couponPoints,
-//               fontWeight: '700',
-//             },
-//             text2: {
-//               color: colors.black,
-//               fontSize: 16,
-//               textContent: 'POINTS',
-//               fontWeight: '700',
-//             },
-//             text3: {
-//               color: colors.grey,
-//               fontSize: 12,
-//               textContent: basePoints,
-//               fontWeight: '700',
-//             },
-//             button: {
-//               buttonColor: colors.yellow,
-//               buttonTextColor: colors.black,
-//               buttonText: 'Register Warranty',
-//               buttonAction: () => navigation.navigate('AddWarranty'),
-//               fontWeight: '400',
-//             },
-//             textInput: false,
-//           });
-//           setScratchable(true);
-//           showScratchCard(true);
+// setScratchCardProps({
+//   rewardImage: {
+//     width: 100,
+//     height: 100,
+//     resourceLocation: require('../../../../../assets/images/ic_rewards_gift.png'),
+//   },
+//   rewardResultText: {
+//     color: colors.black,
+//     fontSize: 16,
+//     textContent: 'YOU WON',
+//     fontWeight: '700',
+//   },
+//   text1: {
+//     color: colors.black,
+//     fontSize: 16,
+//     textContent: couponPoints,
+//     fontWeight: '700',
+//   },
+//   text2: {
+//     color: colors.black,
+//     fontSize: 16,
+//     textContent: 'POINTS',
+//     fontWeight: '700',
+//   },
+//   text3: {
+//     color: colors.grey,
+//     fontSize: 12,
+//     textContent: basePoints,
+//     fontWeight: '700',
+//   },
+//   button: {
+//     buttonColor: colors.yellow,
+//     buttonTextColor: colors.black,
+//     buttonText: 'Register Warranty',
+//     buttonAction: () => navigation.navigate('AddWarranty'),
+//     fontWeight: '400',
+//   },
+//   textInput: false,
+// });
+// setScratchable(true);
+// showScratchCard(true);
