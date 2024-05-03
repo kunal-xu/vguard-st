@@ -40,7 +40,7 @@ export const newUserKycField = [
 	{
     id: "89ae9dd3-9a36-41bb-87b7-6121a0975fa7",
     type: "picker",
-    items: ["Select Account Type*", "Savings", "Current", "Salary", "Fixed deposit"],
+    items: ["Savings", "Current", "Salary", "Fixed deposit"],
     data: "BankDetail.bankAccType",
     properties: {
       mode: "dropdown",
@@ -69,6 +69,7 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
+      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
@@ -87,6 +88,7 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
+      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
@@ -105,6 +107,7 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
+      editable: false,
       keyboardType: "default",
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,

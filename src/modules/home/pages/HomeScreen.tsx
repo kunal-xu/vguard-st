@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   point: {
     fontWeight: "bold",
-    color: colors.lightBlack,
+    color: "black",
     fontSize: responsiveFontSize(2),
     textAlign: "center",
   },

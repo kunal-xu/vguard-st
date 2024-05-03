@@ -5,27 +5,17 @@ import {
   StyleSheet,
   ScrollView,
   SafeAreaView,
-  TouchableOpacity,
   Image,
-  Linking,
-  ToastAndroid,
 } from "react-native";
-import { Picker, PickerProps } from "@react-native-picker/picker";
 import { height, width } from "../../../utils/dimensions";
-import { Checkbox } from "react-native-paper";
 import Buttons from "../../../components/Buttons";
-import { addLeadForm, getBanks } from "../../../utils/apiservice";
+import { addLeadForm } from "../../../utils/apiservice";
 import NeedHelp from "../../../components/NeedHelp";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import colors from "../../../../colors";
 import Loader from "../../../components/Loader";
 import { useTranslation } from "react-i18next";
-import { VguardRishtaUser } from "../../../utils/interfaces";
 import InputField from "../../../components/InputField";
 import PickerField from "../../../components/PickerField";
-import ImagePickerField from "../../../components/ImagePickerField";
-import DatePickerField from "../../../components/DatePickerField";
-import { useFocusEffect } from "@react-navigation/native";
 import Popup from "../../../components/Popup";
 
 const LeadForm = ({ navigation, route }) => {
@@ -41,18 +31,16 @@ const LeadForm = ({ navigation, route }) => {
   const [loader, showLoader] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string>("");
+  const [selectedValue, setSelectedValue] = useState<string[]>([""]);
   const items = [
-    { label: "Air Coolers", value: "Air Coolers", id: "" },
-    { label: "Modular Switches", value: "Modular Switches", id: "" },
-    { label: "Common Division", value: "Common Division", id: "" },
-    { label: "SK Appliances", value: "SK Appliances", id: "" },
-    { label: "Stabilizer", value: "Stabilizer", id: "" },
-    { label: "Digital UPS", value: "Digital UPS", id: "" },
-    { label: "UPS", value: "UPS", id: "" }
+    { label: "AC", value: "AC", id: "" },
+    { label: "TV", value: "TV", id: "" },
+    { label: "Refrigerator", value: "Refrigerator", id: "" },
+    { label: "Washing machine", value: "Washing machine", id: "" },
+    { label: "Others", value: "Others", id: "" },
   ]
 
-  function formatDate(date) {
+  function formatDate(date: string | number | Date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -66,12 +54,18 @@ const LeadForm = ({ navigation, route }) => {
       try {
         const today = new Date();
         const formattedDate = formatDate(today);
+        let values = "";
+        selectedValue.map((item: string) => {
+          values += item;
+          values += ", "
+        })
+        values = values.substring(0, values.length - 2);
         const body = {
           Name: name,
           DateOfLead: formattedDate,
           ContactNumber: usernumber,
           Pincode: pincode,
-          ServiceCategories: selectedValue
+          ServiceCategories: values
         };
         const validationResponse = await addLeadForm(body);
         showLoader(false);
@@ -130,11 +124,6 @@ const LeadForm = ({ navigation, route }) => {
                 height: height / 10,
               }}
             >
-              {/* <Text style={styles.userDetails}>New User</Text>
-              <Text style={styles.userDetails}>Rishta ID</Text>
-              <Text style={styles.userDetails}>
-                Mobile No.
-              </Text> */}
             </View>
           </View>
           <Text style={styles.textHeader}>
@@ -145,145 +134,25 @@ const LeadForm = ({ navigation, route }) => {
           <InputField
             label={"Name"}
             value={name}
-            onChangeText={(text: string) => setName(text)}
-          />
+            onChangeText={(text: string) => setName(text)} errorMessage={undefined} disabled={undefined} keyboardType={undefined}          />
 
           <InputField
             label={"Contact"}
             value={usernumber}
-            disabled
-          />
+            disabled errorMessage={undefined} onChangeText={undefined} keyboardType={undefined}          />
           
           <InputField
             label={"Pincode"}
             value={pincode}
-            onChangeText={(text: string) => setPincode(text)}
-          />
+            maxLength={6}
+            keyboardType="number-pad"
+            onChangeText={(text: string) => setPincode(text)} errorMessage={undefined} disabled={undefined} keyboardType={undefined}          />
 
-            {/* <Picker
-              selectedValue={selectedValue}
-              onValueChange={(value) => {
-                setSelectedValue(value);
-              }}
-              mode = "dropdown"
-              style = {
-                colors: "black"
-              }
-                // style = {
-                //   color = "black"
-                //   borderWidth = 1.5
-                //   borderColor = "#D3D3D3"
-                // }
-            >
-              {items?.map((item, index) => {
-                return (
-                  <Picker.Item
-                    label={item}
-                    value={index === 0 ? "undefined" : item}
-                  />
-                );
-              })}
-            </Picker> */}
-          
-          
           <PickerField
-            label={"Categories"}
+            label={"Service Categories"}
             selectedValue={selectedValue}
-            onValueChange={(text: string) =>
-              setSelectedValue(text)
-            }
-            items={items}
-          />
-          {/*
-          
-          <ImagePickerField
-            label={t("strings:lbl_upload_cancelled_cheque")}
-            onImageChange={handleImageChange}
-            imageRelated=""
-            fileUri={chequeFileData?.uri}
-          />
-
-          <Text style={styles.textHeader}>
-            {t("strings:lbl_nominee_details")}
-          </Text>
-
-          <InputField
-            label={t("strings:lbl_name_of_nominee")}
-            onChangeText={(text: string) =>
-              onChangeUserInput(text, "bankDetail.nomineeName")
-            }
-            value={newUserDetails?.bankDetail?.nomineeName}
-          />
-          <DatePickerField
-            label={t("strings:date_of_birth")}
-            onDateChange={(text) =>
-              onChangeUserInput(text, "bankDetail.nomineeDob")
-            }
-            date={newUserDetails?.bankDetail?.nomineeDob}
-            maximumDate={curr_date}
-          />
-          <InputField
-            label={t("strings:lbl_mobile_number")}
-            onChangeText={(text: string) =>
-              onChangeUserInput(text, "bankDetail.nomineeMobileNo")
-            }
-            value={newUserDetails?.bankDetail?.nomineeMobileNo}
-            numeric={true}
-            maxLength={10}
-          />
-          <InputField
-            label={t("strings:lbl_email")}
-            onChangeText={(text: string) =>
-              onChangeUserInput(text, "bankDetail.nomineeEmail")
-            }
-            value={newUserDetails?.bankDetail?.nomineeEmail}
-          />
-          <InputField
-            label={t("strings:lbl_address")}
-            onChangeText={(text: string) =>
-              onChangeUserInput(text, "bankDetail.nomineeAdd")
-            }
-            value={newUserDetails?.bankDetail?.nomineeAdd}
-          />
-          <InputField
-            label={t("strings:lbl_relationship_with_you")}
-            onChangeText={(text: string) =>
-              onChangeUserInput(text, "bankDetail.nomineeRelation")
-            }
-            value={newUserDetails?.bankDetail?.nomineeRelation}
-          />
-
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Checkbox.Android
-              color={colors.yellow}
-              status={checked ? "checked" : "unchecked"}
-              onPress={() => setChecked(!checked)}
-            />
-            <Text style={{ color: "black" }}>
-              {t(" I agree to terms and condition")}
-            </Text>
-          </View>
-
-          <View style={{ margin: 10 }}>
-            <Text style={{ color: "blue" }}>
-              I have read & fully understood the{" "}
-              <TouchableOpacity
-                style={{ top: 5 }}
-                onPress={openTermsAndConditions}
-              >
-                <Text
-                  style={{
-                    color: "blue",
-                    textDecorationLine: "underline",
-                    top: 5,
-                  }}
-                >
-                  terms and conditions
-                </Text>
-              </TouchableOpacity>{" "}
-              of V-guard Rishta Loyalty Program and abide to follow them.
-            </Text>
-          </View> */}
+            onValueChange={(text: string) => setSelectedValue(text)}
+            items={items} errorMessage={undefined} disabled={undefined} setIndex={undefined}/>
           <View
             style={{
               display: "flex",

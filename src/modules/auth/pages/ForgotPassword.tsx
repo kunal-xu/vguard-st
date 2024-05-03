@@ -1,59 +1,68 @@
-import { View, Text, StyleSheet, ScrollView, Image, TextInput, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next';
-import colors from '../../../../colors';
-import Buttons from '../../../components/Buttons';
-import arrowIcon from '../../../assets/images/arrow.png';
-import { responsiveHeight } from 'react-native-responsive-dimensions';
-import Popup from '../../../components/Popup';
-import { forgotPassword } from '../../../utils/apiservice';
-import { NavigationProps } from '../../../utils/interfaces';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  ToastAndroid,
+} from "react-native";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import colors from "../../../../colors";
+import Buttons from "../../../components/Buttons";
+import arrowIcon from "../../../assets/images/arrow.png";
+import { responsiveHeight } from "react-native-responsive-dimensions";
+import Popup from "../../../components/Popup";
+import { forgotPassword } from "../../../utils/apiservice";
+import { NavigationProps } from "../../../utils/interfaces";
+import Loader from "../../../components/Loader";
 
 const ForgotPassword = ({ navigation }: NavigationProps) => {
   const { t } = useTranslation();
   const placeholderColor = colors.grey;
-  const [number, setNumber] = useState('');
-
+  const [number, setNumber] = useState("");
+  const [loader, showLoader] = useState(false);
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [popupContent, setPopupContent] = useState('');
+  const [popupContent, setPopupContent] = useState("");
 
   const handleSubmit = async () => {
-    let pattern = /^[3-9][0-9]{9}$/;
-    if (pattern.test(number)) {
+    const numberRegex = /^[6789]\d{9}$/;
+    showLoader(true);
+    if (numberRegex.test(number)) {
       setPopupVisible(true);
-      forgotPassword(number)
-        .then((response) => response.data)
-        .then((responsedata) => {
-          const message = responsedata.message;
-          setPopupContent(message);
-          setNumber("");
-          setTimeout(() => {
-            setPopupVisible(false);
-            navigation.navigate("login");
-          }, 5000);
-          // if (message == "SMS sent for new password") {
-          //   setTimeout(() => {
-          //     navigation.navigate("login");
-          //   }, 1000);
-          // } else {
-          //   return;
-          // }
-        });
+      setPopupContent("This feature is under development");
+      // forgotPassword(number)
+      //   .then((response) => response.data)
+      //   .then((responsedata) => {
+      //     const message = responsedata.message;
+      //     setPopupContent(message);
+      //     setNumber("");
+      //     setTimeout(() => {
+      //       setPopupVisible(false);
+      //       navigation.navigate("login");
+      //     }, 5000);
+      //     // if (message == "SMS sent for new password") {
+      //     //   setTimeout(() => {
+      //     //     navigation.navigate("login");
+      //     //   }, 1000);
+      //     // } else {
+      //     //   return;
+      //     // }
+      //   });
     } else {
-      let msg =
-        number.length != 10
-          ? "Please enter 10 digit mobile number"
-          : "Enter valid registered mobile no.";
-      setPopupVisible(true);
-      setPopupContent(msg);
+      showLoader(false);
+      ToastAndroid.show("Invalid number format.", ToastAndroid.LONG);
     }
   };
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.forgotPasswordScreen}>
         <View style={styles.mainWrapper}>
+          <Loader isLoading={loader} />
           <Image
-            source={require("../../../assets/images/group_907.png")}
+            source={require("../../../assets/images/ic_rishta_logo.jpg")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>
@@ -111,50 +120,50 @@ const ForgotPassword = ({ navigation }: NavigationProps) => {
       )}
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
   forgotPasswordScreen: {
-    height: '100%',
+    height: "100%",
     backgroundColor: colors.white,
-    display: 'flex',
+    display: "flex",
   },
   mainWrapper: {
     padding: 30,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    flexGrow: 1
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    flexGrow: 1,
   },
   textHeader: {
     color: colors.grey,
     fontSize: 14,
-    fontWeight: 'bold',
-    width: '70%',
-    textAlign: 'center',
-    marginTop: responsiveHeight(2)
+    fontWeight: "bold",
+    width: "70%",
+    textAlign: "center",
+    marginTop: responsiveHeight(2),
   },
   mainHeader: {
     color: colors.black,
     fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   imageSaathi: {
     width: 100,
     height: 98,
-    marginBottom: 30
+    marginBottom: 30,
   },
   imageVguard: {
     width: 100,
     height: 36,
   },
   formContainer: {
-    width: '100%',
-    justifyContent: 'center',
+    width: "100%",
+    justifyContent: "center",
     padding: 16,
     flex: 2,
   },
@@ -165,29 +174,29 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: colors.black,
     backgroundColor: colors.white,
-    shadowColor: 'rgba(0, 0, 0, 0.8)',
+    shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,
   },
 
   footergreyText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 12,
     color: colors.grey,
     paddingBottom: 5,
   },
   footerContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
-    justifyContent: 'center',
+    justifyContent: "center",
     backgroundColor: colors.lightGrey,
-    width: '100%',
-    paddingVertical: 10
+    width: "100%",
+    paddingVertical: 10,
   },
   buttonContainer: {
-    marginTop: responsiveHeight(10)
-  }
-})
+    marginTop: responsiveHeight(10),
+  },
+});
 
-export default ForgotPassword
+export default ForgotPassword;

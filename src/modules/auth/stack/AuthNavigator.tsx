@@ -33,9 +33,9 @@ const Kyc = () => {
   const kycStack = createNativeStackNavigator();
   return (
     <kycStack.Navigator screenOptions={{ headerShown: true }}>
-      {/* <kycStack.Screen name="Registration" component={NewUser} /> */}
+      <kycStack.Screen name="Registration" component={NewUser} />
       <kycStack.Screen name="Bank Details" component={NewUserKyc} />
-      {/* <kycStack.Screen name='Credentials' component={NomineePage} /> */}
+      <kycStack.Screen name='Credentials' component={NomineePage} />
     </kycStack.Navigator>
   );
 };

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, SafeAreaView, Linking } from "react-native";
-import { height, width } from "../../../utils/dimensions";
-import { Avatar } from "react-native-paper";
+import { View, Text, ScrollView, SafeAreaView, Linking, ToastAndroid } from "react-native";
 import Buttons from "../../../components/Buttons";
 import NeedHelp from "../../../components/NeedHelp";
 import Popup from "../../../components/Popup";
@@ -11,23 +9,19 @@ import Field from "../../../components/Field";
 import { NavigationProps } from "../../../utils/interfaces";
 import { registerNewUser } from "../../../utils/apiservice";
 import { useData } from "../../../hooks/useData";
+import { PasswordMatchSchema } from "../../../utils/schemas/Credentials";
+import { z } from "zod";
 
 const NomineePage = ({ navigation }: NavigationProps) => {
   const { state, dispatch } = useData();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const openTermsAndConditions = () => {
-    // Add the URL of your terms and conditions page
-    const termsAndConditionsURL = "https://vguardrishta.com/tnc_retailer.html";
-
-    // Open the URL in the device's default web browser
-    Linking.openURL(termsAndConditionsURL);
-  };
 
   async function register() {
-    setIsLoading(true);
     try {
+      PasswordMatchSchema.parse(state);
+      setIsLoading(true);
       const response = await registerNewUser(state);
       const responseData = response.data;
       setIsLoading(false);
@@ -40,9 +34,13 @@ const NomineePage = ({ navigation }: NavigationProps) => {
       setTimeout(() => {
         navigation.navigate("login");
       }, 1200);
-    } catch (error) {
-      setIsLoading(false);
-      setPopupMessage("Something went wrong. Please try again.");
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
+      } else {
+        setIsLoading(false);
+        setPopupMessage("Something went wrong. Please try again.");
+      }
     }
   }
 
@@ -53,23 +51,11 @@ const NomineePage = ({ navigation }: NavigationProps) => {
           <View
             style={{
               backgroundColor: "transparent",
-              height: height / 8,
-              margin: 20,
-              flexDirection: "row",
-              width: width / 2.1,
-              justifyContent: "space-evenly",
-              alignItems: "center",
+              margin: 2,
+              padding: 10,
+              marginLeft: 1,
             }}
-          >
-            <Avatar.Image
-              size={84}
-              source={require("../../../assets/images/ac_icon.png")}
-            />
-            <View style={{ margin: 20, flexDirection: "column" }}>
-              <Text style={{ color: "grey" }}>Contact: {state.Contact}</Text>
-              <Text style={{ color: "grey" }}>Unique ID: {state.UniqueId}</Text>
-            </View>
-          </View>
+          ></View>
           {isLoading == true ? (
             <View style={{ flex: 1 }}>
               <Loader isLoading={isLoading} />
@@ -90,10 +76,7 @@ const NomineePage = ({ navigation }: NavigationProps) => {
               type={field.type}
               data={field.data}
               label={field.label}
-              items={field.items}
               properties={field.properties}
-              rules={field.rules}
-              links={field.links}
             />
           ))}
           <View

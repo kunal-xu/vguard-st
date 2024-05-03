@@ -97,7 +97,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
     } catch (error: any) {
       showLoader(false);
       setIsPopupVisible(!isPopupVisible);
-      setPopupContent(error.message);
+      setPopupContent(error.response.data.message);
       console.error("Login error:", error.message);
     }
   };
@@ -141,6 +141,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 placeholder={t("strings:lbl_registered_mobile_number_login")}
                 placeholderTextColor={placeholderColor}
                 value={username}
+                keyboardType="number-pad"
                 onChangeText={(text) => setUsername(text)}
               />
             </View>
@@ -154,6 +155,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 style={styles.input}
                 placeholder={t("strings:password")}
                 placeholderTextColor={placeholderColor}
+                maxLength={8}
                 secureTextEntry={true}
                 value={password}
                 onChangeText={(text) => setPassword(text)}

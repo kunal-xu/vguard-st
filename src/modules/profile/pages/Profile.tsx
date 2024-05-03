@@ -4,9 +4,7 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  TouchableHighlight,
   Image,
-  Linking,
   TouchableOpacity,
 } from "react-native";
 import {
@@ -372,12 +370,12 @@ const Profile = ({ navigation }) => {
             resizeMode="cover"
           />
         </View>
-        <TouchableHighlight
+        <TouchableOpacity
           style={styles.button}
           onPress={() => navigation.navigate("Edit Profile")}
         >
           <Text style={styles.buttonText}>{t("strings:edit_profile")}</Text>
-        </TouchableHighlight>
+        </TouchableOpacity>
       </View>
       <View style={styles.profileText}>
         <Text style={styles.textDetail}>{state.Name}</Text>

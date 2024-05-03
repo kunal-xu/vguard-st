@@ -1,13 +1,13 @@
 export class BankDetail {
   errorMessage: string | null = null;
   bankId: string | null = null;
-  bankAccNo: string | null = null;
+  bankAccNo: string | null = "";
   bankAccHolderName: string | null = null;
   bankAccType: string = "Savings";
   bankAccTypePos: string | null = null;
   bankNameAndBranch: string | null = null;
   branchAddress: string | null = null;
-  bankIfsc: string | null = null;
+  bankIfsc: string | null = "";
   nomineeName: string | null = null;
   nomineeDob: string | null = null;
   checkPhoto: string | null = null;

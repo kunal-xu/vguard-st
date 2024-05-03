@@ -5,6 +5,7 @@ import {
   Text,
   TextInput,
   TextStyle,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -42,6 +43,8 @@ import {
 } from "../utils/types";
 import Popup from "./Popup";
 import Loader from "./Loader";
+import { BankDetailsSchema } from "../utils/schemas/BankDetails";
+import { z } from "zod";
 
 interface RuleItem {
   id: number;
@@ -98,6 +101,12 @@ const Field = (props: FieldProps) => {
   const { type, source } = props;
   const { t } = useTranslation();
   const { state, dispatch, customerState, customerDispatch } = useData();
+  const [loader, showLoader] = useState(false);
+  const [popupContent, setPopupContent] = useState("");
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const togglePopup = () => {
+    setIsPopupVisible(!isPopupVisible);
+  };
 
   const handleFormInputChange = (
     field: keyof STUser,
@@ -332,6 +341,8 @@ const Field = (props: FieldProps) => {
       if (type === "bank") {
         async function getBankDetails() {
           try {
+            BankDetailsSchema.parse(state.BankDetail);
+            showLoader(true);
             const response = await getBankDetail({
               UniqueId: state.UniqueId,
               BankDetail: {
@@ -340,6 +351,7 @@ const Field = (props: FieldProps) => {
               },
             });
             const responseData: BankDetail = response.data;
+            showLoader(false);
             if (responseData.bankDataPresent === 1) {
               handleFormInputChange(
                 "BankDetail",
@@ -356,9 +368,22 @@ const Field = (props: FieldProps) => {
                 "branchAddress",
                 responseData.branchAddress as string
               );
+            } else {
+              setIsPopupVisible(true);
+              setPopupContent(response.data.errorMessage);
             }
-          } catch (error) {
-            console.log(error);
+          } catch (error: any) {
+            if (error instanceof z.ZodError) {
+              ToastAndroid.show(
+                `${error.errors[0].message}`,
+                ToastAndroid.LONG
+              );
+            } else {
+              console.log(error);
+              showLoader(false);
+              setIsPopupVisible(true);
+              setPopupContent("Something went wrong");
+            }
           }
         }
         return (
@@ -370,53 +395,22 @@ const Field = (props: FieldProps) => {
               marginVertical: 10,
             }}
           >
+            {loader && <Loader isLoading={loader} />}
+            {isPopupVisible && (
+              <Popup isVisible={isPopupVisible} onClose={togglePopup}>
+                <Text style={{ fontWeight: "bold" }}>{popupContent}</Text>
+              </Popup>
+            )}
             <Buttons {...properties} onPress={getBankDetails} />
           </View>
         );
       }
-      if (type === "upi") {
-        async function getVPA() {
-          try {
-            const response = await getVPAData({
-              UniqueId: state.UniqueId,
-            });
-
-            const responseData: PaytmDetail = response.data;
-            handleFormInputChange(
-              "PaytmDetail",
-              "upiId",
-              responseData.upiId as string
-            );
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        return (
-          <View
-            style={{
-              display: "flex",
-              width: "100%",
-              alignItems: "center",
-              marginVertical: 10,
-            }}
-          >
-            <Buttons {...properties} onPress={getVPA} />
-          </View>
-        );
-      }
     case "floatingLabelInputWithButton":
-      const [isPopupVisible, setIsPopupVisible] = useState(false);
-      const [loader, showLoader] = useState(false);
-      const [popupContent, setPopupContent] = useState("");
-      const togglePopup = () => {
-        setIsPopupVisible(!isPopupVisible);
-      };
-    
       async function tds() {
         showLoader(true);
         try {
           const response = await getTDSPercentage({
-            UniqueId: state.UniqueId
+            UniqueId: state.UniqueId,
           });
           showLoader(false);
           const responseData = response.data;
@@ -427,13 +421,13 @@ const Field = (props: FieldProps) => {
             payload: {
               field: "TDSSlab",
               subfield: undefined,
-              value: responseData.code === 1 ? 10 : 20
-            }
-          })
+              value: responseData.code === 1 ? 10 : 20,
+            },
+          });
         } catch (error: any) {
           showLoader(false);
           setIsPopupVisible(true);
-          setPopupContent(error.response.data.message)
+          setPopupContent(error.response.data.message);
         }
       }
 
@@ -441,7 +435,7 @@ const Field = (props: FieldProps) => {
         showLoader(true);
         try {
           const response = await getVPAData({
-            UniqueId: state.UniqueId
+            UniqueId: state.UniqueId,
           });
           showLoader(false);
           const responseData = response.data;
@@ -452,13 +446,13 @@ const Field = (props: FieldProps) => {
             payload: {
               field: "PaytmDetail",
               subfield: "upiId",
-              value: responseData.entity
-            }
-          })
+              value: responseData.entity,
+            },
+          });
         } catch (error: any) {
           showLoader(false);
           setIsPopupVisible(true);
-          setPopupContent(error.response.data.message)
+          setPopupContent(error.response.data.message);
         }
       }
 
@@ -466,15 +460,21 @@ const Field = (props: FieldProps) => {
         <View style={styles.container}>
           {loader && <Loader isLoading={loader} />}
           {isPopupVisible && (
-          <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-            <Text style={{ fontWeight: "bold" }}>
-              {popupContent || "Incorrect Username or Password"}
-            </Text>
-          </Popup>
-        )}
+            <Popup isVisible={isPopupVisible} onClose={togglePopup}>
+              <Text style={{ fontWeight: "bold" }}>{popupContent}</Text>
+            </Popup>
+          )}
           <Text style={styles.label}>{t(props.label || "")}</Text>
           <View style={styles.inputContainer}>
-            <TextInput style={styles.input} value={source === "tds" ? (state.TDSSlab as string) : (state.PaytmDetail.upiId as string)} />
+            <TextInput
+              style={styles.input}
+              editable={false}
+              value={
+                source === "tds"
+                  ? (state.TDSSlab as string)
+                  : (state.PaytmDetail.upiId as string)
+              }
+            />
             <TouchableOpacity
               style={styles.button}
               onPress={() => {

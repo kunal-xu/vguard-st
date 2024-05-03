@@ -42,13 +42,13 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
         const validationResponseData = validationResponse.data;
         setResponseCode(validationResponseData.code);
         if(validationResponseData.entity === 1) {
-          
           setResponseEntity(1);
         }
         if (validationResponseData.code === 200) {
           const successMessage = validationResponseData.message;
           setIsPopupVisible(true);
           setPopupMessage(successMessage);
+          return;
         } else {
           const errorMessage = validationResponseData.message;
           setIsPopupVisible(true);
@@ -72,6 +72,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const handleClose = () => {
     if(responseCode === 400 && responseEntity === 1) {
+      setResponseEntity(0);
       navigation.navigate("leadform", { usernumber: number });
     }
     if (responseCode === 200) {

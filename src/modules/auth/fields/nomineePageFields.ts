@@ -1,3 +1,4 @@
+import { kMaxLength } from "buffer";
 import { styles } from "./styles";
 
 export const nomineePageFields = [
@@ -18,6 +19,7 @@ export const nomineePageFields = [
 		properties: {
 			keyboardType: "default",
 			staticLabel: true,
+			maxLength: 8,
 			containerStyles: styles.input,
 			labelStyles: styles.labelStyles,
 			inputStyles: {
@@ -30,10 +32,12 @@ export const nomineePageFields = [
 		id: '9d242f22-8e19-4dcd-b1df-bf0b7c804d5e',
 		label: "strings:confirm_password",
 		type: "floatingLabelInput",
-		data: "",
+		data: "confirmPwd",
 		properties: {
 			keyboardType: "default",
+			secureTextEntry: true,
 			staticLabel: true,
+			maxLength: 8,
 			containerStyles: styles.input,
 			labelStyles: styles.labelStyles,
 			inputStyles: {
