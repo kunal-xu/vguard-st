@@ -45,6 +45,8 @@ export class STUser {
   Otp: string | null = null;
   pwd: string | null = "";
   confirmPwd: string | null = "";
+  hasPwdChanged: boolean | null = null;
+  
   constructor(data?: Partial<STUser>) {
     Object.assign(this, data);
     if (data && data.BankDetail) {

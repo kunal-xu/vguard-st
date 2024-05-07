@@ -24,6 +24,8 @@ import NeedHelp from "../../../components/NeedHelp";
 import { getFile, getUser } from "../../../utils/apiservice";
 import { getImages } from "../../../utils/FileUtils";
 import { useData } from "../../../hooks/useData";
+import { useFocusEffect } from "@react-navigation/native";
+import { useAuth } from "../../../hooks/useAuth";
 
 // import { checkAppVersion } from "../../common/services/AppUpdate";
 // import { APP_URL } from "../../../utils/constants";
@@ -33,23 +35,30 @@ const HomeScreen = ({ navigation }) => {
   const [profileImage, setProfileImage] = useState("");
   const [LoggedInUser, setLoggedInUser] = useState(null);
   const { state, dispatch } = useData();
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await getUser();
-        const responseData = response.data;
-        dispatch({
-          type: "GET_ALL_FIELDS",
-          payload: {
-            value: responseData,
-          },
-        });
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    })();
-  }, []);
-
+  const {logout} = useAuth()
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getUser();
+          const responseData = response.data;
+          dispatch({
+            type: "GET_ALL_FIELDS",
+            payload: {
+              value: responseData,
+            },
+          });
+          if(responseData.hasPwdChanged) {
+            
+          }
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
+  
+      fetchData();  
+    }, [])
+  );
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View style={styles.mainWrapper}>

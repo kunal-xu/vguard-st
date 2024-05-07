@@ -24,6 +24,7 @@ const AuthNavigator = () => {
       <Stack.Screen name="forgotPassword" component={ForgotPassword} />
       <Stack.Screen name="loginWithNumber" component={LoginWithNumber} />
       <Stack.Screen name="leadform" component={LeadForm} />
+      <Stack.Screen name='Credentials' component={NomineePage} />
       {/* <Stack.Screen name='PreviewSummary' component={PreviewUserRegistration} /> */}
     </Stack.Navigator>
   );

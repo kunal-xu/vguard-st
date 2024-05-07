@@ -84,6 +84,18 @@ const AddWarranty = ({ navigation }: NavigationProps) => {
 
   async function saveData() {
     showLoader(true);
+    try {
+      const response = await sendCustomerData(customerState);
+      const responseData = response.data;
+      showLoader(false);
+      setPopupVisible(true);
+      setPopupContent(responseData.message);
+    } catch (error: any) {
+      showLoader(false);
+      setPopupVisible(true);
+      setPopupContent(error.response.data.message);
+    }
+    /*
     const response = await sendCustomerData(customerState);
     const result = await response.data;
     showLoader(false);
@@ -138,6 +150,7 @@ const AddWarranty = ({ navigation }: NavigationProps) => {
       setPopupVisible(true);
       setPopupContent(t("strings:something_wrong"));
     }
+    */
   }
   return (
     <ScrollView style={{ backgroundColor: "white" }}>

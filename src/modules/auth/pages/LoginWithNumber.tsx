@@ -75,6 +75,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
       setResponseEntity(0);
       navigation.navigate("leadform", { usernumber: number });
     }
+    
     if (responseCode === 200) {
       navigation.navigate("loginwithotp", { usernumber: number });
     }

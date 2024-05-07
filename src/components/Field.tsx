@@ -421,7 +421,7 @@ const Field = (props: FieldProps) => {
             payload: {
               field: "TDSSlab",
               subfield: undefined,
-              value: responseData.code === 1 ? 10 : 20,
+              value: responseData.entity,
             },
           });
         } catch (error: any) {

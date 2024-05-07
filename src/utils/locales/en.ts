@@ -433,6 +433,9 @@ export default {
     excluding_scratch_card_and_points_before_1st_april:
       '(Excluding scratch card and points before 1st April)',
     first_scan_date: 'Fist scan date:',
+    customer_name: 'Customer Name',
+    customer_contact: 'Customer Contact',
+    customer_alternate_number: 'Customer Alternate Number',
     first_scan_date_starts_from_1st_april_onwards:
       'First scan date starts from 1st April onwards',
     share_subject: 'User referral code',
@@ -446,7 +449,7 @@ export default {
     dealer_district: 'Dealer District',
     cust_detail_not_found: 'Customer details not available, Please fill manually',
     valid_coupon_please_proceed_to_prod_regi:
-      'Valid coupon , Proceed to product registration.',
+      'Valid coupon , Proceed to warranty registration.',
     enter_selling_price: 'Enter selling price',
     capture_warranty_details: 'Capture warranty details picture',
     capture_bill_details: 'Capture bill details picture',

@@ -35,6 +35,7 @@ import PopupWithOkAndCancel from "../../../../../components/PopupWithOkAndCancel
 import NeedHelp from "../../../../../components/NeedHelp";
 import getLocation from "../../../../../utils/geolocation";
 import Buttons from "../../../../../components/Buttons";
+import { useData } from "../../../../../hooks/useData";
 
 interface ScanCodeProps {
   navigation: any;
@@ -100,34 +101,21 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
   });
   const [pinData, setPinData] = useState("");
   const [CouponData, setCouponData] = useState({
-    userMobileNumber: "",
     couponCode: "",
-    // pin: '',
-    // smsText: '',
-    from: "",
-    userId: 0,
-    apmID: 0,
-    retailerCoupon: false,
-    userCode: "",
-    isAirCooler: 0,
+    pin: "",
     latitude: "",
     longitude: "",
     geolocation: "",
-    category: "Customer",
   });
+
+  const {customerState, customerDispatch} = useData();
 
   async function isValidBarcode(
     CouponData: any,
-    isAirCooler: number,
     pinFourDigit: string,
-    isPinRequired: number,
-    dealerCategory: any
+    
   ) {
     var result = null;
-    CouponData.isAirCooler = isAirCooler;
-    if (dealerCategory) {
-      CouponData.dealerCategory = dealerCategory;
-    }
     if (pinFourDigit == "") {
       result = await validateCoupon(CouponData);
       return result;
@@ -177,12 +165,28 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
       }
       var apiResponse;
       try {
-        apiResponse = await isValidBarcode(CouponData, 0, "", 0, null);
+        apiResponse = await isValidBarcode(CouponData, "");
         const r = await apiResponse.data;
         if (r.errorCode == 1) {
           showLoader(false);
           setQrcode("");
           setOkPopupVisible(true);
+          customerDispatch({
+            type: "UPDATE_SUB_FIELD",
+            payload: {
+              field: "cresp",
+              subfield: "couponCode",
+              value: r.copuonCode
+            }
+          });
+          customerDispatch({
+            type: "UPDATE_SUB_FIELD",
+            payload: {
+              field: "cresp",
+              subfield: "skuDetail",
+              value: r.partName
+            }
+          });
           setOkPopupContent({
             text: t("strings:valid_coupon_please_proceed_to_prod_regi"),
             okAction: () => navigation.navigate("Add Warranty"),
@@ -249,57 +253,57 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
         console.error("Send Coupon PIN API Error:", error);
       });
   };
-  function checkBonusPoints() {
-    showScratchCard(false);
-    if (CouponResponse?.transactId && CouponResponse?.bitEligibleScratchCard) {
-      getBonusPoints(CouponResponse.transactId).then((response) =>
-        response.data.then((result) => {
-          var couponPoints = result.promotionPoints;
-          setScratchCardProps({
-            rewardImage: {
-              width: 100,
-              height: 100,
-              resourceLocation: RewardIcon,
-            },
-            rewardResultText: {
-              color: colors.black,
-              fontSize: 16,
-              textContent: result.errorMsg,
-              fontWeight: "700",
-            },
-            text1: {
-              color: colors.black,
-              fontSize: 16,
-              textContent: couponPoints,
-              fontWeight: "700",
-            },
-            text2: {
-              color: colors.black,
-              fontSize: 16,
-              textContent: "POINTS",
-              fontWeight: "700",
-            },
-            text3: {
-              color: colors.grey,
-              fontSize: 12,
-              textContent: "",
-              fontWeight: "700",
-            },
-            button: {
-              buttonColor: colors.yellow,
-              buttonTextColor: colors.black,
-              buttonText: "",
-              buttonAction: "",
-              fontWeight: "400",
-            },
-            textInput: false,
-          });
-          setScratchable(false);
-        })
-      );
-      showScratchCard(true);
-    }
-  }
+  // function checkBonusPoints() {
+  //   showScratchCard(false);
+  //   if (CouponResponse?.transactId && CouponResponse?.bitEligibleScratchCard) {
+  //     getBonusPoints(CouponResponse.transactId).then((response) =>
+  //       response.data.then((result) => {
+  //         var couponPoints = result.promotionPoints;
+  //         setScratchCardProps({
+  //           rewardImage: {
+  //             width: 100,
+  //             height: 100,
+  //             resourceLocation: RewardIcon,
+  //           },
+  //           rewardResultText: {
+  //             color: colors.black,
+  //             fontSize: 16,
+  //             textContent: result.errorMsg,
+  //             fontWeight: "700",
+  //           },
+  //           text1: {
+  //             color: colors.black,
+  //             fontSize: 16,
+  //             textContent: couponPoints,
+  //             fontWeight: "700",
+  //           },
+  //           text2: {
+  //             color: colors.black,
+  //             fontSize: 16,
+  //             textContent: "POINTS",
+  //             fontWeight: "700",
+  //           },
+  //           text3: {
+  //             color: colors.grey,
+  //             fontSize: 12,
+  //             textContent: "",
+  //             fontWeight: "700",
+  //           },
+  //           button: {
+  //             buttonColor: colors.yellow,
+  //             buttonTextColor: colors.black,
+  //             buttonText: "",
+  //             buttonAction: "",
+  //             fontWeight: "400",
+  //           },
+  //           textInput: false,
+  //         });
+  //         setScratchable(false);
+  //       })
+  //     );
+  //     showScratchCard(true);
+  //   }
+  // }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -310,7 +314,7 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
             scratchCardProps={scratchCardProps}
             visible={scratchCard}
             scratchable={scratchable}
-            onClose={checkBonusPoints}
+            // onClose={checkBonusPoints}
           />
         )}
         <TouchableOpacity style={styles.imageContainer} onPress={() => scan()}>

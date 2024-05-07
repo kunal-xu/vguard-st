@@ -18,6 +18,7 @@ import { getFile, getUser } from "../../../utils/apiservice";
 import { useTranslation } from "react-i18next";
 import { getImages } from "../../../utils/FileUtils";
 import { useData } from "../../../hooks/useData";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Profile = ({ navigation }) => {
   const { t } = useTranslation();
@@ -39,22 +40,26 @@ const Profile = ({ navigation }) => {
   // });
   // const [profileImage, setProfileImage] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await getUser();
-        const responseData = response.data;
-        dispatch({
-          type: "GET_ALL_FIELDS",
-          payload: {
-            value: responseData,
-          },
-        });
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    })();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getUser();
+          const responseData = response.data;
+          dispatch({
+            type: "GET_ALL_FIELDS",
+            payload: {
+              value: responseData,
+            },
+          });
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
+  
+      fetchData();  
+    }, [])
+  );
 
   const labels = [
     "Gender",

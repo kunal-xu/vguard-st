@@ -1,4 +1,4 @@
-package com.tfl.vguardrishta;
+package com.vguard.vguardst;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

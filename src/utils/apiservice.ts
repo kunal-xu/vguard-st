@@ -1,8 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import messaging from "@react-native-firebase/messaging";
 
-// const BASE_URL = "http://192.168.114.165:5005/vguard/api";
-const BASE_URL = 'https://infra.4test.info/vguard/api';
+const BASE_URL = "http://192.168.29.15:5005/vguard/api";
+// const BASE_URL = 'https://infra.4test.info/vguard/api';
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -405,6 +405,11 @@ export function bankTransfer(productOrder: any) {
   return createPostRequest(path, productOrder);
 }
 
+export function upiTransfer(productOrder: any) {
+  const path = "order/upiTransfer";
+  return createPostRequest(path, productOrder);
+}
+
 export function productOrder(productOrder: any) {
   const path = "order/product";
   return createPostRequest(path, productOrder);
@@ -471,7 +476,7 @@ export function getTicketHistory() {
 }
 
 export function getNotifications() {
-  const path = "alert/";
+  const path = "alert";
   return createGetRequest(path);
 }
 
@@ -510,8 +515,8 @@ export function getProductWiseOffers() {
   return createGetRequest(path);
 }
 
-export function getRedemptionHistory(type: string) {
-  const path = `product/redemptionHistory?type=${type}`;
+export function getRedemptionHistory() {
+  const path = `product/redemptionHistory`;
   return createGetRequest(path);
 }
 

@@ -66,11 +66,11 @@ const RedeemStack = () => {
           headerShown: true
         }}
       />                
-      <Stack.Screen name="UPI Transfer" component={UpiTransfer} 
+      {/* <Stack.Screen name="UPI Transfer" component={UpiTransfer} 
         options={{
           headerShown: true
         }}
-      /> 
+      /> */}
     </Stack.Navigator>
   );
 };

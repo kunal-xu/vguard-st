@@ -67,9 +67,9 @@ const RewardBox = ({
 			justifyContent: "center",
 		},
 		text: {
-			color: scratchCardProps.rewardResultText.color || "blue",
-			fontWeight: scratchCardProps.rewardResultText.fontWeight || "500",
-			fontSize: scratchCardProps.rewardResultText.fontSize || 16,
+			color: scratchCardProps?.rewardResultText?.color || "blue",
+			fontWeight: scratchCardProps?.rewardResultText?.fontWeight || "500",
+			fontSize: scratchCardProps?.rewardResultText?.fontSize || 16,
 			textAlign: "center",
 			textTransform: "uppercase",
 		},
@@ -86,24 +86,24 @@ const RewardBox = ({
 		},
 		rewardImage: { height: 100, width: 100, alignSelf: "center" },
 		text1: {
-			color: scratchCardProps.text1.color || "blue",
-			fontWeight: scratchCardProps.text1.fontWeight || "500",
-			fontSize: scratchCardProps.text1.fontSize || 16,
+			color: scratchCardProps?.text1?.color || "blue",
+			fontWeight: scratchCardProps?.text1?.fontWeight || "500",
+			fontSize: scratchCardProps?.text1?.fontSize || 16,
 			marginTop: 5,
 			textAlign: "center",
 			textTransform: "uppercase",
 		},
 		text2: {
-			color: scratchCardProps.text2.color || "blue",
-			fontWeight: scratchCardProps.text2.fontWeight || "500",
-			fontSize: scratchCardProps.text2.fontSize || 16,
+			color: scratchCardProps?.text2?.color || "blue",
+			fontWeight: scratchCardProps?.text2?.fontWeight || "500",
+			fontSize: scratchCardProps?.text2?.fontSize || 16,
 			marginTop: 5,
 			textAlign: "center",
 		},
 		text3: {
-			color: scratchCardProps.text3.color || "blue",
-			fontWeight: scratchCardProps.text3.fontWeight || "500",
-			fontSize: scratchCardProps.text3.fontSize || 16,
+			color: scratchCardProps?.text3?.color || "blue",
+			fontWeight: scratchCardProps?.text3?.fontWeight || "500",
+			fontSize: scratchCardProps?.text3?.fontSize || 16,
 			textAlign: "center",
 			marginTop: 5,
 		},
@@ -121,92 +121,101 @@ const RewardBox = ({
 		}
 	}
 	return (
-		<Modal
-			transparent
-			animationType="slide"
-			visible={visible}
-			onRequestClose={onClose}
-		>
-			<View
-				style={{
-					flex: 1,
-					justifyContent: "center",
-					alignItems: "center",
-					// backgroundColor: "blue",
-				}}
-			>
-				<View style={{ width: 350, height: 320 }}>
-					<View style={styles.modalContent}>
-						<View style={styles.modalHeader}>
-							<TouchableOpacity onPress={onClose}>
-								<Image
-									style={styles.buttonClose}
-									source={require("../assets/images/ic_close.png")}
-								/>
-							</TouchableOpacity>
-						</View>
-						<View style={styles.textInputWrapper}>
-							{scratchCardProps.textInput && (
-								<TextInput
-									style={styles.textInputAlign}
-									onChangeText={onChangeText}
-									value={text}
-									placeholder="Enter text here"
-									placeholderTextColor="grey"
-								/>
-							)}
-						</View>
+    <Modal
+      transparent
+      animationType="slide"
+      visible={visible}
+      onRequestClose={onClose}
+    >
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "rgba(0,0,0,0.6)",
+        }}
+      >
+        <View style={{ width: 350, height: 320 }}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <TouchableOpacity onPress={onClose}>
+                <Image
+                  style={styles.buttonClose}
+                  source={require("../assets/images/ic_close.png")}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.textInputWrapper}>
+              {scratchCardProps.textInput && (
+                <TextInput
+                  style={styles.textInputAlign}
+                  onChangeText={onChangeText}
+                  value={text}
+                  placeholder="Enter text here"
+                  placeholderTextColor="grey"
+                />
+              )}
+            </View>
 
-						{scratchCardProps.rewardImage.resourceLocation && (
-							<Image
-								style={styles.rewardImage}
-								source={scratchCardProps.rewardImage.resourceLocation}
-							/>
-						)}
+            {scratchCardProps?.rewardImage?.resourceLocation && (
+              <Image
+                style={styles.rewardImage}
+                source={scratchCardProps.rewardImage.resourceLocation}
+              />
+            )}
 
-						{scratchCardProps.rewardImage.resourceUrl && (
-							<Image
-								style={styles.rewardImage}
-								source={{
-									url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==",
-								}}
-							/>
-						)}
+            {scratchCardProps?.rewardImage?.resourceUrl && (
+              <Image
+                style={styles.rewardImage}
+                source={{
+                  url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==",
+                }}
+              />
+            )}
 
-						<Text style={styles.text}>
-							{scratchCardProps.rewardResultText.textContent}
-						</Text>
-						<Text style={styles.text1}>
-							{scratchCardProps.text1.textContent}
-						</Text>
-						<Text style={styles.text2}>
-							{scratchCardProps.text2.textContent}
-						</Text>
-						<Text style={styles.text3}>
-							{scratchCardProps.text3.textContent}
-						</Text>
+            <Text style={styles.text}>
+              {scratchCardProps?.rewardResultText?.textContent}
+            </Text>
 
-						{scratchCardProps.button.buttonText && (
-							<TouchableOpacity
-								style={styles.modalButton}
-								onPress={scratchCardProps.button.buttonAction}
-							>
-								<Text style={styles.regWarButton}>
-									{scratchCardProps.button.buttonText}
-								</Text>
-							</TouchableOpacity>
-						)}
-					</View>
-					{show && (<ScratchCard
-						source={require("../assets/images/ic_scratch_card_greeting_2.webp")}
-						brushWidth={40}
-						style={[styles.scratch_card, show]}
-						onScratch={handleScratch}
-					/>)}
-				</View>
-			</View>
-		</Modal>
-	);
+            {Number(scratchCardProps.text1.textContent || "0") != 0 && (
+              <Text style={styles.text1}>
+                {scratchCardProps?.text1?.textContent}
+              </Text>
+            )}
+
+            {Number(scratchCardProps.text1.textContent || "0") != 0 && (
+              <Text style={styles.text2}>
+                {scratchCardProps?.text2?.textContent}
+              </Text>
+            )}
+
+            <Text style={styles.text3}>
+              {scratchCardProps?.text3?.textContent}
+            </Text>
+
+            {scratchCardProps.button.buttonText && (
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={scratchCardProps?.button?.buttonAction}
+              >
+                <Text style={styles.regWarButton}>
+                  {scratchCardProps?.button?.buttonText}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          {show && (
+            <ScratchCard
+              source={require("../assets/images/ic_scratch_card_greeting_2.webp")}
+              brushWidth={40}
+              style={[styles.scratch_card, show]}
+              onScratch={handleScratch}
+            />
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
 };
 
 export default RewardBox;

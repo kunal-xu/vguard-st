@@ -1,5 +1,5 @@
 export class PaytmDetail {
-    upiId: string | null = null;
+    upiId: string | undefined = undefined;
     paytmNo: string | null = null;
     upiVerified: string | null = null;
     constructor(data?: Partial<PaytmDetail>) {

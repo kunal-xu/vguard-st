@@ -130,9 +130,19 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
             },
           });
         }
-        setIsPopupVisible(true);
-        setPopupMessage(verificationResponseData.message);
         navigation.navigate("Kyc");
+      } else if (verificationResponse.status === 202) {
+        showLoader(false);
+        dispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "Contact",
+            subfield: undefined,
+            value: number,
+          },
+        });
+        
+        navigation.navigate("Credentials");
       } else {
         showLoader(false);
         setIsPopupVisible(true);

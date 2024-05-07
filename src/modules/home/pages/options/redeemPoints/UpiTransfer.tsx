@@ -20,66 +20,52 @@ import {
 } from "react-native-responsive-dimensions";
 import Buttons from "../../../../../components/Buttons";
 import arrowIcon from "../../../../../assets/images/arrow.png";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import PopupWithButton from "../../../../../components/PopupWithButton";
-import { findUpiDetails, getUpiId } from "../../HomeApiService";
-import {
-  checkVPA,
-  getUser,
-  upiTransfer,
-  verifyVPA,
-} from "../../../../../utils/apiservice";
+import { getUser, upiTransfer } from "../../../../../utils/apiservice";
 import Loader from "../../../../../components/Loader";
 import Popup from "../../../../../components/Popup";
 import { useData } from "../../../../../hooks/useData";
+import { NavigationProps } from "../../../../../utils/interfaces";
 
 const UpiTransfer = ({ navigation }) => {
   const { t } = useTranslation();
   const [isPopupVisible, setPopupVisible] = useState(false);
-  const [isUpiFound, setUpiFound] = useState(false);
-  const [isUpiNotFound, setUpiNotFound] = useState(false);
-  const [upiPayload, setUpiPayload] = useState({
-    upi_id: null,
-    points: null,
-    isWallet: true,
-  });
   const [isLoading, setIsLoading] = useState(false);
   const [popupContent, setPopupContent] = useState("");
-  const [isUpiTransfer, setIsUpiTransfer] = useState(false);
+  const [upiCheck, setUpiCheck] = useState(true);
+  const [points, setPoints] = useState(0);
+  const [wallet, isWallet] = useState(false);
 
   const handleProceed = async () => {
-    if (!upiPayload.upi_id) {
-      ToastAndroid.show("UPI ID cannot be empty ", ToastAndroid.SHORT);
-    } else if (!upiPayload.points) {
+    if (!points) {
       ToastAndroid.show(
         t("strings:please_enter_points_toredeem"),
         ToastAndroid.SHORT
       );
-    } else if (!upiPayload.isWallet) {
-      ToastAndroid.show("Please check the wallet option", ToastAndroid.SHORT);
-    } else {
-      // ToastAndroid.show("Feature is currently not implemented",ToastAndroid.SHORT)
+    } 
+    // else if (!upiCheck) {
+    //   ToastAndroid.show("Please check the wallet option", ToastAndroid.SHORT);
+    else {
       try {
         setIsLoading(true);
         const payload = {
-          upi: upiPayload.upi_id,
-          amount: upiPayload.points,
+          amount: points,
         };
-        let response = await upiTransfer(payload);
-        if (response.code === 1) {
-          setIsUpiTransfer(true);
-          setPopupContent(response.message);
+        setIsLoading(false);
+        const response = await upiTransfer(payload);
+        const responseData = response.data
+        if (responseData.code === 1) {    
+          setPopupVisible(true);  
+          setPopupContent(responseData.message);
         } else {
-          setIsUpiTransfer(true);
-          setPopupContent(response.message);
+          setPopupVisible(true);
+          setPopupContent(responseData.message);
         }
       } catch (e) {
-      } finally {
         setIsLoading(false);
       }
     }
   };
-  
 
   const { state, dispatch } = useData();
 
@@ -100,11 +86,8 @@ const UpiTransfer = ({ navigation }) => {
     })();
   }, []);
 
-  const handleChange = () => {
-    setUpiPayload({ ...upiPayload, isWallet: !upiPayload.isWallet });
-  };
+  
   const redirectRedeemPoints = () => {
-    setIsUpiTransfer(false);
     navigation.pop();
   };
 
@@ -142,7 +125,7 @@ const UpiTransfer = ({ navigation }) => {
               placeholderTextColor={colors.grey}
               textAlign="center"
               editable={false}
-              value={upiPayload?.upi_id}
+              value={state.PaytmDetail.upiId}
             />
           </View>
         </View>
@@ -158,36 +141,35 @@ const UpiTransfer = ({ navigation }) => {
               placeholder={t("strings:enter_points")}
               placeholderTextColor={colors.grey}
               textAlign="center"
-              value={upiPayload.points}
+              value={points}
               onChangeText={(txt) =>
-                setUpiPayload({ ...upiPayload, points: txt })
+                setPoints(txt)
               }
               keyboardType="numeric"
             />
           </View>
         </View>
         <Text style={styles.chooseWallet}>{t("strings:choose_wallet")}</Text>
-        <TouchableOpacity onPress={handleChange}>
+        <TouchableOpacity>
           <View style={styles.wallet}>
             <Image
               resizeMode="contain"
               style={{
                 width: 25,
                 height: 25,
-                tintColor: !upiPayload?.isWallet ? "grey" : undefined,
                 flex: 1,
                 alignSelf: "center",
               }}
               source={require("../../../../../assets/images/upi_transfer.webp")}
             />
-            {upiPayload?.isWallet && (
+            {isWallet && (
               <Image
                 resizeMode="contain"
                 style={styles.check}
                 source={require("../../../../../assets/images/tick_1.png")}
               />
             )}
-            {!upiPayload?.isWallet && (
+            {!isWallet && (
               <Image
                 resizeMode="contain"
                 style={styles.check}
@@ -199,7 +181,7 @@ const UpiTransfer = ({ navigation }) => {
         <Buttons
           style={styles.button}
           label={t("strings:proceed")}
-          variant={upiPayload?.isWallet ? "filled" : "reduceOpacity"}
+          variant={isWallet ? "filled" : "reduceOpacity"}
           onPress={() => handleProceed()}
           width="100%"
           iconHeight={10}
@@ -212,7 +194,7 @@ const UpiTransfer = ({ navigation }) => {
         buttonText="Find UPI ID"
         isVisible={isPopupVisible}
         onClose={() => setPopupVisible(false)}
-        onConfirm={() => findUpiId()}
+        
       >
         <Text style={styles.popupText}>
           Please click on find to get UPI ID linked with your registered mobile
@@ -221,26 +203,20 @@ const UpiTransfer = ({ navigation }) => {
       </PopupWithButton>
       <PopupWithButton
         buttonText="Proceed"
-        isVisible={isUpiFound}
-        onClose={() => setUpiFound(false)}
-        onConfirm={() => setUpiFound(false)}
       >
         <Text style={styles.popupText}>Below UPI-VPA found linked. {"\n"}</Text>
         <Text style={styles.italics}>testvguardrishta@okhdfcbank</Text>
       </PopupWithButton>
       <PopupWithButton
         buttonText="Ok"
-        isVisible={isUpiNotFound}
-        onClose={() => setUpiNotFound(false)}
-        onConfirm={() => setUpiNotFound(false)}
       >
         <Text style={styles.popupText}>No UPI-VPA linked found.</Text>
       </PopupWithButton>
-      {isUpiTransfer && (
+      {/* {isUpiTransfer && (
         <Popup isVisible={isUpiTransfer} onClose={() => redirectRedeemPoints()}>
           {popupContent}
         </Popup>
-      )}
+      )} */}
     </ScrollView>
   );
 };
@@ -295,7 +271,7 @@ const styles = StyleSheet.create({
   },
   point: {
     fontWeight: "bold",
-    color: colors.lightBlack,
+    color: "black",
     fontSize: responsiveFontSize(1.7),
     textAlign: "center",
   },

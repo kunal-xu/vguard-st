@@ -1,24 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ScrollView } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { responsiveFontSize, responsiveHeight } from 'react-native-responsive-dimensions';
-import colors from '../../../../../../colors';
-import { getRedemptionHistory } from '../../../../../utils/apiservice';
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, StyleSheet, ScrollView } from "react-native";
+import { useTranslation } from "react-i18next";
+import {
+  responsiveFontSize,
+  responsiveHeight,
+} from "react-native-responsive-dimensions";
+import colors from "../../../../../../colors";
+import { getRedemptionHistory } from "../../../../../utils/apiservice";
 
 const RedemptionHistory = () => {
   const { t } = useTranslation();
   const [redemptionHistoryData, setRedemptionHistoryData] = useState([]);
   useEffect(() => {
-    getRedemptionHistory("")
-      .then(response =>{
-     let responseData = response;
-     console.log(">>>>>responseData",responseData)
-        setRedemptionHistoryData(responseData);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-  }, []); 
+    (async () => {
+      try {
+        const { data } = await getRedemptionHistory();
+        setRedemptionHistoryData(data);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
 
   const renderItem = ({ item }) => (
     <View style={[styles.item]}>
@@ -89,16 +91,16 @@ const RedemptionHistory = () => {
       )}
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   greyText: {
     color: colors.grey,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   header: {
     fontSize: responsiveFontSize(2.5),
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.black,
   },
   headerWrapper: {
@@ -111,23 +113,23 @@ const styles = StyleSheet.create({
   middleText: {
     marginTop: responsiveHeight(40),
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   item: {
     padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    display: 'flex',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    display: "flex",
   },
   text: {
     flexGrow: 1,
-    width: '20%',
+    width: "20%",
     fontSize: responsiveFontSize(1.5),
   },
-  text2:{
-    width: '90%',
+  text2: {
+    width: "90%",
     fontSize: responsiveFontSize(1.5),
   },
   smalltext: {
@@ -137,9 +139,8 @@ const styles = StyleSheet.create({
   },
   detail: {
     flexGrow: 1,
-    width: '40%',
-    flexDirection: 'column',
-
+    width: "40%",
+    flexDirection: "column",
   },
   activeItem: {
     backgroundColor: colors.yellow,
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   inactiveItem: {
     backgroundColor: colors.lightGrey,
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   separator: {
     height: 1,
@@ -163,15 +164,15 @@ const styles = StyleSheet.create({
   },
   activeText: {
     color: colors.black,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   inactiveText: {
     color: colors.grey,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   status: {
-    width: '24%',
-    textAlign: 'center',
+    width: "24%",
+    textAlign: "center",
     fontSize: responsiveFontSize(1.5),
   },
 });

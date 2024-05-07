@@ -18,8 +18,9 @@ import {
 import {useTranslation} from 'react-i18next';
 import NeedHelp from '../../../../../components/NeedHelp';
 import CustomTouchableOption from '../../../../../components/CustomTouchableOption';
-import { getMonthWiseEarning } from '../../../../../utils/apiservice';
+import { getMonthWiseEarning, getUser } from '../../../../../utils/apiservice';
 import { getImages } from '../../../../../utils/FileUtils';
+import { useData } from '../../../../../hooks/useData';
 
 const Dashboard = () => {
   const baseURL = 'https://www.vguardrishta.com/img/appImages/Profile/';
@@ -32,16 +33,6 @@ const Dashboard = () => {
     totalPointsRedeemed: '',
     totalPointsEarned: ''
   });
-
-  const [userData, setUserData] = useState({
-    userName: '',
-    userCode: '',
-    pointsBalance: '',
-    redeemedPoints: '',
-    userImage: '',
-    userRole: ''
-  });
-
 
   const onValueChange = (event, newDate) => {
     const selectedDate = newDate || date;
@@ -57,38 +48,42 @@ const Dashboard = () => {
     setShow(false);
   };
 
-  // useEffect(() => {
-  //   AsyncStorage.getItem('USER').then(r => {
-  //     const user = JSON.parse(r);
-  //     console.log(user);
-  //     const data = {
-  //       userName: user.name,
-  //       userCode: user.userCode,
-  //       userImage: user.kycDetails.selfie,
-  //       userRole: user.professionId      
-  //     };
-  //     setUserData(data);
-  //   });
-  // }, []);
-
+  const { state, dispatch } = useData();
   useEffect(() => {
-    if (userData.userRole && userData.userImage) {
+    (async () => {
+      try {
+        const response = await getUser();
+        const responseData = response.data;
+        dispatch({
+          type: "GET_ALL_FIELDS",
+          payload: {
+            value: responseData,
+          },
+        });
+      } catch (error: any) {
+        console.log(error.message);
+      }
+    })();
+  }, []);
+
+  // useEffect(() => {
+  //   if (userData.userRole && userData.userImage) {
       
-      const getImage = async () => {
-        try {
-          const profileImage = getImages(
-            userData.userImage,
-            'PROFILE',
-          );
-          setProfileImage(profileImage);
-        } catch (error) {
-          console.log('Error while fetching profile image:', error);
-        }
-      };
+  //     const getImage = async () => {
+  //       try {
+  //         const profileImage = getImages(
+  //           userData.userImage,
+  //           'PROFILE',
+  //         );
+  //         setProfileImage(profileImage);
+  //       } catch (error) {
+  //         console.log('Error while fetching profile image:', error);
+  //       }
+  //     };
   
-      getImage();
-    }
-  }, [userData.userRole, userData.userImage]);
+  //     getImage();
+  //   }
+  // }, [userData.userRole, userData.userImage]);
   const [selectedYear, setSelectedYear] = useState(moment().format('YYYY'));
   const [selectedMonth, setSelectedMonth] = useState(moment().format('MM'));
   useEffect(() => {
@@ -111,8 +106,8 @@ const Dashboard = () => {
           />
         </View>
         <View style={styles.profileText}>
-          <Text style={styles.textDetail}>{userData.userName}</Text>
-          <Text style={styles.textDetail}>{userData.userCode}</Text>
+          <Text style={styles.textDetail}>{state.Name}</Text>
+          <Text style={styles.textDetail}>{state.RishtaID}</Text>
         </View>
       </View>
       <TouchableOpacity onPress={() => setShow(true)}>

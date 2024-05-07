@@ -46,7 +46,8 @@ export const customerData = [
     source: "customer",
     properties: {
       staticLabel: true,
-      keyboardType: "default",
+      keyboardType: "number-pad",
+      maxLength: 10,
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
       inputStyles: {
@@ -128,6 +129,7 @@ export const customerData = [
     properties: {
       keyboardType: "default",
       staticLabel: true,
+      editable: false,
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
       inputStyles: {
@@ -145,6 +147,7 @@ export const customerData = [
     properties: {
       keyboardType: "default",
       staticLabel: true,
+      editable: false,
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
       inputStyles: {
@@ -161,6 +164,7 @@ export const customerData = [
     source: "customer",
     properties: {
       keyboardType: "default",
+      editable: false,
       staticLabel: true,
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
@@ -194,8 +198,8 @@ export const customerData = [
     data: "cresp.couponCode",
     source: "customer",
     properties: {
-      keyboardType: "email-address",
       staticLabel: true,
+      editable: false,
       containerStyles: styles.input,
       labelStyles: styles.labelStyles,
       inputStyles: {
@@ -211,7 +215,6 @@ export const customerData = [
     data: "cresp.skuDetail",
     source: "customer",
     properties: {
-      keyboardType: "email-address",
       editable: false,
       staticLabel: true,
       containerStyles: styles.input,

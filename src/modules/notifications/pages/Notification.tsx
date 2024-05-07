@@ -4,22 +4,22 @@ import colors from '../../../../colors';
 import { responsiveFontSize, responsiveWidth } from 'react-native-responsive-dimensions';
 import { getNotifications } from '../../../utils/apiservice';
 import Loader from '../../../components/Loader';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Notification = () => {
   const [loader, showLoader] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    showLoader(true);
-
-    getNotifications().then(async (response) => {
-      console.log(response);
-      const result = await response.data;
-      console.log(result);
-      setNotifications(result);
-      showLoader(false);
-    });
-  }, []);
+    (async () => {
+      try {
+        const response = await getNotifications();
+        setNotifications(response.data)
+      } catch (error: any) {
+        console.log(error.response.data)
+      }
+    })()
+  }, [])
 
   return (
     <ScrollView style={styles.mainWrapper}>

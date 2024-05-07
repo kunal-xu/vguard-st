@@ -1,4 +1,4 @@
-package com.tfl.vguardrishta;
+package com.vguard.vguardst;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
@@ -8,7 +8,7 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactNativeHost;
 import com.facebook.soloader.SoLoader;
-import com.tfl.vguardrishta.ReactNativeFlipper;
+import com.vguard.vguardst.ReactNativeFlipper;
 
 import java.util.List;
 

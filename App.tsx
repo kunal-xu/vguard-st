@@ -7,9 +7,10 @@ import {
 } from 'react-native';
 import AppNavigator from './src/components/AppNavigator';
 import notificationListener from './src/modules/notifications/pages/push_notification';
-
 import { AuthProvider } from './src/hooks/useAuth';
 import { DataProvider } from './src/hooks/useData';
+
+
 
 async function requestAllPermissions() {
   try {
