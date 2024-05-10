@@ -15,7 +15,7 @@ interface RedemptionHistoryItem {
 
 const UniqueCodeHistory: React.FC = () => {
   const { t } = useTranslation();
-  const [loader, showLoader] = useState(true);
+  const [loader, showLoader] = useState(false);
   const [redemptionHistoryData, setRedemptionHistoryData] = useState<RedemptionHistoryItem[]>([]);
 
   useEffect(() => {

@@ -3,13 +3,13 @@ import { View, Text, ScrollView, ToastAndroid } from "react-native";
 import { height, width } from "../../../utils/dimensions";
 import { Avatar } from "react-native-paper";
 import Buttons from "../../../components/Buttons";
-import { newUserFields } from "../fields/newUserFields";
+import { registrationFields } from "../fields/registrationFields";
 import { NavigationProps } from "../../../utils/interfaces";
 import Field from "../../../components/Field";
 import { useData } from "../../../hooks/useData";
 import { RegistrationSchema } from "../../../utils/schemas/Registration";
 
-const NewUser = ({ navigation }: NavigationProps) => {
+const Registration = ({ navigation }: NavigationProps) => {
   const { state } = useData();
 
   function validateFields() {
@@ -27,33 +27,34 @@ const NewUser = ({ navigation }: NavigationProps) => {
       <View style={{ backgroundColor: "white" }}>
         <View
           style={{
-            backgroundColor: "transparent",
+            backgroundColor: "white",
             height: height / 8,
-            margin: 20,
+            margin: 10,
             flexDirection: "row",
-            width: width / 2.1,
-            justifyContent: "space-evenly",
+            width: width,
+            justifyContent: "flex-start",
             alignItems: "center",
-            padding: 20,
+            padding: 5,
           }}
         >
           <Avatar.Image
-            size={84}
+            size={80}
             source={require("../../../assets/images/ac_icon.png")}
           />
           <View
             style={{
-              margin: 20,
-              flexDirection: "column",
-              padding: 10,
+              backgroundColor: "white",
+              margin: 10,
+              justifyContent: "space-evenly",
               height: height / 10,
+              width: width
             }}
           >
-            <Text style={{ color: "grey" }}>Contact: {state.Contact}</Text>
-            <Text style={{ color: "grey" }}>Unique ID: {state.UniqueId}</Text>
+            <Text style={{ color: "black" }}>Contact: {state.Contact}</Text>
+            <Text style={{ color: "black" }}>Unique ID: {state.UniqueId}</Text>
           </View>
         </View>
-        {newUserFields.map((field) => (
+        {registrationFields.map((field) => (
           <Field
             id={field.id}
             key={field.id}
@@ -91,4 +92,4 @@ const NewUser = ({ navigation }: NavigationProps) => {
   );
 };
 
-export default NewUser;
+export default Registration;

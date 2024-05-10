@@ -28,7 +28,7 @@ export class STUser {
   PaytmDetail: PaytmDetail = new PaytmDetail();
   WelcomeBanner: WelcomeBanner = new WelcomeBanner();
   EmailId: string | null = "";
-  Gender: string | null = null;
+  Gender: string = "";
   AlternateNumber: string | null = null;
   Selfie: string | null = null;
   EarnedPoints: string | null = null;
@@ -39,14 +39,14 @@ export class STUser {
   TDSSlab: string | null = "";
   TDSKitty: string | null = null;
   NumberOfScans: string | null = null;
-  InvitationDate: Date | null = null;
+  InvitationDate: string | undefined = "";
   UpdatedOn: string | null = null;
   OtpType: string | null = null;
   Otp: string | null = null;
   pwd: string | null = "";
   confirmPwd: string | null = "";
   hasPwdChanged: boolean | null = null;
-  
+
   constructor(data?: Partial<STUser>) {
     Object.assign(this, data);
     if (data && data.BankDetail) {

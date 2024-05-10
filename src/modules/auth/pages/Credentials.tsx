@@ -4,7 +4,7 @@ import Buttons from "../../../components/Buttons";
 import NeedHelp from "../../../components/NeedHelp";
 import Popup from "../../../components/Popup";
 import Loader from "../../../components/Loader";
-import { nomineePageFields } from "../fields/nomineePageFields";
+import { credentialsFields } from "../fields/credentialsFIelds";
 import Field from "../../../components/Field";
 import { NavigationProps } from "../../../utils/interfaces";
 import { registerNewUser } from "../../../utils/apiservice";
@@ -12,7 +12,7 @@ import { useData } from "../../../hooks/useData";
 import { PasswordMatchSchema } from "../../../utils/schemas/Credentials";
 import { z } from "zod";
 
-const NomineePage = ({ navigation }: NavigationProps) => {
+const Credentials = ({ navigation }: NavigationProps) => {
   const { state, dispatch } = useData();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
@@ -22,8 +22,10 @@ const NomineePage = ({ navigation }: NavigationProps) => {
     try {
       PasswordMatchSchema.parse(state);
       setIsLoading(true);
+      console.log(state);
       const response = await registerNewUser(state);
       const responseData = response.data;
+      console.log(responseData)
       setIsLoading(false);
       setIsPopupVisible(true);
       setPopupMessage(responseData.message);
@@ -35,9 +37,11 @@ const NomineePage = ({ navigation }: NavigationProps) => {
         navigation.navigate("login");
       }, 1200);
     } catch (error: any) {
+      console.log(error);
       if (error instanceof z.ZodError) {
         ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
       } else {
+        
         setIsLoading(false);
         setPopupMessage("Something went wrong. Please try again.");
       }
@@ -69,7 +73,7 @@ const NomineePage = ({ navigation }: NavigationProps) => {
               <Text>{popupMessage}</Text>
             </Popup>
           )}
-          {nomineePageFields.map((field) => (
+          {credentialsFields.map((field) => (
             <Field
               id={field.id}
               key={field.id}
@@ -107,4 +111,4 @@ const NomineePage = ({ navigation }: NavigationProps) => {
   );
 };
 
-export default NomineePage;
+export default Credentials;

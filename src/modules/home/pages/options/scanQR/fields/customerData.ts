@@ -11,13 +11,10 @@ export const customerData = [
     properties: {
       staticLabel: true,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -30,12 +27,10 @@ export const customerData = [
       keyboardType: "number-pad",
       staticLabel: true,
       maxLength: 10,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -48,13 +43,10 @@ export const customerData = [
       staticLabel: true,
       keyboardType: "number-pad",
       maxLength: 10,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -130,12 +122,10 @@ export const customerData = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -148,12 +138,10 @@ export const customerData = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -166,12 +154,10 @@ export const customerData = [
       keyboardType: "default",
       editable: false,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -183,12 +169,10 @@ export const customerData = [
     properties: {
       keyboardType: "email-address",
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -200,12 +184,10 @@ export const customerData = [
     properties: {
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -217,12 +199,10 @@ export const customerData = [
     properties: {
       editable: false,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -235,12 +215,10 @@ export const customerData = [
       keyboardType: "email-address",
       editable: false,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 ];

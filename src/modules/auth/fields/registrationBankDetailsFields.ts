@@ -1,6 +1,6 @@
 import { styles } from "./styles";
 
-export const newUserKycField = [
+export const registrationBankDetails = [
   {
     id: "284a95c8-84e1-418c-8d38-f8a6ebb72423",
     type: "floatingLabelInput",
@@ -10,13 +10,10 @@ export const newUserKycField = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -28,13 +25,10 @@ export const newUserKycField = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -71,13 +65,10 @@ export const newUserKycField = [
       maxLength: 30,
       editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -90,13 +81,10 @@ export const newUserKycField = [
       maxLength: 30,
       editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -109,13 +97,10 @@ export const newUserKycField = [
       maxLength: 30,
       editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -137,13 +122,10 @@ export const newUserKycField = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	// {
@@ -174,13 +156,10 @@ export const newUserKycField = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -192,13 +171,10 @@ export const newUserKycField = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -210,13 +186,10 @@ export const newUserKycField = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -228,13 +201,10 @@ export const newUserKycField = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -280,14 +250,11 @@ export const newUserKycField = [
     properties: {
       staticLabel: true,
       maxLength: 30,
-      keyboardType: "default",
-      containerStyles: styles.input,
+      keyboardType: "number-pad",
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 ];

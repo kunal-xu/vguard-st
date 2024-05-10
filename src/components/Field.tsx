@@ -191,10 +191,10 @@ const Field = (props: FieldProps) => {
       return <Text style={properties}>{t(props.label as string)}</Text>;
     case "picker":
       properties = (props as PickerField).properties;
-      const rules: Rules | undefined = props.rules;
+      // const rules: Rules | undefined = props.rules;
       const items = props.items;
       const [selectedValue, setSelectedValue] = useState<undefined>();
-      const [rule, setRule] = useState<number>(0);
+      // const [rule, setRule] = useState<number>(0);
       return (
         <>
           <View style={styles.viewNew}>
@@ -202,7 +202,7 @@ const Field = (props: FieldProps) => {
               {...properties}
               selectedValue={selectedValue}
               onValueChange={(value, index) => {
-                setRule(index);
+                // setRule(index);
                 setSelectedValue(value);
                 handleFormInputChange(
                   props.data as keyof STUser,
@@ -221,7 +221,7 @@ const Field = (props: FieldProps) => {
               })}
             </Picker>
           </View>
-          {props.links?.map((linkItem) =>
+          {/* {props.links?.map((linkItem) =>
             rules?.[rule]?.map((rule) => {
               if (rule.id === linkItem.id && rule.hasLink) {
                 linkItem.properties = {
@@ -240,7 +240,7 @@ const Field = (props: FieldProps) => {
                 );
               }
             })
-          )}
+          )} */}
         </>
       );
     case "dropDownPicker":
@@ -457,6 +457,7 @@ const Field = (props: FieldProps) => {
       }
 
       return (
+        
         <View style={styles.container}>
           {loader && <Loader isLoading={loader} />}
           {isPopupVisible && (
@@ -505,18 +506,18 @@ const styles = StyleSheet.create({
     borderColor: "#D3D3D3",
   },
   container: {
-    padding: 5,
-    margin: 20,
-    marginTop: 5,
-    color: "#D3D3D3",
-    borderRadius: 5,
-    borderColor: "#D3D3D3",
-    borderWidth: 1.5,
-    bottom: -5,
+    padding: 6,
+    margin: 18,
+    marginTop: 4,
+    color: "black",
+    borderRadius: 6,
+    borderColor: "black",
+    borderWidth: 2,
+    // bottom: -5,
   },
   label: {
-    backgroundColor: "transparent",
-    color: "#333",
+    backgroundColor: "white",
+    color: "black",
   },
   inputContainer: {
     flexDirection: "row",

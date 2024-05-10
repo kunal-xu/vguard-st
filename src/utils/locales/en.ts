@@ -510,7 +510,7 @@ export default {
     please_enter_bank_name: 'Please enter bank name',
     please_enter_bank_aacounttype: 'Please  enter bank account type',
     please_enter_account_holder_name: 'Please enter bank account holder name',
-    please_enter_bank_account_number: 'Please enter bank account number',
+    please_enter_bank_account_number: 'Bank Account Number',
     select_usertype_ac: 'Please select the Ac service engineer type login',
     select_usertype_plumber: 'Please select the Electrician/Plumber type login',
     select_usertype_retailer: 'Please select the Retailer type login',

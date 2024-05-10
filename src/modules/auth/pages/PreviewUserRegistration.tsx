@@ -23,7 +23,7 @@ import ImageWithModal from '../../../components/ImageWithModal';
 
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useTranslation } from 'react-i18next';
-import NewUserKyc from './NewUserKyc';
+import NewUserKyc from './RegistrationBankDetails';
 import Popup from '../../../components/Popup';
 
 const PreviewUserRegistration = ({ navigation }) => {

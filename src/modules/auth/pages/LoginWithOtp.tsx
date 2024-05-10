@@ -130,7 +130,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
             },
           });
         }
-        navigation.navigate("Kyc");
+        navigation.navigate("RegistrationPage");
       } else if (verificationResponse.status === 202) {
         showLoader(false);
         dispatch({
@@ -141,7 +141,6 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
             value: number,
           },
         });
-        
         navigation.navigate("Credentials");
       } else {
         showLoader(false);
@@ -181,7 +180,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
         ) : null}
         <View style={styles.mainWrapper}>
           <Image
-            source={require("../../../assets/images/group_907.png")}
+            source={require("../../../assets/images/ic_rishta_logo.jpg")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>
@@ -310,9 +309,9 @@ const styles = StyleSheet.create({
     // marginBottom: 10
   },
   imageSaathi: {
-    width: 100,
-    height: 98,
-    marginBottom: 30,
+    width: 150,
+    height: 200,
+    marginBottom: 10,
   },
   imageVguard: {
     width: 100,

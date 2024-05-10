@@ -2,28 +2,29 @@ import { StyleSheet } from "react-native";
 import { height } from "../../../../../../utils/dimensions";
 
 export const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "white",
-    },
-    input: {
-      padding: 5,
-      height: height / 15,
-      margin: 20,
-      marginTop: 5,
-      color: "#D3D3D3",
-      borderRadius: 5,
-      backgroundColor: "white",
-      borderColor: "#D3D3D3",
-      borderWidth: 1.5,
-      bottom: -5,
-      // elevation: 1,
-    },
-    labelStyles: {
-      backgroundColor: "transparent",
-      margin: 14,
-      color: "red",
-    },
-  });
+  container: {
+    borderWidth: 2,
+    height: height / 16,
+    backgroundColor: "#fff",
+    borderColor: "black",
+    borderRadius: 6,
+    margin: 18,
+    marginTop: 4,
+    borderCurve: "circular"
+  },
+  labelStyles: {
+    backgroundColor: "#fff",
+    paddingHorizontal: 4,
+    marginLeft: 8,
+  },
+  customLabelStyles: {
+    colorFocused: "black",
+    colorBlurred: "black",
+    fontSizeFocused: 16,
+  },
+  inputStyles: {
+    color: "black",
+    backgroundColor: "#fff",
+    paddingHorizontal: 14
+  },
+});

@@ -32,8 +32,6 @@ import { useAuth } from "../../../hooks/useAuth";
 
 const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
-  const [profileImage, setProfileImage] = useState("");
-  const [LoggedInUser, setLoggedInUser] = useState(null);
   const { state, dispatch } = useData();
   const {logout} = useAuth()
   useFocusEffect(
@@ -48,8 +46,12 @@ const HomeScreen = ({ navigation }) => {
               value: responseData,
             },
           });
-          if(responseData.hasPwdChanged) {
-            
+          if(responseData.hasPwdChanged || responseData.BlockStatus === 3) {
+            dispatch({
+              type: "CLEAR_ALL_FIELDS",
+              payload: {},
+            });
+            logout();
           }
         } catch (error: any) {
           console.log(error.message);
@@ -170,8 +172,8 @@ const HomeScreen = ({ navigation }) => {
             <CustomTouchableOption
               text="strings:welfare"
               iconSource={require("../../../assets/images/training_info.png")}
-              screenName="Welfare"
-              disabled={true}
+              screenName="App Tutorials"
+              disabled={false}
             />
             <CustomTouchableOption
               text="strings:what_s_new"

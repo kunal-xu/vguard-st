@@ -170,14 +170,14 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                   {t("strings:update_kyc_capslock")}
                 </Text>
               </TouchableOpacity> */}
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => navigation.navigate("forgotPassword")}
                 style={styles.forgotPasswordContainer}
               >
                 <Text style={[styles.forgotPassword]}>
                   {t("strings:forgot_password_question")}
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
             <View style={styles.buttonContainer}>
               <Buttons

@@ -22,8 +22,23 @@ const AddressDetailSchema = z.object({
 const GenderEnum = z.enum(["Male", "Female", "Others"]);
 
 export const RegistrationSchema = z.object({
-  Gender: GenderEnum,
+  Gender: GenderEnum.refine((value) => {
+    return value === "Male" || value === "Female" || value === "Others";
+  }, {
+    message: "Gender should be either 'Male', 'Female', or 'Others'",
+    path: ['Gender']
+  }),
   TDSSlab: z.string().min(1, { message: "Verify TDS percentage" }),
   EmailId: z.union([z.literal(""), z.string().email()]),
   AddressDetail: AddressDetailSchema,
 });
+
+
+export const RegistrationCustomerDetailsSchema = z.object({
+  name: z.string().min(3, {message: "Name cannot be empty"}),
+  contactNo: z.string().min(10, {message: "Invalid number format"}),
+  pinCode: z
+  .string()
+  .min(1, {message: "Pincode cannot be empty"}),
+  email: z.string().email(),
+})

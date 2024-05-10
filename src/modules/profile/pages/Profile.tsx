@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import { getImages } from "../../../utils/FileUtils";
 import { useData } from "../../../hooks/useData";
 import { useFocusEffect } from "@react-navigation/native";
+import { StatusMappings } from "../../../utils/StatusMappings";
 
 const Profile = ({ navigation }) => {
   const { t } = useTranslation();
@@ -28,7 +29,7 @@ const Profile = ({ navigation }) => {
   const [showBankDetails, setShowBankDetails] = useState(false);
   const [showPanDetails, setShowPanDetails] = useState(false);
   const [showNomineeDetails, setShowNomineeDetails] = useState(false);
-
+  const statusMappings = new StatusMappings();
   // const [data, setData] = useState([]);
   // const [userData, setUserData] = useState({
   //   userName: "",
@@ -56,8 +57,9 @@ const Profile = ({ navigation }) => {
           console.log(error.message);
         }
       };
-  
+      
       fetchData();  
+      
     }, [])
   );
 
@@ -70,6 +72,8 @@ const Profile = ({ navigation }) => {
     "PAN",
     "Bank Details",
     "TDS Slab",
+    "Activation Status",
+    "Block Status"
   ];
   const renderField = (fieldName) => {
     const fieldMap = {
@@ -176,6 +180,34 @@ const Profile = ({ navigation }) => {
             <View style={styles.databox}>
               <Text style={styles.yesorno}>
                 {hasPanDetails ? state.TDSSlab : "N/A"}
+              </Text>
+            </View>
+          </View>
+        </>
+      );
+    }
+    else if (fieldName === "Activation Status") {
+      const hasPanDetails = state.ActivationStatus;
+      return (
+        <>
+          <View>
+            <View style={styles.databox}>
+              <Text style={styles.yesorno}>
+                {hasPanDetails ? (statusMappings.ActivationStatus[state.ActivationStatus as number]) : "N/A"}
+              </Text>
+            </View>
+          </View>
+        </>
+      );
+    }
+    else if (fieldName === "Block Status") {
+      const hasPanDetails = state.BlockStatus;
+      return (
+        <>
+          <View>
+            <View style={styles.databox}>
+              <Text style={styles.yesorno}>
+                {hasPanDetails ? (statusMappings.TechnicianBlockStatus[state.BlockStatus as number]) : "N/A"}
               </Text>
             </View>
           </View>

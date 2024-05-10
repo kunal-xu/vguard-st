@@ -10,18 +10,27 @@ import { getProdWiseEarning } from '../../../../../utils/apiservice';
 const ProductWiseEarning = () => {
     const [productDetails, setProductDetails] = useState([]);
     useEffect(() => {
-        getProdWiseEarning()
-            .then(response => response.data)
-            .then(responseData => {
-                console.log(responseData);
-                setProductDetails(responseData);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
+        (async () => {
+            try{
+                const response = await getProdWiseEarning();
+                const responseData = response.data;
+                setProductDetails(responseData)
+            }catch(error) {
+                console.log(error);
+            }
+        })()
+        // getProdWiseEarning()
+        //     .then(response => response.data)
+        //     .then(responseData => {
+        //         console.log(responseData);
+        //         setProductDetails(responseData);
+        //     })
+        //     .catch(error => {
+        //         console.error('Error fetching data:', error);
+        //     });
     }, []);
 
-    const data = productDetails.map(product => [
+    productDetails.map(product => [
         product.slNo.toString(),
         product.partDesc,
         product.points.toString(),

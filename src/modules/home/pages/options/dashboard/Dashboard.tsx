@@ -1,5 +1,5 @@
-import React, {useState, useCallback, useEffect} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useCallback, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   SafeAreaView,
@@ -7,47 +7,37 @@ import {
   Text,
   TouchableOpacity,
   Image,
-} from 'react-native';
-import MonthPicker from 'react-native-month-year-picker';
-import moment from 'moment';
-import colors from '../../../../../../colors';
+  ToastAndroid,
+  ScrollView
+} from "react-native";
+import MonthPicker from "react-native-month-year-picker";
+import moment from "moment";
+import colors from "../../../../../../colors";
 import {
   responsiveFontSize,
   responsiveHeight,
-} from 'react-native-responsive-dimensions';
-import {useTranslation} from 'react-i18next';
-import NeedHelp from '../../../../../components/NeedHelp';
-import CustomTouchableOption from '../../../../../components/CustomTouchableOption';
-import { getMonthWiseEarning, getUser } from '../../../../../utils/apiservice';
-import { getImages } from '../../../../../utils/FileUtils';
-import { useData } from '../../../../../hooks/useData';
+  responsiveWidth,
+} from "react-native-responsive-dimensions";
+import { useTranslation } from "react-i18next";
+import NeedHelp from "../../../../../components/NeedHelp";
+import CustomTouchableOption from "../../../../../components/CustomTouchableOption";
+import { getMonthWiseEarning, getUser } from "../../../../../utils/apiservice";
+import { getImages } from "../../../../../utils/FileUtils";
+import { useData } from "../../../../../hooks/useData";
+import DatePicker from "../../../../../components/DatePicker";
+import DatePickerField from "../../../../../components/DatePickerField";
+import { Picker } from "@react-native-picker/picker";
+import { height } from "../../../../../utils/dimensions";
+import Buttons from "../../../../../components/Buttons";
 
 const Dashboard = () => {
-  const baseURL = 'https://www.vguardrishta.com/img/appImages/Profile/';
-  const {t} = useTranslation();
-  const [date, setDate] = useState(new Date());
+  const baseURL = "https://www.vguardrishta.com/img/appImages/Profile/";
+  const { t } = useTranslation();
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [show, setShow] = useState(false);
-  const [profileImage, setProfileImage] = useState('');
-  const [pointsData, setPointsData] = useState({
-    schemePoints: '',
-    totalPointsRedeemed: '',
-    totalPointsEarned: ''
-  });
-
-  const onValueChange = (event, newDate) => {
-    const selectedDate = newDate || date;
-    const selectedMonthDate = moment(selectedDate).format('MM');
-    const selectedYearDate = moment(selectedDate).format('YYYY');
-    getMonthWiseEarning(selectedMonthDate, selectedYearDate)
-      .then((data) => data.data)
-      .then((data) => {
-        console.log(data, "---------------")
-        setPointsData(data);
-      });
-
-    setShow(false);
-  };
-
+  const items: any[] = ["Select Product"];
+  const [selectedValue, setSelectedValue] = useState<undefined>();
   const { state, dispatch } = useData();
   useEffect(() => {
     (async () => {
@@ -65,10 +55,20 @@ const Dashboard = () => {
       }
     })();
   }, []);
-
+  const handleSearch = () => {
+    if(fromDate === "") {
+      ToastAndroid.show("Please select the starting date", ToastAndroid.LONG);
+      return;
+    }
+    if(toDate === "") {
+      ToastAndroid.show("Please select the end date", ToastAndroid.LONG);
+      return;
+    }
+    ToastAndroid.show("Please complete a scan to download the report", ToastAndroid.LONG);
+  }
   // useEffect(() => {
   //   if (userData.userRole && userData.userImage) {
-      
+
   //     const getImage = async () => {
   //       try {
   //         const profileImage = getImages(
@@ -80,28 +80,31 @@ const Dashboard = () => {
   //         console.log('Error while fetching profile image:', error);
   //       }
   //     };
-  
+
   //     getImage();
   //   }
   // }, [userData.userRole, userData.userImage]);
-  const [selectedYear, setSelectedYear] = useState(moment().format('YYYY'));
-  const [selectedMonth, setSelectedMonth] = useState(moment().format('MM'));
-  useEffect(() => {
-    getMonthWiseEarning(selectedMonth, selectedYear)
-      .then((data) => data.data)
-      .then((data) => {
-        console.log(data, "-------")
-        setPointsData(data);
-      })
-  }, []);
+  const [selectedYear, setSelectedYear] = useState(moment().format("YYYY"));
+  const [selectedMonth, setSelectedMonth] = useState(moment().format("MM"));
+  // useEffect(() => {
+  //   getMonthWiseEarning(selectedMonth, selectedYear)
+  //     .then((data) => data.data)
+  //     .then((data) => {
+  //       console.log(data, "-------");
+  //       setPointsData(data);
+  //     });
+  // }, []);
 
   return (
+    <ScrollView>
     <View style={styles.mainWrapper}>
       <View style={styles.profileDetails}>
         <View style={styles.ImageProfile}>
           <Image
-            source={{uri: profileImage}}
-            style={{width: '100%', height: '100%', borderRadius: 100}}
+            source={{
+              uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp?pid=ImgGn",
+            }}
+            style={{ width: "100%", height: "100%", borderRadius: 100 }}
             resizeMode="contain"
           />
         </View>
@@ -110,61 +113,90 @@ const Dashboard = () => {
           <Text style={styles.textDetail}>{state.RishtaID}</Text>
         </View>
       </View>
-      <TouchableOpacity onPress={() => setShow(true)}>
-        <SafeAreaView style={styles.datepicker}>
-          <Text style={styles.text}>{moment(date).format('MMMM YYYY')}</Text>
-          <Image
-            style={{ width: '6%', height: '100%' }}
-            resizeMode="contain"
-            source={require('../../../../../assets/images/unfold_arrow.png')}
-          />
-        </SafeAreaView>
-      </TouchableOpacity>
-      {show && (
-        <MonthPicker
-          onChange={(event, newDate) => {
-            onValueChange(event, newDate);
-            setDate(newDate || date);
+      <View style={styles.viewNew}>
+        <Picker
+          mode="dropdown"
+          style={{
+            color: "black",
+            borderWidth: 2,
+            borderColor: "black",
           }}
-          value={date}
-          locale="en"
-        />
-
-      )}
+          selectedValue={selectedValue}
+          onValueChange={(value, index) => {
+            setSelectedValue(value);
+          }}
+        >
+          {items?.map((item, index) => {
+            return (
+              <Picker.Item
+                label={item}
+                value={index === 0 ? "undefined" : item}
+              />
+            );
+          })}
+        </Picker>
+      </View>
 
       <View style={styles.points}>
         <View style={styles.leftPoint}>
-          <Text style={styles.greyText}>{t('strings:points_earned')}</Text>
+          <Text style={styles.greyText}>{t("strings:points_earned")}</Text>
 
-          <Text style={styles.point}>{pointsData?.totalPointsEarned ? pointsData?.totalPointsEarned : 0}</Text>
+          <Text style={styles.point}>
+            {Number(state.EarnedPoints)?.toFixed(1) || 0}
+          </Text>
+        </View>
+        <View style={styles.middlePoint}>
+          <Text style={styles.greyText}>{t("strings:redeemable_points")}</Text>
+          <Text style={styles.point}>
+            {Number(state.RedeemablePoints)?.toFixed(1) || 0}
+          </Text>
         </View>
         <View style={styles.rightPoint}>
-          <Text style={styles.greyText}>{t('strings:points_redeemed')}</Text>
-          <Text style={styles.point}>{pointsData?.totalPointsRedeemed ? pointsData?.totalPointsRedeemed : 0}</Text>
-
+          <Text style={styles.greyText}>{t("strings:redeemed_points")}</Text>
+          <Text style={styles.point}>
+            {Number(state.RedeemedPoints)?.toFixed(1) || 0}
+          </Text>
         </View>
       </View>
 
+      <View style={styles.container}>
+        <DatePickerField
+          label="Date (From)"
+          date={fromDate}
+          onDateChange={(selectedDate) => setFromDate(selectedDate)}
+          minDate={state.InvitationDate}
+        />
+        <DatePickerField
+          label="Date (To)"
+          date={toDate}
+          onDateChange={(selectedDate) => setToDate(selectedDate)}
+          
+        />
+      </View>
+      <View style={{alignItems: "flex-end", marginTop: 20}}>
+        <Buttons variant="filled" label="Search" width="30%" onPress={handleSearch}/>
+      </View>
+      <Text style={{color: colors.grey, fontStyle: "italic", marginTop: 10}}>By default, points are shown up-to-date for all enrolled product categories.</Text>
       <View style={styles.options}>
         <CustomTouchableOption
           text="strings:product_wise_earning"
-          iconSource={require('../../../../../assets/images/ic_bank_transfer.webp')}
+          iconSource={require("../../../../../assets/images/ic_bank_transfer.webp")}
           screenName="Product Wise Earning"
         />
         <CustomTouchableOption
           text="strings:scheme_wise_earning"
-          iconSource={require('../../../../../assets/images/ic_paytm_transfer.webp')}
+          iconSource={require("../../../../../assets/images/ic_paytm_transfer.webp")}
           screenName="Scheme Wise Earning"
         />
         <CustomTouchableOption
           text="strings:your_rewards"
-          iconSource={require('../../../../../assets/images/ic_egift_cards.webp')}
+          iconSource={require("../../../../../assets/images/ic_egift_cards.webp")}
           screenName="Your Rewards"
         />
       </View>
-
       <NeedHelp />
     </View>
+    </ScrollView>
   );
 };
 
@@ -172,11 +204,26 @@ const styles = StyleSheet.create({
   mainWrapper: {
     padding: 15,
   },
+  viewNew: {
+    backgroundColor: "#fff",
+    height: height / 17,
+    margin: 20,
+    borderRadius: 5,
+    flexDirection: "column",
+    marginTop: 20,
+    borderWidth: 1.5,
+    borderColor: "black",
+  },
+  container: {
+    flexDirection: "row", // Arrange items horizontally
+    justifyContent: "space-between", // Add space between items
+    paddingHorizontal: 16, // Adjust padding as needed
+  },
   datepicker: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
     borderColor: colors.lightGrey,
     borderWidth: 1,
     borderRadius: 5,
@@ -188,9 +235,9 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   profileDetails: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     fontSize: responsiveFontSize(1.7),
   },
@@ -202,55 +249,67 @@ const styles = StyleSheet.create({
   },
   textDetail: {
     color: colors.black,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: responsiveFontSize(1.7),
   },
   points: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
     gap: 5,
-    marginTop: 30,
+    // marginTop: 30,
   },
   leftPoint: {
-    width: '50%',
+    width: responsiveWidth(30),
     height: 100,
     backgroundColor: colors.lightYellow,
     borderTopLeftRadius: 50,
     borderBottomLeftRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: 20,
+    paddingTop: 20,
   },
 
   rightPoint: {
-    width: '50%',
+    width: responsiveWidth(30),
     height: 100,
     backgroundColor: colors.lightYellow,
     borderTopRightRadius: 50,
     borderBottomRightRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: 20,
+    paddingTop: 20,
+  },
+
+  middlePoint: {
+    width: responsiveWidth(30),
+    height: 100,
+    backgroundColor: colors.lightYellow,
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: 20,
+    paddingTop: 20,
   },
   greyText: {
-    width: '80%',
+    width: "80%",
     color: colors.grey,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     fontSize: responsiveFontSize(1.7),
     marginBottom: 10,
   },
   point: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.black,
     fontSize: responsiveFontSize(1.7),
   },
   options: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    marginVertical: responsiveHeight(5),
+    display: "flex",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    marginVertical: responsiveHeight(3),
   },
 });
 

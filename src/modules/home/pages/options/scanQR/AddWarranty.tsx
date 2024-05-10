@@ -1,9 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, ToastAndroid } from "react-native";
 import React, { useState, useEffect } from "react";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
@@ -19,6 +14,8 @@ import { customerData } from "./fields/customerData";
 import Field from "../../../../../components/Field";
 import { useData } from "../../../../../hooks/useData";
 import { NavigationProps } from "../../../../../utils/interfaces";
+import { RegistrationCustomerDetailsSchema } from "../../../../../utils/schemas/Registration";
+import { z } from "zod";
 
 const AddWarranty = ({ navigation }: NavigationProps) => {
   const { t } = useTranslation();
@@ -83,17 +80,23 @@ const AddWarranty = ({ navigation }: NavigationProps) => {
   }, []);
 
   async function saveData() {
-    showLoader(true);
+    
     try {
+      RegistrationCustomerDetailsSchema.parse(customerState);
+      showLoader(true);
       const response = await sendCustomerData(customerState);
       const responseData = response.data;
       showLoader(false);
       setPopupVisible(true);
       setPopupContent(responseData.message);
     } catch (error: any) {
-      showLoader(false);
-      setPopupVisible(true);
-      setPopupContent(error.response.data.message);
+      if (error instanceof z.ZodError) {
+        ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
+      } else {
+        showLoader(false);
+        setPopupVisible(true);
+        setPopupContent(error.response.data.message);
+      }
     }
     /*
     const response = await sendCustomerData(customerState);
@@ -218,6 +221,7 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: "bold",
     color: colors.black,
+    marginBottom: 10,
   },
   inputArea: {
     borderColor: colors.lightGrey,

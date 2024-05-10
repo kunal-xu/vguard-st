@@ -3,16 +3,16 @@ import { ProductDetail } from "./ProductDetail";
 
 export class RegisterCustomerDetails {
   nameTitle: string | null = "";
-  contactNo: string | null = null;
-  name: string | null = null;
-  email: string | null = null;
+  contactNo: string | null = "";
+  name: string | null = "";
+  email: string | null = "";
   currAdd: string | null = null;
   alternateNo: string | null = null;
-  state: string | null = null;
-  district: string | null = null;
+  state: string | null = "";
+  district: string | null = "";
   city: string | null = null;
   landmark: string | null = null;
-  pinCode: string | null = null;
+  pinCode: string | null = "";
   dealerName: string | null = null;
   dealerAdd: string | null = null;
   dealerState: string | null = null;

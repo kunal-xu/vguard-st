@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import HomeScreen from "../pages/HomeScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Welfare from "../pages/options/welfare/Welfare";
+import Welfare from "../pages/options/welfare/AppTutorials";
 import Bank from "../pages/options/bank/Bank";
 import TDS from "../pages/options/TDS/TDS";
 import Engagement from "../pages/options/engagement/Engagement";
@@ -31,6 +31,7 @@ import {
   Modal,
 } from "react-native";
 import LanguagePicker from "../../../components/LanguagePicker";
+import AppTutorials from "../pages/options/welfare/AppTutorials";
 
 const HomeStack = () => {
   const Stack = createNativeStackNavigator();
@@ -87,8 +88,8 @@ const HomeStack = () => {
         <Stack.Screen name="schemes" component={SchemesStack} />
         <Stack.Screen name="info" component={InfoStack} />
         <Stack.Screen
-          name="Welfare"
-          component={Welfare}
+          name="App Tutorials"
+          component={AppTutorials}
           options={{
             headerShown: true,
           }}

@@ -133,6 +133,7 @@ const EditProfile = ({ navigation }) => {
 const styles = StyleSheet.create({
   mainWrapper: {
     backgroundColor: "#fff",
+    marginTop: 30
   },
   iconButton: {
     backgroundColor: colors.yellow,

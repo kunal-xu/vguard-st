@@ -2,11 +2,11 @@ import React from "react";
 import { View, ScrollView, SafeAreaView } from "react-native";
 import Buttons from "../../../components/Buttons";
 import { NavigationProps } from "../../../utils/interfaces";
-import { newUserKycField } from "../fields/newUserKycFields";
+import { registrationBankDetails } from "../fields/registrationBankDetailsFields";
 import Field from "../../../components/Field";
 
 
-const NewUserKyc = ({ navigation }: NavigationProps) => {
+const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
   return (
     <SafeAreaView style={{ backgroundColor: "white" }}>
       <ScrollView style={{ backgroundColor: "white" }}>
@@ -19,7 +19,7 @@ const NewUserKyc = ({ navigation }: NavigationProps) => {
               marginLeft: 1,
             }}
           ></View>
-          {newUserKycField.map((field) => (
+          {registrationBankDetails.map((field) => (
             <Field
               id={field.id}
               key={field.id}
@@ -58,4 +58,4 @@ const NewUserKyc = ({ navigation }: NavigationProps) => {
   );
 };
 
-export default NewUserKyc;
+export default RegistrationBankDetails;

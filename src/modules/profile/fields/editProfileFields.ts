@@ -10,12 +10,10 @@ export const editProfileFields = [
     properties: {
       keyboardType: "email-address",
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -27,12 +25,10 @@ export const editProfileFields = [
       keyboardType: "default",
       maxLength: 10,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -44,12 +40,10 @@ export const editProfileFields = [
       keyboardType: "default",
       maxLength: 128,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -61,12 +55,10 @@ export const editProfileFields = [
       keyboardType: "default",
       maxLength: 60,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -78,12 +70,10 @@ export const editProfileFields = [
       keyboardType: "default",
       maxLength: 60,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -156,12 +146,10 @@ export const editProfileFields = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -173,12 +161,10 @@ export const editProfileFields = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -190,12 +176,10 @@ export const editProfileFields = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -217,13 +201,10 @@ export const editProfileFields = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -235,13 +216,10 @@ export const editProfileFields = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -276,14 +254,12 @@ export const editProfileFields = [
     properties: {
       staticLabel: true,
       maxLength: 30,
+      editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -294,14 +270,12 @@ export const editProfileFields = [
     properties: {
       staticLabel: true,
       maxLength: 40,
+      editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -312,14 +286,12 @@ export const editProfileFields = [
     properties: {
       staticLabel: true,
       maxLength: 30,
+      editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -341,13 +313,10 @@ export const editProfileFields = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	// {
@@ -378,13 +347,10 @@ export const editProfileFields = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -396,13 +362,10 @@ export const editProfileFields = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -414,13 +377,10 @@ export const editProfileFields = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -432,13 +392,10 @@ export const editProfileFields = [
       staticLabel: true,
       maxLength: 30,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 	{
@@ -454,32 +411,13 @@ export const editProfileFields = [
   {
     id: "9387f5d0-6538-4d6e-af3f-c336f4f0bf6f",
     type: "Button",
-    label: "upi",
+    label: "UPI",
     properties: {
       label: "Verify UPI ID",
       variant: "outlined",
       width: 350,
     }
   },
-	{
-    id: "85562c96-5712-41b0-8c6b-e89badded4bc",
-    type: "floatingLabelInput",
-    label: "strings:lbl_paytm_upi",
-    data: "PaytmDetail.upiId",
-    properties: {
-      staticLabel: true,
-      maxLength: 30,
-      editable: false,
-      keyboardType: "default",
-      containerStyles: styles.input,
-      labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
-    },
-  }
 ];
 
 

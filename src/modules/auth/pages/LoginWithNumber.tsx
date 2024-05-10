@@ -9,19 +9,22 @@ import {
   TouchableOpacity,
   Alert,
   ToastAndroid,
+  Modal,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-
+import language from "../../../assets/images/language.png";
 import colors from "../../../../colors";
 import Buttons from "../../../components/Buttons";
 import arrowIcon from "../../../assets/images/arrow.png";
 import { generateOtpForLogin } from "../../../utils/apiservice";
 import Popup from "../../../components/Popup";
 import Loader from "../../../components/Loader";
+import { height } from "../../../utils/dimensions";
+import LanguagePicker from "../../../components/LanguagePicker";
 
 const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [number, setNumber] = useState("");
-  const [preferedLanguage, setpreferedLanguage] = useState(1);
+  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [responseCode, setResponseCode] = useState(0);
@@ -41,7 +44,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
         showLoader(false);
         const validationResponseData = validationResponse.data;
         setResponseCode(validationResponseData.code);
-        if(validationResponseData.entity === 1) {
+        if (validationResponseData.entity === 1) {
           setResponseEntity(1);
         }
         if (validationResponseData.code === 200) {
@@ -70,12 +73,20 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const { t } = useTranslation();
 
+  const handleLanguageButtonPress = () => {
+    setShowLanguagePicker(true);
+  };
+
+  const handleCloseLanguagePicker = () => {
+    setShowLanguagePicker(false);
+  };
+
   const handleClose = () => {
-    if(responseCode === 400 && responseEntity === 1) {
+    if (responseCode === 400 && responseEntity === 1) {
       setResponseEntity(0);
       navigation.navigate("leadform", { usernumber: number });
     }
-    
+
     if (responseCode === 200) {
       navigation.navigate("loginwithotp", { usernumber: number });
     }
@@ -92,6 +103,18 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
       <View style={styles.registerUser}>
         <Loader isLoading={loader} />
         <View style={styles.mainWrapper}>
+          <View style={styles.buttonLanguageContainer}>
+            <Buttons
+              style={styles.button}
+              label=""
+              variant="outlined"
+              onPress={handleLanguageButtonPress}
+              iconHeight={30}
+              iconWidth={30}
+              iconGap={0}
+              icon={language}
+            />
+          </View>
           <Image
             source={require("../../../assets/images/ic_rishta_logo.jpg")}
             style={styles.imageSaathi}
@@ -120,14 +143,6 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
               </View>
             </View>
             <View style={styles.updateAndForgot}>
-              {/* <TouchableOpacity
-                onPress={() => navigation.navigate("ReUpdateKycOTP")}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>
-                  {t("strings:update_kyc_capslock")}
-                </Text>
-              </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={() => navigation.navigate("login")}
                 style={styles.forgotPasswordContainer}
@@ -161,7 +176,6 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
                 {t("strings:lbl_otp_through_phone_call")}
               </Text>
             </TouchableOpacity>
-            
           </View>
         </View>
         <View>
@@ -175,6 +189,19 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showLanguagePicker}
+          onRequestClose={handleCloseLanguagePicker}
+        >
+          <View style={styles.languagePickerContainer}>
+            <LanguagePicker onCloseModal={handleCloseLanguagePicker} />
+            <TouchableOpacity onPress={handleCloseLanguagePicker}>
+              <Text style={styles.closeText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </View>
     </ScrollView>
   );
@@ -233,7 +260,7 @@ const styles = StyleSheet.create({
   },
   input: {
     color: colors.black,
-    height: 40,
+    height: height / 16,
     padding: 10,
   },
   inputContainer: {
@@ -280,6 +307,35 @@ const styles = StyleSheet.create({
     backgroundColor: colors.lightGrey,
     width: "100%",
     paddingVertical: 10,
+  },
+  buttonLanguageContainer: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+  },
+  button: {
+    backgroundColor: colors.yellow,
+    padding: 10,
+    borderRadius: 5,
+    width: 100,
+    alignItems: "center",
+    alignSelf: "flex-end",
+  },
+  languagePickerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.white,
+  },
+  closeText: {
+    marginTop: 20,
+    color: colors.black,
+    backgroundColor: colors.yellow,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 5,
+    fontWeight: "bold",
   },
   option: {
     display: "flex",

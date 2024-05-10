@@ -1,7 +1,7 @@
 import { kMaxLength } from "buffer";
 import { styles } from "./styles";
 
-export const nomineePageFields = [
+export const credentialsFields = [
 	// {
 	// 	id: '83022d78-251a-4e69-b410-3cd60355cc61',
 	// 	label: 'strings:please_click_your_selfie',
@@ -20,12 +20,10 @@ export const nomineePageFields = [
 			keyboardType: "default",
 			staticLabel: true,
 			maxLength: 8,
-			containerStyles: styles.input,
-			labelStyles: styles.labelStyles,
-			inputStyles: {
-				color: "black",
-				paddingHorizontal: 10,
-			},
+			containerStyles: styles.container,
+      labelStyles: styles.labelStyles,
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
 		}
 	},
 	{
@@ -38,12 +36,10 @@ export const nomineePageFields = [
 			secureTextEntry: true,
 			staticLabel: true,
 			maxLength: 8,
-			containerStyles: styles.input,
-			labelStyles: styles.labelStyles,
-			inputStyles: {
-				color: "black",
-				paddingHorizontal: 10,
-			},
+			containerStyles: styles.container,
+      labelStyles: styles.labelStyles,
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
 		}
 	},
 ];

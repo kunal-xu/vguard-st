@@ -1,9 +1,9 @@
 import { height, width } from "../../../utils/dimensions";
 import { styles } from "./styles";
 
-export const newUserFields = [
+export const registrationFields = [
   {
-    id: "6a615c7e-1c90-462f-a133-b6ca3200ab26",
+    id: "2af107a0-af3f-4c05-bf43-add3e85f73d1",
     type: "floatingLabelInput",
     label: "strings:name",
     data: "Name",
@@ -11,17 +11,14 @@ export const newUserFields = [
       staticLabel: true,
       editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
-    },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
+    }
   },
   {
-    id: "ccdc3f5a-50a6-4ead-9164-8372b1dea148",
+    id: "a3f68cfb-4e14-4d91-96b9-1f4844bc6741",
     type: "text",
     label: "strings:lbl_gender_mandatory",
     properties: {
@@ -31,7 +28,7 @@ export const newUserFields = [
     },
   },
   {
-    id: "89ae9dd3-9a36-41bb-87b7-6121a0975fa7",
+    id: "07bfda04-2a1c-44f8-b569-9896945fb718",
     type: "picker",
     items: ["Select Gender*", "Male", "Female", "Other"],
     data: "Gender",
@@ -39,13 +36,13 @@ export const newUserFields = [
       mode: "dropdown",
       style: {
         color: "black",
-        borderWidth: 1.5,
-        borderColor: "#D3D3D3",
+        borderWidth: 2,
+        borderColor: "black",
       },
     },
   },
   {
-    id: "eb764633-0acc-4458-92b2-66bc38a2ac88",
+    id: "c445af89-753c-4956-b490-51b3c29a8e84",
     type: "floatingLabelInput",
     label: "strings:lbl_date_of_birth",
     data: "DOB",
@@ -53,17 +50,14 @@ export const newUserFields = [
       staticLabel: true,
       editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "0098ec68-1e52-4c7b-a741-e303eea8e84c",
+    id: "30f0a95f-5b0d-4dac-ae4d-c4f07fdbfcb9",
     label: "strings:contact_no",
     type: "floatingLabelInput",
     data: "Contact",
@@ -72,81 +66,14 @@ export const newUserFields = [
       staticLabel: true,
       maxLength: 10,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
-  // {
-  //   id: "1b4a9653-afde-4c60-825c-75186a3fabcf",
-  //   label: "strings:_is_what_s_app_contact_same_as_above",
-  //   type: "text",
-  //   properties: {
-  //     color: "black",
-  //     marginLeft: 20,
-  //     bottom: 5,
-  //   },
-  // },
-  // {
-  //   id: "367da2c5-03a8-43f5-8775-dc96d8c56427",
-  //   type: "picker",
-  //   items: ["Select WhatsApp contact same as above?", "Yes", "No"],
-  //   data: "isWhatsAppSame",
-  //   properties: {
-  //     mode: "dropdown",
-  //     style: {
-  //       color: "black",
-  //       borderWidth: 1.5,
-  //       borderColor: "#D3D3D3",
-  //     },
-  //   },
-  //   rules: {
-  //     0: [
-  //       {
-  //         id: 0,
-  //         hasLink: false,
-  //       }
-  //     ],
-  //     1: [
-  //       {
-  //         id: 0,
-  //         hasLink: true,
-  //         editable: false,
-  //       }
-  //     ],
-  //     2: [
-  //       {
-  //         id: 0,
-  //         hasLink: true,
-  //         editable: true,
-  //       }
-  //     ]
-  //   },
-  //   links: [
-  //     {
-  //       id: 0,
-  //       label: "strings:lbl_whats_app_number",
-  //       type: "floatingLabelInput",
-  //       data: "whatsappNo",
-  //       properties: {
-  //         keyboardType: "number-pad",
-  //         staticLabel: true,
-  //         maxLength: 10,
-  //         containerStyles: styles.input,
-  //         labelStyles: styles.labelStyles,
-  //         inputStyles: {
-  //           color: "black",
-  //           paddingHorizontal: 10,
-  //         },
-  //       },
-  //     },
-  //   ]
-  // },
   {
-    id: "284a95c8-84e1-418c-8d38-f8a6ebb72423",
+    id: "049f8efa-7f43-40ec-a6cf-6ce25e1012cc",
     type: "floatingLabelInput",
     label: "strings:update_aadhar_voter_id_dl_manually",
     data: "Aadhar",
@@ -154,17 +81,14 @@ export const newUserFields = [
       staticLabel: true,
       editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "faf8b98e-a52f-4697-8f74-924e75343ee7",
+    id: "81f1d65a-d34b-4367-897d-e3bb83e012b5",
     type: "floatingLabelInput",
     label: "strings:pan_card",
     data: "PAN",
@@ -172,13 +96,10 @@ export const newUserFields = [
       staticLabel: true,
       editable: false,
       keyboardType: "default",
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-        paddingVertical: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -194,14 +115,12 @@ export const newUserFields = [
     type: "floatingLabelInput",
     data: "EmailId",
     properties: {
-      keyboardType: "email-address",
+      keyboardType: "default",
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
@@ -213,16 +132,14 @@ export const newUserFields = [
       keyboardType: "default",
       maxLength: 10,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "96f46ac3-c2a6-4863-86b0-bb73c5ebb6b9",
+    id: "0ac5e100-97a8-4890-9afd-b27151ba30fa",
     label: "strings:lbl_current_address_line_1",
     type: "floatingLabelInput",
     data: "AddressDetail.currentAddressLine1",
@@ -230,16 +147,14 @@ export const newUserFields = [
       keyboardType: "default",
       maxLength: 128,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "f515df31-b3c7-4c22-be1b-955d86b0e474",
+    id: "102e7726-0ec0-42d6-b8b3-04244b0516fc",
     label: "strings:lbl_current_address_line_2",
     type: "floatingLabelInput",
     data: "AddressDetail.currentAddressLine2",
@@ -247,16 +162,14 @@ export const newUserFields = [
       keyboardType: "default",
       maxLength: 60,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "e482c9f2-e595-4d62-a22e-45b0fcd4ed1f",
+    id: "158b7a97-8fd2-44b5-8c2c-5a38321f6dfc",
     label: "strings:lbl_current_address_line_3",
     type: "floatingLabelInput",
     data: "AddressDetail.currentAddressLine3",
@@ -264,16 +177,14 @@ export const newUserFields = [
       keyboardType: "default",
       maxLength: 60,
       staticLabel: true,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "black",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "97fbf4f6-65e2-4209-881e-664e7b64b391",
+    id: "020f953a-39fb-4d54-96bc-f54975c3672f",
     label: "auth:newuser:Secondpagepincode",
     type: "dropDownPicker",
     data: "AddressDetail.currentPincode",
@@ -335,7 +246,7 @@ export const newUserFields = [
     },
   },
   {
-    id: "579d9086-9d29-4ae4-8583-494b497d0af8",
+    id: "71e4532e-bb97-4894-bbc4-fcee343a5963",
     label: "strings:select_state",
     type: "floatingLabelInput",
     data: "AddressDetail.currentState",
@@ -343,16 +254,14 @@ export const newUserFields = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "e5f652db-1c60-42cf-a990-b9e15b3b2e34",
+    id: "9a5af1b0-428c-4709-9e57-4d14eafd18c0",
     label: "strings:select_district",
     type: "floatingLabelInput",
     data: "AddressDetail.currentDistrict",
@@ -360,16 +269,14 @@ export const newUserFields = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
   {
-    id: "645354b2-fc70-4b66-858c-3e852c5f9c9f ",
+    id: "b7ac4223-344b-4a90-a801-1d496aeccc7c",
     label: "strings:select_city",
     type: "floatingLabelInput",
     data: "AddressDetail.currentCity",
@@ -377,12 +284,10 @@ export const newUserFields = [
       keyboardType: "default",
       staticLabel: true,
       editable: false,
-      containerStyles: styles.input,
+      containerStyles: styles.container,
       labelStyles: styles.labelStyles,
-      inputStyles: {
-        color: "grey",
-        paddingHorizontal: 10,
-      },
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
     },
   },
 ];
