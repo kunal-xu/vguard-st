@@ -17,7 +17,7 @@ export class StatusMappings {
     "Moderately Active": 6,
     "Inactive": 7,
   };
-
+  //status
   readonly TechnicianBlockStatus: { [id: number | string]: string | number } = {
     0: "Scan Block",
     1: "Active",

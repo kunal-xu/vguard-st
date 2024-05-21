@@ -32,8 +32,8 @@ import { useAuth } from "../../../hooks/useAuth";
 
 const HomeScreen = ({ navigation }) => {
   const { t } = useTranslation();
-  const { state, dispatch } = useData();
-  const {logout} = useAuth()
+  const { state, dispatch, customerDispatch } = useData();
+  const { logout } = useAuth();
   useFocusEffect(
     React.useCallback(() => {
       const fetchData = async () => {
@@ -46,7 +46,11 @@ const HomeScreen = ({ navigation }) => {
               value: responseData,
             },
           });
-          if(responseData.hasPwdChanged || responseData.BlockStatus === 3) {
+          customerDispatch({
+            type: "CLEAR_ALL_FIELDS",
+            payload: {},
+          });
+          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
             dispatch({
               type: "CLEAR_ALL_FIELDS",
               payload: {},
@@ -57,8 +61,8 @@ const HomeScreen = ({ navigation }) => {
           console.log(error.message);
         }
       };
-  
-      fetchData();  
+
+      fetchData();
     }, [])
   );
   return (
@@ -162,9 +166,9 @@ const HomeScreen = ({ navigation }) => {
               disabled={false}
             />
             <CustomTouchableOption
-              text="strings:info_desk"
-              iconSource={require("../../../assets/images/ic_vguard_info.webp")}
-              screenName="info"
+              text="strings:update_bank"
+              iconSource={require("../../../assets/images/ic_update_kyc.webp")}
+              screenName="Update Bank and UPI"
               disabled={false}
             />
           </View>
@@ -207,6 +211,12 @@ const HomeScreen = ({ navigation }) => {
 
               <Text style={[styles.nav]}>Instruction Manual</Text>
             </TouchableOpacity>
+            <CustomTouchableOption
+              text="strings:info_desk"
+              iconSource={require("../../../assets/images/ic_vguard_info.webp")}
+              screenName="info"
+              disabled={false}
+            />
           </View>
         </View>
         <NeedHelp />
@@ -311,7 +321,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   lastrow: {
-    marginLeft: 5,
+    display: "flex",
+    flexDirection: "row",
+    gap: 40,
+    justifyContent: "flex-start",
   },
   oval: {
     padding: 10,

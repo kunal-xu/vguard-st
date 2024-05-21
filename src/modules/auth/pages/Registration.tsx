@@ -17,7 +17,7 @@ const Registration = ({ navigation }: NavigationProps) => {
       RegistrationSchema.parse(state);
       navigation.navigate("Bank Details");
     } catch (error: any) {
-      ToastAndroid.show(`${error.errors[0].path[0]} : ${error.errors[0].message}`, ToastAndroid.LONG);
+      ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
     }
   }
   

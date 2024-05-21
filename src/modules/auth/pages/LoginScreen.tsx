@@ -98,7 +98,6 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
       showLoader(false);
       setIsPopupVisible(!isPopupVisible);
       setPopupContent(error.response.data.message);
-      console.error("Login error:", error.message);
     }
   };
 
@@ -142,6 +141,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 placeholderTextColor={placeholderColor}
                 value={username}
                 keyboardType="number-pad"
+                maxLength={10}
                 onChangeText={(text) => setUsername(text)}
               />
             </View>
@@ -244,9 +244,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
         </View>
         {isPopupVisible && (
           <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-            <Text style={{ fontWeight: "bold" }}>
-              {popupContent || "Incorrect Username or Password"}
-            </Text>
+              {popupContent}
           </Popup>
         )}
         <Modal

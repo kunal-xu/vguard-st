@@ -3,12 +3,10 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Video from 'react-native-video';
 
 const VideoPlayer = ({ videoUrl }) => {
-  const [currentVideo, setCurrentVideo] = useState(videoUrl);
-
   return (
     <View style={styles.videoPlayerContainer}>
       <Video
-        source={{ uri: currentVideo }}
+        source={{ uri: videoUrl }}
         style={styles.videoPlayer}
         controls={true}
         resizeMode="contain"
@@ -17,12 +15,13 @@ const VideoPlayer = ({ videoUrl }) => {
   );
 };
 
+
 const VideoList = ({ videos, onVideoPress }) => {
   return (
     <View style={styles.videoListContainer}>
       {videos.map((video, index) => (
         <TouchableOpacity key={index} onPress={() => onVideoPress(video)}>
-          <Text style={styles.videoListItem}>Video {index + 1}</Text>
+          <Text style={styles.videoListItem}>Sample {index + 1}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -31,8 +30,8 @@ const VideoList = ({ videos, onVideoPress }) => {
 
 const AppTutorials = () => {
   const videos = [
-    'https://example.com/video1.mp4',
-    'https://example.com/video2.mp4',
+    'https://storage.googleapis.com/vguard_staging_bucket/stimg/appVideos/003f94c2-41db-4e15-ba03-473a4c3a5fe4.mp4',
+    'https://storage.googleapis.com/vguard_staging_bucket/stimg/appVideos/01f57299-fa89-4a4e-8ca3-0a3043d27828.mp4',
     // Add more video URLs as needed
   ];
   const [selectedVideo, setSelectedVideo] = useState(videos[0]);
@@ -43,8 +42,12 @@ const AppTutorials = () => {
 
   return (
     <View style={styles.container}>
-      <VideoPlayer videoUrl={selectedVideo} />
-      <VideoList videos={videos} onVideoPress={handleVideoPress} />
+      <View style={styles.videoPlayerContainer}>
+        <VideoPlayer videoUrl={selectedVideo} />
+      </View>
+      <View style={styles.videoListContainer}>
+        <VideoList videos={videos} onVideoPress={handleVideoPress} />
+      </View>
     </View>
   );
 };
@@ -52,7 +55,7 @@ const AppTutorials = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'black',
     paddingTop: 40,
   },
   videoPlayerContainer: {

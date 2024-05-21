@@ -6,7 +6,6 @@ export class CouponRedeemResponse {
   statusType: number = -1;
   balance: String = "0";
   currentPoints: String = "0";
-  couponPoints: string | null = "0";
   promotionPoints: string | null = "0";
   transactId: string | null = null;
   schemePoints: string | null = "0";
@@ -14,12 +13,11 @@ export class CouponRedeemResponse {
   clubPoints: string | null = "0";
   scanDate: string | null = null;
   scanStatus: string | null = null;
-  copuonCode: string | null = "";
   bitEligibleScratchCard: boolean | null = false;
   partId: string | null = null;
   partNumber: string | null = null;
   partName: string | null = null;
-  couponCode: string | null = null;
+  couponCode: string | null = "";
   skuDetail: string | null = null;
   purchaseDate: string | null = null;
   categoryId: string | null = null;

@@ -36,7 +36,7 @@ export class STUser {
   BalancePoints: string | null = null;
   RedeemablePoints: string | null = null;
   DeductedTDS: string | null = null;
-  TDSSlab: string | null = "";
+  TDSSlab: string | null = null;
   TDSKitty: string | null = null;
   NumberOfScans: string | null = null;
   InvitationDate: string | undefined = "";

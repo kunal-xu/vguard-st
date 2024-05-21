@@ -108,7 +108,7 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
     geolocation: "",
   });
 
-  const {customerState, customerDispatch} = useData();
+  const {state, customerState, customerDispatch} = useData();
 
   async function isValidBarcode(
     CouponData: any,
@@ -167,6 +167,7 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
       try {
         apiResponse = await isValidBarcode(CouponData, "");
         const r = await apiResponse.data;
+        
         if (r.errorCode == 1) {
           showLoader(false);
           setQrcode("");
@@ -176,7 +177,7 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
             payload: {
               field: "cresp",
               subfield: "couponCode",
-              value: r.copuonCode
+              value: r.couponCode
             }
           });
           customerDispatch({
@@ -187,6 +188,66 @@ const ScanCode: React.FC<ScanCodeProps> = ({ navigation }) => {
               value: r.partName
             }
           });
+          customerDispatch({
+            type: "UPDATE_SUB_FIELD",
+            payload: {
+              field: "cresp",
+              subfield: "couponPoints",
+              value: r.couponPoints
+            }
+          });
+          customerDispatch({
+            type: "UPDATE_SUB_FIELD",
+            payload: {
+              field: "cresp",
+              subfield: "partNumber",
+              value: r.partNumber
+            }
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "dealerNumber",
+              subfield: undefined,
+              value: state.Contact as string
+            }
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "dealerAdd",
+              subfield: undefined,
+              value: state.AddressDetail.currentAddressLine1 as string
+            }
+          });
+
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "dealerState",
+              subfield: undefined,
+              value: state.AddressDetail.currentState as string
+            }
+          });
+
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "dealerName",
+              subfield: undefined,
+              value: state.Name as string
+            }
+          });
+
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "dealerPinCode",
+              subfield: undefined,
+              value: state.AddressDetail.currentPincode as string
+            }
+          });
+
           setOkPopupContent({
             text: t("strings:valid_coupon_please_proceed_to_prod_regi"),
             okAction: () => navigation.navigate("Add Warranty"),

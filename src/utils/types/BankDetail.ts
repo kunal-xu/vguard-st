@@ -16,7 +16,7 @@ export class BankDetail {
   nomineeAdd: string | null = null;
   nomineeRelation: string | null = null;
   nomineeAccNo: string | null = null;
-  bankDataPresent: number | null = null;
+  bankDataPresent: boolean | null = null;
 
   constructor(data?: Partial<BankDetail>) {
     Object.assign(this, data);

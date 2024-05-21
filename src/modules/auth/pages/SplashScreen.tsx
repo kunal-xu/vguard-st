@@ -4,13 +4,14 @@ import colors from '../../../../colors';
 import { useFocusEffect } from '@react-navigation/native';
 import { NavigationProps } from '../../../utils/interfaces';
 import React from 'react';
+import { height, width } from '../../../utils/dimensions';
 
 const SplashScreen = ({ navigation }: NavigationProps) => {
   useFocusEffect(
     useCallback(() => {
       const timeoutId = setTimeout(() => {
         navigation.navigate('loginWithNumber');
-      }, 1000);
+      }, 1500);
       return () => clearTimeout(timeoutId);
     }, [])
   );
@@ -23,7 +24,7 @@ const SplashScreen = ({ navigation }: NavigationProps) => {
           style={styles.imageVguard}
         />
         <Image
-          source={require('../../../assets/images/group_907.png')}
+          source={require("../../../assets/images/ic_rishta_logo.jpg")}
           style={styles.imageSaathi}
         />
       </View>
@@ -37,52 +38,22 @@ const styles = StyleSheet.create({
     padding: 25,
     backgroundColor: colors.white,
   },
-  buttonContainer: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  },
-  button: {
-    alignSelf: 'flex-end',
-  },
   imageContainer: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: "space-evenly",
     height: '75%',
     width: '100%',
-    gap: 100,
   },
   imageVguard: {
-    width: 200,
-    height: 73,
+    width: width / 2,
+    height: height / 12,
   },
   imageSaathi: {
-    width: 200,
-    height: 196,
-  },
-  startButtonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '20%',
-  },
-  languagePickerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.white
-  },
-  closeText: {
-    marginTop: 20,
-    color: colors.black,
-    backgroundColor: colors.yellow,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 5,
-    fontWeight: 'bold'
+    width: width,
+    height: height / 3,
+    
   },
 });
 

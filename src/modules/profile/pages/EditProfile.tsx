@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   PermissionsAndroid,
+  ToastAndroid,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -26,6 +27,10 @@ import Field from "../../../components/Field";
 import { useData } from "../../../hooks/useData";
 import Loader from "../../../components/Loader";
 import Popup from "../../../components/Popup";
+import { useFocusEffect } from "@react-navigation/native";
+import { useAuth } from "../../../hooks/useAuth";
+import { z } from "zod";
+import { RegistrationSchema } from "../../../utils/schemas/Registration";
 
 const EditProfile = ({ navigation }) => {
   const { t } = useTranslation();
@@ -35,26 +40,39 @@ const EditProfile = ({ navigation }) => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const { state, dispatch } = useData();
+  const { logout } = useAuth();
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getUser();
+          const responseData = response.data;
+          dispatch({
+            type: "GET_ALL_FIELDS",
+            payload: {
+              value: responseData,
+            },
+          });
+          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
+            dispatch({
+              type: "CLEAR_ALL_FIELDS",
+              payload: {},
+            });
+            logout();
+          }
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await getUser();
-        const responseData = response.data;
-        dispatch({
-          type: "GET_ALL_FIELDS",
-          payload: {
-            value: responseData,
-          },
-        });
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    })();
-  }, []);
+      fetchData();
+    }, [])
+  );
 
   const updateuseprofile = async () => {
     try {
+      RegistrationSchema.parse(state);
       setIsLoading(true);
       const response = await updateProfile(state);
       const responseData = response.data;
@@ -65,10 +83,14 @@ const EditProfile = ({ navigation }) => {
       }
       setIsPopupVisible(true);
       setPopupMessage(responseData.message);
-    } catch (error) {
-      setIsLoading(false);
-      setIsPopupVisible(true);
-      setPopupMessage("Error in updating user profile");
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
+      } else {
+        setIsLoading(false);
+        setIsPopupVisible(true);
+        setPopupMessage("Error in updating user profile");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -98,10 +120,7 @@ const EditProfile = ({ navigation }) => {
             type={field.type}
             data={field.data}
             label={field.label}
-            items={field.items}
             properties={field.properties}
-            rules={field.rules}
-            links={field.links}
           />
         ))}
       </ScrollView>

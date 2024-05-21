@@ -20,6 +20,7 @@ import { getImages } from "../../../utils/FileUtils";
 import { useData } from "../../../hooks/useData";
 import { useFocusEffect } from "@react-navigation/native";
 import { StatusMappings } from "../../../utils/StatusMappings";
+import { useAuth } from "../../../hooks/useAuth";
 
 const Profile = ({ navigation }) => {
   const { t } = useTranslation();
@@ -30,6 +31,7 @@ const Profile = ({ navigation }) => {
   const [showPanDetails, setShowPanDetails] = useState(false);
   const [showNomineeDetails, setShowNomineeDetails] = useState(false);
   const statusMappings = new StatusMappings();
+  const {logout} = useAuth();
   // const [data, setData] = useState([]);
   // const [userData, setUserData] = useState({
   //   userName: "",
@@ -53,13 +55,19 @@ const Profile = ({ navigation }) => {
               value: responseData,
             },
           });
+          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
+            dispatch({
+              type: "CLEAR_ALL_FIELDS",
+              payload: {},
+            });
+            logout();
+          }
         } catch (error: any) {
           console.log(error.message);
         }
       };
-      
-      fetchData();  
-      
+
+      fetchData();
     }, [])
   );
 
@@ -72,8 +80,8 @@ const Profile = ({ navigation }) => {
     "PAN",
     "Bank Details",
     "TDS Slab",
-    "Activation Status",
-    "Block Status"
+    "Profile Status",
+    "Status"
   ];
   const renderField = (fieldName) => {
     const fieldMap = {
@@ -86,20 +94,6 @@ const Profile = ({ navigation }) => {
       "Bank Details": "BankDetail",
       "TDS Slab": "TDSSlab",
     };
-
-    // if (fieldName in fieldMap) {
-    //   const mappedField = fieldMap[fieldName];
-    //   if (mappedField in state) {
-    //     const fieldValue = state[mappedField];
-    //     return fieldValue === true
-    //       ? "Yes"
-    //       : fieldValue === false
-    //       ? "No"
-    //       : fieldValue;
-    //   } else {
-    //     return "";
-    //   }
-    // } else
     if (fieldName === "PAN") {
       const hasPanDetails = state.PAN;
       return (
@@ -109,26 +103,7 @@ const Profile = ({ navigation }) => {
               <Text style={styles.yesorno}>
                 {hasPanDetails ? state.PAN : "N/A"}
               </Text>
-              {hasPanDetails && (
-                <TouchableOpacity
-                  style={{ marginLeft: 5 }}
-                  onPress={() => setShowPanDetails(!showPanDetails)}
-                >
-                  <Image
-                    source={require("../../../assets/images/ic_ticket_drop_down2.png")}
-                    style={{ width: 20, height: 20 }}
-                  />
-                </TouchableOpacity>
-              )}
             </View>
-            {showPanDetails && (
-              <View style={styles.smallDataBox}>
-                <View style={styles.smallDataRow}>
-                  <Text style={styles.dataSmallLabel}>Pan Card No: </Text>
-                  <Text style={styles.dataSmall}>{state.PAN}</Text>
-                </View>
-              </View>
-            )}
           </View>
         </>
       );
@@ -186,28 +161,26 @@ const Profile = ({ navigation }) => {
         </>
       );
     }
-    else if (fieldName === "Activation Status") {
-      const hasPanDetails = state.ActivationStatus;
+    else if (fieldName === "Profile Status") {
       return (
         <>
           <View>
             <View style={styles.databox}>
               <Text style={styles.yesorno}>
-                {hasPanDetails ? (statusMappings.ActivationStatus[state.ActivationStatus as number]) : "N/A"}
+                {statusMappings.ActivationStatus[state.ActivationStatus as number]}
               </Text>
             </View>
           </View>
         </>
       );
     }
-    else if (fieldName === "Block Status") {
-      const hasPanDetails = state.BlockStatus;
+    else if (fieldName === "Status") {
       return (
         <>
           <View>
             <View style={styles.databox}>
               <Text style={styles.yesorno}>
-                {hasPanDetails ? (statusMappings.TechnicianBlockStatus[state.BlockStatus as number]) : "N/A"}
+                {statusMappings.TechnicianBlockStatus[state.BlockStatus as number]}
               </Text>
             </View>
           </View>
@@ -271,109 +244,6 @@ const Profile = ({ navigation }) => {
                     {state.BankDetail.bankIfsc}
                   </Text>
                 </View>
-              </View>
-            )}
-          </View>
-        </>
-      );
-    } else if (fieldName === "Nominee Details") {
-      const hasNomineeDetails = () => {
-        if (
-          state.BankDetail.nomineeDob ||
-          state.BankDetail.nomineeEmail ||
-          state.BankDetail.nomineeMobileNo ||
-          state.BankDetail.nomineeRelation
-        )
-          return true;
-      };
-      return (
-        <>
-          <View>
-            <View style={styles.databox}>
-              <Text style={styles.yesorno}>
-                {hasNomineeDetails ? "Yes" : "No"}
-              </Text>
-              {hasNomineeDetails && (
-                <TouchableOpacity
-                  style={{ marginLeft: 5 }}
-                  onPress={() => setShowNomineeDetails(!showNomineeDetails)}
-                >
-                  <Image
-                    source={require("../../../assets/images/ic_ticket_drop_down2.png")}
-                    style={{ width: 20, height: 20 }}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
-            {showNomineeDetails && (
-              <View style={styles.smallDataBox}>
-                {state.BankDetail?.nomineeAccNo && (
-                  <View style={styles.smallDataRow}>
-                    <Text style={styles.dataSmallLabel}>Nominee Acc No: </Text>
-                    <Text style={styles.dataSmall}>
-                      {state.BankDetail?.nomineeAccNo}
-                    </Text>
-                  </View>
-                )}
-                {state.BankDetail?.nomineeName && (
-                  <View style={styles.smallDataRow}>
-                    <Text style={styles.dataSmallLabel}>
-                      Nominee Acc Holder Name:{" "}
-                    </Text>
-                    <Text style={styles.dataSmall}>
-                      {state.BankDetail?.nomineeName}
-                    </Text>
-                  </View>
-                )}
-                {state.BankDetail?.nomineeDob && (
-                  <View style={styles.smallDataRow}>
-                    <Text style={styles.dataSmallLabel}>
-                      Nominee Date of Birth:{" "}
-                    </Text>
-                    <Text style={styles.dataSmall}>
-                      {state.BankDetail?.nomineeDob}
-                    </Text>
-                  </View>
-                )}
-                {state.BankDetail?.nomineeMobileNo && (
-                  <View style={styles.smallDataRow}>
-                    <Text style={styles.dataSmallLabel}>
-                      Nominee Mobile Number:{" "}
-                    </Text>
-                    <Text style={styles.dataSmall}>
-                      {state.BankDetail?.nomineeMobileNo}
-                    </Text>
-                  </View>
-                )}
-                {state.BankDetail?.nomineeEmail && (
-                  <View style={styles.smallDataRow}>
-                    <Text style={styles.dataSmallLabel}>
-                      Nominee Email ID:{" "}
-                    </Text>
-                    <Text style={styles.dataSmall}>
-                      {state.BankDetail?.nomineeEmail}
-                    </Text>
-                  </View>
-                )}
-                {state.BankDetail?.nomineeRelation && (
-                  <View style={styles.smallDataRow}>
-                    <Text style={styles.dataSmallLabel}>
-                      Nominee Relation:{" "}
-                    </Text>
-                    <Text style={styles.dataSmall}>
-                      {state.BankDetail?.nomineeRelation}
-                    </Text>
-                  </View>
-                )}
-
-                {state.BankDetail?.nomineeAdd && (
-                  <View style={styles.smallDataRow}>
-                    <Text style={styles.dataSmallLabel}>Nominee Address: </Text>
-                    <Text style={styles.dataSmall}>
-                      {state.BankDetail?.nomineeAdd}
-                    </Text>
-                  </View>
-                )}
               </View>
             )}
           </View>

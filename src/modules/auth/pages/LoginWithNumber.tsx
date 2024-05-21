@@ -10,6 +10,7 @@ import {
   Alert,
   ToastAndroid,
   Modal,
+  Linking,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import language from "../../../assets/images/language.png";
@@ -21,6 +22,9 @@ import Popup from "../../../components/Popup";
 import Loader from "../../../components/Loader";
 import { height } from "../../../utils/dimensions";
 import LanguagePicker from "../../../components/LanguagePicker";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
+import selectedTickImage from "../../../assets/images/tick_1.png";
+import notSelectedTickImage from "../../../assets/images/tick_1_notSelected.png";
 
 const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [number, setNumber] = useState("");
@@ -30,9 +34,28 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [responseCode, setResponseCode] = useState(0);
   const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
+  const [selectedOption, setSelectedOption] = useState(true);
+
+  const pkg = require("../../../../package.json");
+  const version = pkg.version;
+
+  const handleTermsPress = () => {
+    setSelectedOption(!selectedOption);
+  };
+
+  const openTermsAndConditions = () => {
+    const url = "https://vguardrishta.com/tnc_retailer.html";
+    Linking.openURL(url).catch((error) =>
+      console.error("Error opening URL:", error)
+    );
+  };
 
   async function getOTP(OtpType: string) {
     const numberRegex = /^[6789]\d{9}$/;
+    if (selectedOption === false) {
+      ToastAndroid.show(t("strings:please_accept_terms"), ToastAndroid.SHORT);
+      return;
+    }
     showLoader(true);
     if (number.trim().length && numberRegex.test(number.trim())) {
       try {
@@ -97,7 +120,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {isPopupVisible && (
         <Popup isVisible={isPopupVisible} onClose={handleClose}>
-          <Text>{popupMessage}</Text>
+          {popupMessage}
         </Popup>
       )}
       <View style={styles.registerUser}>
@@ -142,16 +165,6 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
                 />
               </View>
             </View>
-            <View style={styles.updateAndForgot}>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("login")}
-                style={styles.forgotPasswordContainer}
-              >
-                <Text style={[styles.forgotPassword]}>
-                  {t("strings:login")}
-                </Text>
-              </TouchableOpacity>
-            </View>
             <View>
               <Buttons
                 label={t("strings:send_otp")}
@@ -164,7 +177,19 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
                 icon={arrowIcon}
               />
             </View>
-            <TouchableOpacity
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 16 }}>
+                <Text style={styles.greyText}>
+                  {t("Already have an account?")}
+                </Text>
+                <TouchableOpacity onPress={() => navigation.navigate("login")}>
+                  <Text style={{ color: colors.yellow }}>
+                    {t("Sign In")}
+                  </Text>
+                  
+                </TouchableOpacity>
+              </View>
+            
+            {/* <TouchableOpacity
               style={styles.otpPhone}
               onPress={() => getOTP("Voice")}
             >
@@ -175,18 +200,41 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
               <Text style={styles.greyText}>
                 {t("strings:lbl_otp_through_phone_call")}
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
         <View>
-          <View style={styles.footerContainer}>
-            <Text style={styles.footergreyText}>
-              {t("strings:powered_by_v_guard")}
-            </Text>
-            <Image
-              source={require("../../../assets/images/group_910.png")}
-              style={styles.imageVguard}
-            />
+          <View style={styles.footer}>
+            <TouchableOpacity
+              onPress={() => handleTermsPress()}
+              style={styles.footerTextContainer}
+            >
+              <Image
+                source={
+                  selectedOption === true
+                    ? selectedTickImage
+                    : notSelectedTickImage
+                }
+                style={styles.tick}
+              />
+
+              <TouchableOpacity onPress={() => openTermsAndConditions()}>
+                <Text style={styles.footerText}>
+                  {t("strings:lbl_accept_terms")}
+                </Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+            <Text style={styles.versionText}>V {version}</Text>
+
+            <View style={styles.footerContainer}>
+              <Text style={styles.footergreyText}>
+                {t("strings:powered_by_v_guard")}
+              </Text>
+              <Image
+                source={require("../../../assets/images/group_910.png")}
+                style={styles.imageVguard}
+              />
+            </View>
           </View>
         </View>
         <Modal
@@ -220,11 +268,36 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 12,
     textAlign: "right",
+    marginTop: 10,
   },
   registerUser: {
     height: "100%",
     backgroundColor: colors.white,
     display: "flex",
+  },
+  footer: {},
+  footerTextContainer: {
+    paddingBottom: 5,
+    paddingHorizontal: 80,
+    display: "flex",
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  footerText: {
+    textAlign: "left",
+    fontSize: 10,
+    color: colors.black,
+  },
+  versionText: {
+    textAlign: "center",
+    color: colors.black,
+    fontSize: responsiveFontSize(1.3),
+  },
+  tick: {
+    height: 15,
+    width: 15,
   },
   mainWrapper: {
     padding: 30,

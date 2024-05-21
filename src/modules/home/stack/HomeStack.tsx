@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import HomeScreen from "../pages/HomeScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Welfare from "../pages/options/welfare/AppTutorials";
-import Bank from "../pages/options/bank/Bank";
+import Bank from "../pages/options/bank/UpdateBankDetails";
 import TDS from "../pages/options/TDS/TDS";
 import Engagement from "../pages/options/engagement/Engagement";
 import Manual from "../pages/options/manual/Manual";
@@ -32,6 +32,7 @@ import {
 } from "react-native";
 import LanguagePicker from "../../../components/LanguagePicker";
 import AppTutorials from "../pages/options/welfare/AppTutorials";
+import UpdateBankDetails from "../pages/options/bank/UpdateBankDetails";
 
 const HomeStack = () => {
   const Stack = createNativeStackNavigator();
@@ -120,6 +121,13 @@ const HomeStack = () => {
         <Stack.Screen
           name="Manual"
           component={Manual}
+          options={{
+            headerShown: true,
+          }}
+        />
+        <Stack.Screen
+          name="Update Bank and UPI"
+          component={UpdateBankDetails}
           options={{
             headerShown: true,
           }}

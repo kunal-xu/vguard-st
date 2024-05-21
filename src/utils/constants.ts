@@ -119,3 +119,17 @@ export const Colors = {
   blue: "#3F51B5",
   white_translucent: "#70ffffff",
 };
+
+export const TDS_CONSENT_MESSAGE: any = {
+  EMPTY: "empty",
+  YES: "yes",
+  NO: "no",
+  UPLOADED:"uploaded",
+  INVALID:"invalid",
+  ACCEPT:"accept",
+  VERIFIED:"verified",
+  NOT_LINKED:"notLinked",
+  EMPTY_IT:"emptyIt",
+  PREVIEW:"preview",
+  NOT_APPROVED:"notApproved"
+};

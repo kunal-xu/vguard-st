@@ -526,3 +526,7 @@ const styles = StyleSheet.create({
 });
 
 export default Ticket;
+
+function logout() {
+  throw new Error("Function not implemented.");
+}

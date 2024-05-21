@@ -16,7 +16,7 @@ const BottomTabLogo = () => {
           <Image
             style={{ height: "50%", width: "50%", marginLeft: '10%' }}
             resizeMode="contain"
-            source={require('../assets/images/ic_rishta_logo_defunct.png')}
+            source={require('../assets/images/ic_rishta_logo_bottom_bar.jpg')}
           />
         </View>
       </ImageBackground>

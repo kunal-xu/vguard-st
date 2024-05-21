@@ -19,6 +19,27 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
               marginLeft: 1,
             }}
           ></View>
+          <View
+            style={{
+              display: "flex",
+              width: "95%",
+              alignItems: "flex-end",
+              marginBottom: 10,
+            }}
+          >
+            <Buttons
+              label="Skip"
+              onPress={() => {
+                navigation.navigate("Credentials");
+              }}
+              variant="outlined"
+              width={88}
+              icon={require("../../../assets/images/arrow.png")}
+              iconWidth={24}
+              iconHeight={8}
+              iconGap={1}
+            />
+            </View>
           {registrationBankDetails.map((field) => (
             <Field
               id={field.id}
@@ -29,6 +50,8 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
               items={field.items}
               properties={field.properties}
               source={field.source}
+              verifyButtonProperties={field.verifyButtonProperties}
+              resetButtonProperties={field.resetButtonProperties}
             />
           ))}
           <View

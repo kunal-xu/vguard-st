@@ -62,6 +62,7 @@ const InstantBankTransfer = () => {
         } else if (reponseData.code === 400) {
           setPopupVisible(true);
           setPopupContent(reponseData.message);
+          // navigation.navigate("Update Bank and UPI");
         } else {
           setPopupContent(
             reponseData.message || "Something went wrong, Please try again"

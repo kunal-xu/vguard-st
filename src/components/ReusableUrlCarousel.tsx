@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, Image, StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import colors from '../../colors';
 
@@ -11,17 +11,22 @@ const ReusableUrlCarousel = ({
 	const [activeIndex, setActiveIndex] = useState(0);
 
 	const renderItem = ({ item, index }) => {
-		console.log("item", item)
-		return (
-			<View style={[styles.carouselItem, { height: carouselHeight }]}>
-				<Image
-					source={{ uri: item.imageUrl }}
-					style={styles.carouselImage}
-					resizeMode="stretch"
-				/>
-			</View>
-		)
-	};
+    return (
+      <View style={[styles.carouselItem, { height: carouselHeight }]}>
+        <ImageBackground
+          source={require("../assets/images/no_image.webp")}
+          style={styles.carouselImage}
+          resizeMode="stretch"
+        >
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={styles.carouselImage}
+            resizeMode="stretch"
+          />
+        </ImageBackground>
+      </View>
+    );
+  };
 
 
 	const screenWidth = Dimensions.get('window').width;
@@ -31,11 +36,11 @@ const ReusableUrlCarousel = ({
 	};
 
 	useEffect(() => {
-		// const timer = setInterval(changeImage, autoChangeInterval);
+		const timer = setInterval(changeImage, autoChangeInterval);
 
-		// return () => {
-		//   clearInterval(timer);
-		// };
+		return () => {
+		  clearInterval(timer);
+		};
 
 	}, []);
 

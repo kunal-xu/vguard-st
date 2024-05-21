@@ -16,6 +16,7 @@ import NeedHelp from '../../../../../components/NeedHelp';
 import ReusableCarousel from '../../../../../components/ReusableCarousel';
 import { getUser } from '../../../../../utils/apiservice';
 import { useFocusEffect } from '@react-navigation/native';
+
 import { useData } from '../../../../../hooks/useData';
 
 const RedeemPoints = ({navigation}) => {
@@ -81,18 +82,18 @@ const RedeemPoints = ({navigation}) => {
               screenName="Bank Transfer"
             />
             <CustomTouchableOption
-              text="strings:paytm_transfer"
-              iconSource={require('../../../../../assets/images/ic_paytm_transfer.webp')}
-              screenName="Paytm Transfer"
-              disabled={true}
-            />
-            <CustomTouchableOption
               text="UPI Transfer"
               iconSource={require('../../../../../assets/images/upi_transfer.webp')}
               screenName="UPI Transfer"
+              disabled={true}
+            />
+            <CustomTouchableOption
+              text="strings:redemption_history"
+              iconSource={require('../../../../../assets/images/ic_redemption_history.webp')}
+              screenName="Redemption History"
             />
           </View>
-          <View style={styles.row}>
+          {/* <View style={styles.row}>
             <CustomTouchableOption
               text="strings:e_gift_cards"
               iconSource={require('../../../../../assets/images/ic_egift_cards.webp')}
@@ -110,7 +111,7 @@ const RedeemPoints = ({navigation}) => {
               iconSource={require('../../../../../assets/images/ic_redemption_history.webp')}
               screenName="Redemption History"
             />
-          </View>
+          </View> */}
         </View>
         <NeedHelp />
       </View>

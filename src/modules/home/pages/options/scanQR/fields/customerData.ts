@@ -3,21 +3,6 @@ import { styles } from "./styles";
 
 export const customerData = [
   {
-    id: "8bd5aa6e-670f-445d-bd10-f0aeef6ee7fe",
-    type: "floatingLabelInput",
-    label: "strings:customer_name",
-    data: "name",
-    source: "customer",
-    properties: {
-      staticLabel: true,
-      keyboardType: "default",
-      containerStyles: styles.container,
-      labelStyles: styles.labelStyles,
-      customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
-    },
-  },
-  {
     id: "364e9b75-a5d8-4809-a73b-1a2dc30cc756",
     label: "strings:customer_contact",
     type: "floatingLabelInput",
@@ -33,6 +18,26 @@ export const customerData = [
       inputStyles: styles.inputStyles
     },
   },
+  {
+    id: "8accac5b-9678-4f66-b23c-3f8072671f7f",
+    type: "CustomerButton"
+  },
+  {
+    id: "8bd5aa6e-670f-445d-bd10-f0aeef6ee7fe",
+    type: "floatingLabelInput",
+    label: "strings:customer_name",
+    data: "name",
+    source: "customer",
+    properties: {
+      staticLabel: true,
+      keyboardType: "default",
+      containerStyles: styles.container,
+      labelStyles: styles.labelStyles,
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
+    },
+  },
+  
   {
     id: "763bcd60-6c2c-4e7c-976f-453384d75c74",
     type: "floatingLabelInput",

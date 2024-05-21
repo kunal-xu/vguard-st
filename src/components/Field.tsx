@@ -19,7 +19,7 @@ import {
 import DatePicker from "./DatePicker";
 import { useTranslation } from "react-i18next";
 import { ButtonsProps, DatePickerProps } from "../utils/interfaces";
-import { height } from "../utils/dimensions";
+import { height, width } from "../utils/dimensions";
 import { useState } from "react";
 import React from "react";
 import {
@@ -45,6 +45,11 @@ import Popup from "./Popup";
 import Loader from "./Loader";
 import { BankDetailsSchema } from "../utils/schemas/BankDetails";
 import { z } from "zod";
+import TDSPopup from "./TDSPopup";
+import { TDS_CONSENT_MESSAGE } from "../utils/constants";
+import ImagePickerField from "./ImagePickerField";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { ButtonProps } from "react-native-paper";
 
 interface RuleItem {
   id: number;
@@ -88,6 +93,11 @@ interface TextField extends BaseFieldProps {
   properties: StyleProp<TextStyle>;
 }
 
+interface SimulButton extends BaseFieldProps {
+  verifyButtonProperties: ButtonProps;
+  resetButtonProperties: ButtonProps;
+}
+
 type FieldProps =
   | FloatingLabelInputField
   | DropDownPickerField
@@ -95,7 +105,8 @@ type FieldProps =
   | DatePickerField
   | TextField
   | BaseFieldProps
-  | ButtonsProps;
+  | ButtonsProps
+  | SimulButton;
 
 const Field = (props: FieldProps) => {
   const { type, source } = props;
@@ -114,7 +125,7 @@ const Field = (props: FieldProps) => {
       | keyof (AddressDetail | BankDetail | PaytmDetail | WelcomeBanner)
       | string
       | undefined,
-    value: string | number
+    value: string | number | boolean
   ) => {
     if (subfield) {
       dispatch({
@@ -191,10 +202,8 @@ const Field = (props: FieldProps) => {
       return <Text style={properties}>{t(props.label as string)}</Text>;
     case "picker":
       properties = (props as PickerField).properties;
-      // const rules: Rules | undefined = props.rules;
       const items = props.items;
       const [selectedValue, setSelectedValue] = useState<undefined>();
-      // const [rule, setRule] = useState<number>(0);
       return (
         <>
           <View style={styles.viewNew}>
@@ -202,7 +211,6 @@ const Field = (props: FieldProps) => {
               {...properties}
               selectedValue={selectedValue}
               onValueChange={(value, index) => {
-                // setRule(index);
                 setSelectedValue(value);
                 handleFormInputChange(
                   props.data as keyof STUser,
@@ -221,26 +229,6 @@ const Field = (props: FieldProps) => {
               })}
             </Picker>
           </View>
-          {/* {props.links?.map((linkItem) =>
-            rules?.[rule]?.map((rule) => {
-              if (rule.id === linkItem.id && rule.hasLink) {
-                linkItem.properties = {
-                  ...linkItem.properties,
-                  editable: rule.editable,
-                };
-                return (
-                  <Field
-                    id={linkItem.id}
-                    key={linkItem.id}
-                    type={linkItem.type}
-                    data={linkItem.data}
-                    label={linkItem.label}
-                    properties={linkItem.properties}
-                  />
-                );
-              }
-            })
-          )} */}
         </>
       );
     case "dropDownPicker":
@@ -294,7 +282,9 @@ const Field = (props: FieldProps) => {
         <DropDownPicker
           {...properties}
           placeholder={
-            pincode === null ? "Search Pincode" : `Searched Pincode: ${pincode}`
+            source && source === "customer" ?
+            (customerState.pinCode === null ? "Search Pincode" : `Pincode: ${customerState.pinCode}`):
+            (state.AddressDetail.currentPincode === null ? "Search Pincode" : `Pincode: ${state.AddressDetail.currentPincode}`)
           }
           open={open}
           setOpen={setOpen}
@@ -335,78 +325,12 @@ const Field = (props: FieldProps) => {
           <DatePicker {...properties} />
         </View>
       );
-    case "Button":
-      properties = props.properties;
-      const type = props.label;
-      if (type === "bank") {
-        async function getBankDetails() {
-          try {
-            BankDetailsSchema.parse(state.BankDetail);
-            showLoader(true);
-            const response = await getBankDetail({
-              UniqueId: state.UniqueId,
-              BankDetail: {
-                bankAccNo: state.BankDetail.bankAccNo,
-                bankIfsc: state.BankDetail.bankIfsc,
-              },
-            });
-            const responseData: BankDetail = response.data;
-            showLoader(false);
-            if (responseData.bankDataPresent === 1) {
-              handleFormInputChange(
-                "BankDetail",
-                "bankAccHolderName",
-                responseData.bankAccHolderName as string
-              );
-              handleFormInputChange(
-                "BankDetail",
-                "bankNameAndBranch",
-                responseData.bankNameAndBranch as string
-              );
-              handleFormInputChange(
-                "BankDetail",
-                "branchAddress",
-                responseData.branchAddress as string
-              );
-            } else {
-              setIsPopupVisible(true);
-              setPopupContent(response.data.errorMessage);
-            }
-          } catch (error: any) {
-            if (error instanceof z.ZodError) {
-              ToastAndroid.show(
-                `${error.errors[0].message}`,
-                ToastAndroid.LONG
-              );
-            } else {
-              console.log(error);
-              showLoader(false);
-              setIsPopupVisible(true);
-              setPopupContent("Something went wrong");
-            }
-          }
-        }
-        return (
-          <View
-            style={{
-              display: "flex",
-              width: "100%",
-              alignItems: "center",
-              marginVertical: 10,
-            }}
-          >
-            {loader && <Loader isLoading={loader} />}
-            {isPopupVisible && (
-              <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-                <Text style={{ fontWeight: "bold" }}>{popupContent}</Text>
-              </Popup>
-            )}
-            <Buttons {...properties} onPress={getBankDetails} />
-          </View>
-        );
-      }
+
     case "floatingLabelInputWithButton":
+      const [tdsConsent, setTdsConsent] = useState(false);
+
       async function tds() {
+        setTdsConsent(false);
         showLoader(true);
         try {
           const response = await getTDSPercentage({
@@ -449,21 +373,34 @@ const Field = (props: FieldProps) => {
               value: responseData.entity,
             },
           });
+          dispatch({
+            type: "UPDATE_SUB_FIELD",
+            payload: {
+              field: "PaytmDetail",
+              subfield: "upiVerified",
+              value: "true",
+            },
+          });
         } catch (error: any) {
           showLoader(false);
           setIsPopupVisible(true);
           setPopupContent(error.response.data.message);
         }
       }
-
       return (
-        
         <View style={styles.container}>
           {loader && <Loader isLoading={loader} />}
           {isPopupVisible && (
             <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-              <Text style={{ fontWeight: "bold" }}>{popupContent}</Text>
+              {popupContent}
             </Popup>
+          )}
+          {tdsConsent && (
+            <TDSPopup
+              popupContent={TDS_CONSENT_MESSAGE.UPLOADED}
+              onClose={() => setTdsConsent(false)}
+              onSubmit={tds}
+            />
           )}
           <Text style={styles.label}>{t(props.label || "")}</Text>
           <View style={styles.inputContainer}>
@@ -476,17 +413,183 @@ const Field = (props: FieldProps) => {
                   : (state.PaytmDetail.upiId as string)
               }
             />
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => {
-                source === "tds" ? tds() : vpa();
-              }}
-            >
-              <Text style={styles.buttonText}>Verify</Text>
-            </TouchableOpacity>
+            {source === "tds" ? (
+              <TouchableOpacity
+                style={state.TDSSlab ? styles.greenButton : styles.button}
+                onPress={state.TDSSlab ? () => {} : () => setTdsConsent(true)}
+                activeOpacity={state.TDSSlab ? 1 : 0.7}
+                disabled={Boolean(state.TDSSlab)}
+              >
+                {state.TDSSlab ? (
+                  <Icon name="check" size={24} color="green" />
+                ) : (
+                  <Text style={styles.buttonText}>Verify</Text>
+                )}
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={
+                  state.PaytmDetail.upiVerified
+                    ? styles.greenButton
+                    : styles.button
+                }
+                onPress={state.PaytmDetail.upiVerified ? () => {} : () => vpa()}
+                activeOpacity={state.PaytmDetail.upiVerified ? 1 : 0.7}
+                disabled={Boolean(state.PaytmDetail.upiVerified)}
+              >
+                {state.PaytmDetail.upiVerified ? (
+                  <Icon name="check" size={24} color="green" />
+                ) : (
+                  <Text style={styles.buttonText}>Verify</Text>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       );
+
+    case "ImagePicker":
+      properties = props.properties;
+      const [fileData, setFileData] = useState({
+        uri: "",
+        name: "",
+        type: "",
+      });
+      const handleImageChange = async (
+        image: string,
+        type: string,
+        imageName: string,
+        label: string
+      ) => {
+        try {
+          setFileData({
+            uri: image,
+            name: imageName,
+            type: type,
+          });
+        } catch (error) {
+          console.error("Error handling image change in Raise Ticket:", error);
+        }
+      };
+      return (
+        <ImagePickerField
+          label={props.label as string}
+          onImageChange={handleImageChange}
+          {...properties}
+        />
+      );
+    
+      case "CustomerButton":
+        return (
+          <View
+            style={{
+              width: "90%",
+              margin: 20,
+              marginTop: 4
+            }}
+          >
+          <Buttons
+            label={t("Get Customer Details")}
+            variant="filled"
+            onPress={() => {}}
+            width="100%"
+            iconHeight={10}
+            iconWidth={30}
+            iconGap={30}
+          />
+          </View>
+        )
+
+    case "BankSimulButton":
+      const verifyButtonproperties = (props as SimulButton)
+        .verifyButtonProperties;
+      const resetButtonProperties = (props as SimulButton)
+        .resetButtonProperties;
+      async function getBankDetails() {
+        try {
+          BankDetailsSchema.parse(state.BankDetail);
+          showLoader(true);
+          const response = await getBankDetail({
+            UniqueId: state.UniqueId,
+            BankDetail: {
+              bankAccNo: state.BankDetail.bankAccNo,
+              bankIfsc: state.BankDetail.bankIfsc,
+            },
+          });
+          const responseData: BankDetail = response.data;
+          showLoader(false);
+          if (responseData.bankDataPresent === true) {
+            //todo lock bankaccount number and ifsc
+            handleFormInputChange(
+              "BankDetail",
+              "bankAccHolderName",
+              responseData.bankAccHolderName as string
+            );
+            handleFormInputChange(
+              "BankDetail",
+              "bankNameAndBranch",
+              responseData.bankNameAndBranch as string
+            );
+            handleFormInputChange(
+              "BankDetail",
+              "branchAddress",
+              responseData.branchAddress as string
+            );
+            handleFormInputChange("BankDetail", "bankDataPresent", true);
+          } else {
+            setIsPopupVisible(true);
+            setPopupContent(response.data.errorMessage || "Bank details not found");
+          }
+        } catch (error: any) {
+          if (error instanceof z.ZodError) {
+            ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
+          } else {
+            console.log(error);
+            showLoader(false);
+            setIsPopupVisible(true);
+            setPopupContent("Something went wrong");
+          }
+        }
+      }
+      function resetBankDetails() {
+        handleFormInputChange("BankDetail", "bankAccNo", "");
+        handleFormInputChange("BankDetail", "bankIfsc", "");
+        handleFormInputChange("BankDetail", "bankAccHolderName", "");
+        handleFormInputChange("BankDetail", "bankNameAndBranch", "");
+        handleFormInputChange("BankDetail", "branchAddress", "");
+        handleFormInputChange("BankDetail", "bankDataPresent", 0);
+      }
+      
+      return (
+        <View
+          style={{
+            flexDirection: "row-reverse",
+            justifyContent: "space-evenly",
+            marginBottom: 20,
+          }}
+        >
+          {loader && <Loader isLoading={loader} />}
+          {isPopupVisible && (
+            <Popup isVisible={isPopupVisible} onClose={togglePopup}>
+              {popupContent}
+            </Popup>
+          )}
+          {state.BankDetail.bankDataPresent ? (
+            <Buttons variant="disabled" label="Verified" width={width / 3} />
+          ) : (
+            <Buttons {...verifyButtonproperties} onPress={getBankDetails} />
+          )}
+          <Buttons
+            {...resetButtonProperties}
+            onPress={resetBankDetails}
+            icon={require("../assets/images/update.png")}
+            iconWidth={16}
+            iconHeight={16}
+            iconGap={8}
+          />
+        </View>
+      );
+
     default:
       return null;
   }
@@ -496,14 +599,14 @@ export default Field;
 
 const styles = StyleSheet.create({
   viewNew: {
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     height: height / 17,
     margin: 20,
     borderRadius: 5,
     flexDirection: "column",
     marginTop: 0,
-    borderWidth: 1.5,
-    borderColor: "#D3D3D3",
+    borderWidth: 2,
+    borderColor: "black",
   },
   container: {
     padding: 6,
@@ -522,8 +625,6 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-
-    // backgroundColor: "yellow"
   },
   input: {
     flex: 1,
@@ -537,6 +638,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginLeft: 10,
+  },
+  greenButton: {
+    backgroundColor: "white",
+    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    color: "green",
   },
   buttonText: {
     color: "#fff",

@@ -41,12 +41,6 @@ const AddWarranty = ({ navigation }: NavigationProps) => {
       textContent: "POINTS",
       fontWeight: "700",
     },
-    text3: {
-      color: "#9c9c9c",
-      fontSize: 12,
-      textContent: " ",
-      fontWeight: "700",
-    },
     button: {
       buttonColor: "#F0C300",
       buttonTextColor: "black",
@@ -80,22 +74,60 @@ const AddWarranty = ({ navigation }: NavigationProps) => {
   }, []);
 
   async function saveData() {
-    
     try {
       RegistrationCustomerDetailsSchema.parse(customerState);
       showLoader(true);
       const response = await sendCustomerData(customerState);
       const responseData = response.data;
       showLoader(false);
-      setPopupVisible(true);
-      setPopupContent(responseData.message);
+      if (responseData.errorCode == 1) {
+        var couponPoints = responseData.couponPoints;
+        setScratchCardProps({
+          rewardImage: {
+            width: 100,
+            height: 100,
+            resourceLocation: require("../../../../../assets/images/ic_rewards_gift.png"),
+          },
+          rewardResultText: {
+            color: colors.black,
+            fontSize: 16,
+            textContent: "YOU WON",
+            fontWeight: "700",
+          },
+          text1: {
+            color: colors.black,
+            fontSize: 16,
+            textContent: couponPoints,
+            fontWeight: "700",
+          },
+          text2: {
+            color: colors.black,
+            fontSize: 16,
+            textContent: "POINTS",
+            fontWeight: "700",
+          },
+          button: {
+            buttonColor: colors.yellow,
+            buttonTextColor: colors.black,
+            buttonText: "Scan Again",
+            buttonAction: () =>
+              navigation.reset({ index: 0, routes: [{ name: "Scan Code" }] }),
+            fontWeight: "400",
+          },
+          textInput: false,
+        });
+        setScratchCard(true);
+      } else {
+        setPopupVisible(true);
+        setPopupContent(responseData.errorMsg);
+      }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
       } else {
         showLoader(false);
         setPopupVisible(true);
-        setPopupContent(error.response.data.message);
+        setPopupContent(t("strings:something_wrong"));
       }
     }
     /*

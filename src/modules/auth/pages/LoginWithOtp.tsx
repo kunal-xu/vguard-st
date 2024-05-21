@@ -130,7 +130,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
             },
           });
         }
-        navigation.navigate("RegistrationPage");
+        navigation.reset({ index: 0, routes: [{ name: "RegistrationPage" }] });
       } else if (verificationResponse.status === 202) {
         showLoader(false);
         dispatch({
@@ -141,7 +141,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
             value: number,
           },
         });
-        navigation.navigate("Credentials");
+        navigation.reset({ index: 0, routes: [{ name: "Credentials" }] })
       } else {
         showLoader(false);
         setIsPopupVisible(true);
@@ -246,19 +246,21 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                 <TouchableOpacity onPress={() => getOTP("SMS")}>
                   <Text style={{ color: colors.yellow }}>
                     {t("strings:resend_otp")}
+                    {countdown > 0 ? (
+                  <Text style={styles.greyText}>in {countdown} seconds</Text>
+                ) : null}
                   </Text>
+                  
                 </TouchableOpacity>
               </View>
-              <Text style={styles.greyText}>{t("strings:or")}</Text>
+              {/* <Text style={styles.greyText}>{t("strings:or")}</Text> */}
               <View style={{ flexDirection: "row", gap: 10 }}>
-                <TouchableOpacity onPress={() => getOTP("Voice")}>
+                {/* <TouchableOpacity onPress={() => getOTP("Voice")}>
                   <Text style={{ color: colors.yellow }}>
                     {t("strings:call_to_get_otp")}
                   </Text>
-                </TouchableOpacity>
-                {countdown > 0 ? (
-                  <Text style={styles.greyText}>in {countdown} seconds</Text>
-                ) : null}
+                </TouchableOpacity> */}
+                
               </View>
             </View>
           </View>

@@ -98,7 +98,7 @@ const LeadForm = ({ navigation, route }) => {
       <ScrollView style={{ backgroundColor: "white" }}>
       {isPopupVisible && (
         <Popup isVisible={isPopupVisible} onClose={handleClose}>
-          <Text>{popupMessage}</Text>
+          {popupMessage}
         </Popup>
       )}
         <Loader isLoading={loader} />

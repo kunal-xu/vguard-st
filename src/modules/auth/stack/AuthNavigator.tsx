@@ -26,8 +26,8 @@ const AuthNavigator = () => {
       <Stack.Screen name="forgotPassword" component={ForgotPassword} />
       <Stack.Screen name="loginWithNumber" component={LoginWithNumber} />
       <Stack.Screen name="leadform" component={LeadForm} />
-      <Stack.Screen name='Credentials' component={Credentials} /> */}
-      {/* <Stack.Screen name='PreviewSummary' component={PreviewUserRegistration} />
+      <Stack.Screen name='Credentials' component={Credentials} />
+      {/* <Stack.Screen name='PreviewSummary' component={PreviewUserRegistration} /> */}
     </Stack.Navigator>
   );
 };
@@ -44,3 +44,5 @@ const Kyc = () => {
 };
 
 export default AuthNavigator;
+
+

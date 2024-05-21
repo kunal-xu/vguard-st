@@ -21,7 +21,7 @@ type Action = {
     subfield?:
       | keyof (AddressDetail | BankDetail | PaytmDetail | WelcomeBanner)
       | string;
-    value?: string | number | object | STUser;
+    value?: string | number | object | STUser | boolean;
   };
 };
 

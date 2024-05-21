@@ -2,6 +2,15 @@ import { height, width } from "../../../utils/dimensions";
 import { styles } from "./styles";
 
 export const registrationFields = [
+  // {
+  //   id: "e57905fd-95a3-4642-9129-09012b98e6a1",
+  //   type: "ImagePicker",
+  //   data: "Selfie",
+  //   label: "Profile Picture",
+  //   properties: {
+  //     imageRelated: "Profile"
+  //   }
+  // },
   {
     id: "2af107a0-af3f-4c05-bf43-add3e85f73d1",
     type: "floatingLabelInput",
@@ -17,30 +26,7 @@ export const registrationFields = [
       inputStyles: styles.inputStyles
     }
   },
-  {
-    id: "a3f68cfb-4e14-4d91-96b9-1f4844bc6741",
-    type: "text",
-    label: "strings:lbl_gender_mandatory",
-    properties: {
-      color: "black",
-      marginLeft: 24,
-      marginBottom: 2,
-    },
-  },
-  {
-    id: "07bfda04-2a1c-44f8-b569-9896945fb718",
-    type: "picker",
-    items: ["Select Gender*", "Male", "Female", "Other"],
-    data: "Gender",
-    properties: {
-      mode: "dropdown",
-      style: {
-        color: "black",
-        borderWidth: 2,
-        borderColor: "black",
-      },
-    },
-  },
+  
   {
     id: "c445af89-753c-4956-b490-51b3c29a8e84",
     type: "floatingLabelInput",
@@ -103,6 +89,20 @@ export const registrationFields = [
     },
   },
   {
+    id: "07bfda04-2a1c-44f8-b569-9896945fb718",
+    type: "picker",
+    items: ["Select Gender", "Male", "Female", "Other"],
+    data: "Gender",
+    properties: {
+      mode: "dropdown",
+      style: {
+        color: "black",
+        borderWidth: 2,
+        borderColor: "black",
+      },
+    },
+  },
+  {
     id: "c322d6ac-cfeb-46d4-a977-01d8c65b90da",
     type: "floatingLabelInputWithButton",
     label: "strings:tds_slab",
@@ -117,6 +117,21 @@ export const registrationFields = [
     properties: {
       keyboardType: "default",
       staticLabel: true,
+      containerStyles: styles.container,
+      labelStyles: styles.labelStyles,
+      customLabelStyles: styles.customLabelStyles,
+      inputStyles: styles.inputStyles
+    },
+  },
+  {
+    id: "85935fdc-d4ae-4648-aa53-eac776e462f2",
+    type: "floatingLabelInput",
+    label: "strings:alternate_contact_number",
+    data: "AlternateNumber",
+    properties: {
+      staticLabel: true,
+      maxLength: 10,
+      keyboardType: "number-pad",
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
@@ -145,7 +160,7 @@ export const registrationFields = [
     data: "AddressDetail.currentAddressLine1",
     properties: {
       keyboardType: "default",
-      maxLength: 128,
+      maxLength: 20,
       staticLabel: true,
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
@@ -160,7 +175,7 @@ export const registrationFields = [
     data: "AddressDetail.currentAddressLine2",
     properties: {
       keyboardType: "default",
-      maxLength: 60,
+      maxLength: 20,
       staticLabel: true,
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,

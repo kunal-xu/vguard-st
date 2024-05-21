@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Image,
   ToastAndroid,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import MonthPicker from "react-native-month-year-picker";
 import moment from "moment";
@@ -36,8 +36,11 @@ const Dashboard = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [show, setShow] = useState(false);
-  const items: any[] = ["Select Product"];
+  const items: any[] = ["Select Product", "VNS 400 DIGITAL"];
   const [selectedValue, setSelectedValue] = useState<undefined>();
+  const [earnedPoints, setEarnedPoints] = useState("0");
+  const [redeemablePoints, setRedeemablePoints] = useState("0");
+  const [redeemedPoints, setRedeemedPoints] = useState("0");
   const { state, dispatch } = useData();
   useEffect(() => {
     (async () => {
@@ -50,22 +53,38 @@ const Dashboard = () => {
             value: responseData,
           },
         });
+        setEarnedPoints(state.EarnedPoints as string);
+        setRedeemablePoints(state.RedeemablePoints as string);
+        setRedeemedPoints(state.RedeemedPoints as string);
       } catch (error: any) {
         console.log(error.message);
       }
     })();
   }, []);
-  const handleSearch = () => {
-    if(fromDate === "") {
+  const handleSearch = async () => {
+    if (fromDate === "") {
       ToastAndroid.show("Please select the starting date", ToastAndroid.LONG);
       return;
     }
-    if(toDate === "") {
+    if (toDate === "") {
       ToastAndroid.show("Please select the end date", ToastAndroid.LONG);
       return;
     }
-    ToastAndroid.show("Please complete a scan to download the report", ToastAndroid.LONG);
-  }
+    if(toDate < fromDate) {
+      ToastAndroid.show("Please select the correct date range", ToastAndroid.LONG);
+      return;
+    }
+    // ToastAndroid.show("Please complete a scan to download the report", ToastAndroid.LONG);
+    try {
+      const response = await getMonthWiseEarning(fromDate, toDate);
+      const reponseData = response.data;
+      setEarnedPoints(reponseData.EarnedPoints as string);
+      setRedeemablePoints(reponseData.RedeemablePoints as string);
+      setRedeemedPoints(reponseData.RedeemedPoints as string);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   // useEffect(() => {
   //   if (userData.userRole && userData.userImage) {
 
@@ -86,6 +105,7 @@ const Dashboard = () => {
   // }, [userData.userRole, userData.userImage]);
   const [selectedYear, setSelectedYear] = useState(moment().format("YYYY"));
   const [selectedMonth, setSelectedMonth] = useState(moment().format("MM"));
+  const [selectedDay, setSelectedDay] = useState(moment().format("DD"));
   // useEffect(() => {
   //   getMonthWiseEarning(selectedMonth, selectedYear)
   //     .then((data) => data.data)
@@ -97,105 +117,117 @@ const Dashboard = () => {
 
   return (
     <ScrollView>
-    <View style={styles.mainWrapper}>
-      <View style={styles.profileDetails}>
-        <View style={styles.ImageProfile}>
-          <Image
-            source={{
-              uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp?pid=ImgGn",
+      <View style={styles.mainWrapper}>
+        <View style={styles.profileDetails}>
+          <View style={styles.ImageProfile}>
+            <Image
+              source={{
+                uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp?pid=ImgGn",
+              }}
+              style={{ width: "100%", height: "100%", borderRadius: 100 }}
+              resizeMode="contain"
+            />
+          </View>
+          <View style={styles.profileText}>
+            <Text style={styles.textDetail}>{state.Name}</Text>
+            <Text style={styles.textDetail}>{state.RishtaID}</Text>
+          </View>
+        </View>
+        <View style={styles.viewNew}>
+          <Picker
+            mode="dropdown"
+            style={{
+              color: "black",
+              borderWidth: 2,
+              borderColor: "black",
             }}
-            style={{ width: "100%", height: "100%", borderRadius: 100 }}
-            resizeMode="contain"
+            selectedValue={selectedValue}
+            onValueChange={(value, index) => {
+              setSelectedValue(value);
+            }}
+          >
+            {items?.map((item, index) => {
+              return (
+                <Picker.Item
+                  label={item}
+                  value={index === 0 ? "undefined" : item}
+                />
+              );
+            })}
+          </Picker>
+        </View>
+
+        <View style={styles.points}>
+          <View style={styles.leftPoint}>
+            <Text style={styles.greyText}>{t("strings:points_earned")}</Text>
+
+            <Text style={styles.point}>
+              {Number(earnedPoints)?.toFixed(1) || 0}
+            </Text>
+          </View>
+          <View style={styles.middlePoint}>
+            <Text style={styles.greyText}>
+              {t("strings:redeemable_points")}
+            </Text>
+            <Text style={styles.point}>
+              {Number(redeemablePoints)?.toFixed(1) || 0}
+            </Text>
+          </View>
+          <View style={styles.rightPoint}>
+            <Text style={styles.greyText}>{t("strings:redeemed_points")}</Text>
+            <Text style={styles.point}>
+              {Number(redeemedPoints)?.toFixed(1) || 0}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.container}>
+          <DatePickerField
+            label="Date (From)"
+            date={fromDate}
+            onDateChange={(selectedDate) => setFromDate(selectedDate)}
+            minDate={state.InvitationDate}
+          />
+          <DatePickerField
+            label="Date (To)"
+            date={toDate}
+            onDateChange={(selectedDate) => setToDate(selectedDate)}
+            minDate={state.InvitationDate}
           />
         </View>
-        <View style={styles.profileText}>
-          <Text style={styles.textDetail}>{state.Name}</Text>
-          <Text style={styles.textDetail}>{state.RishtaID}</Text>
+        <View style={{ alignItems: "flex-end", marginTop: 20 }}>
+          <Buttons
+            variant="filled"
+            label="Search"
+            width="30%"
+            onPress={handleSearch}
+          />
         </View>
-      </View>
-      <View style={styles.viewNew}>
-        <Picker
-          mode="dropdown"
-          style={{
-            color: "black",
-            borderWidth: 2,
-            borderColor: "black",
-          }}
-          selectedValue={selectedValue}
-          onValueChange={(value, index) => {
-            setSelectedValue(value);
-          }}
+        <Text
+          style={{ color: colors.grey, fontStyle: "italic", marginTop: 10 }}
         >
-          {items?.map((item, index) => {
-            return (
-              <Picker.Item
-                label={item}
-                value={index === 0 ? "undefined" : item}
-              />
-            );
-          })}
-        </Picker>
-      </View>
-
-      <View style={styles.points}>
-        <View style={styles.leftPoint}>
-          <Text style={styles.greyText}>{t("strings:points_earned")}</Text>
-
-          <Text style={styles.point}>
-            {Number(state.EarnedPoints)?.toFixed(1) || 0}
-          </Text>
+          By default, points are shown up-to-date for all enrolled product
+          categories.
+        </Text>
+        <View style={styles.options}>
+          <CustomTouchableOption
+            text="strings:product_wise_earning"
+            iconSource={require("../../../../../assets/images/ic_bank_transfer.webp")}
+            screenName="Product Wise Earning"
+          />
+          <CustomTouchableOption
+            text="strings:scheme_wise_earning"
+            iconSource={require("../../../../../assets/images/ic_paytm_transfer.webp")}
+            screenName="Scheme Wise Earning"
+          />
+          <CustomTouchableOption
+            text="strings:your_rewards"
+            iconSource={require("../../../../../assets/images/ic_egift_cards.webp")}
+            screenName="Your Rewards"
+          />
         </View>
-        <View style={styles.middlePoint}>
-          <Text style={styles.greyText}>{t("strings:redeemable_points")}</Text>
-          <Text style={styles.point}>
-            {Number(state.RedeemablePoints)?.toFixed(1) || 0}
-          </Text>
-        </View>
-        <View style={styles.rightPoint}>
-          <Text style={styles.greyText}>{t("strings:redeemed_points")}</Text>
-          <Text style={styles.point}>
-            {Number(state.RedeemedPoints)?.toFixed(1) || 0}
-          </Text>
-        </View>
+        <NeedHelp />
       </View>
-
-      <View style={styles.container}>
-        <DatePickerField
-          label="Date (From)"
-          date={fromDate}
-          onDateChange={(selectedDate) => setFromDate(selectedDate)}
-          minDate={state.InvitationDate}
-        />
-        <DatePickerField
-          label="Date (To)"
-          date={toDate}
-          onDateChange={(selectedDate) => setToDate(selectedDate)}
-          
-        />
-      </View>
-      <View style={{alignItems: "flex-end", marginTop: 20}}>
-        <Buttons variant="filled" label="Search" width="30%" onPress={handleSearch}/>
-      </View>
-      <Text style={{color: colors.grey, fontStyle: "italic", marginTop: 10}}>By default, points are shown up-to-date for all enrolled product categories.</Text>
-      <View style={styles.options}>
-        <CustomTouchableOption
-          text="strings:product_wise_earning"
-          iconSource={require("../../../../../assets/images/ic_bank_transfer.webp")}
-          screenName="Product Wise Earning"
-        />
-        <CustomTouchableOption
-          text="strings:scheme_wise_earning"
-          iconSource={require("../../../../../assets/images/ic_paytm_transfer.webp")}
-          screenName="Scheme Wise Earning"
-        />
-        <CustomTouchableOption
-          text="strings:your_rewards"
-          iconSource={require("../../../../../assets/images/ic_egift_cards.webp")}
-          screenName="Your Rewards"
-        />
-      </View>
-      <NeedHelp />
-    </View>
     </ScrollView>
   );
 };
@@ -203,6 +235,7 @@ const Dashboard = () => {
 const styles = StyleSheet.create({
   mainWrapper: {
     padding: 15,
+    backgroundColor: "white",
   },
   viewNew: {
     backgroundColor: "#fff",

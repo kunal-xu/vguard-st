@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import messaging from "@react-native-firebase/messaging";
 
-// const BASE_URL = "http://192.168.114.165:5005/vguard/api";
+// const BASE_URL = "http://192.168.148.248:5005/vguard/api";
 const BASE_URL = 'https://infra.4test.info/vguard/api';
 
 export const api: AxiosInstance = axios.create({
@@ -461,7 +461,7 @@ export function getWhatsNew() {
 }
 
 export function getSchemeImages() {
-  const path = "schemes/";
+  const path = "schemes";
   return createGetRequest(path);
 }
 
@@ -578,8 +578,8 @@ export function getReferralName(referralCode: string) {
   return createGetRequest(path);
 }
 
-export function getMonthWiseEarning(month: string, year: string) {
-  const path = `user/monthWiseEarning/${month}/${year}`;
+export function getMonthWiseEarning(from: string, to: string) {
+  const path = `user/monthWiseEarning/${from}/${to}`;
   return createGetRequest(path);
 }
 

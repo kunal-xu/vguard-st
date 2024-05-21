@@ -187,9 +187,9 @@ export interface NavigationProps {
 
 export interface PopupProps {
   isVisible: boolean;
-  onClose: () => void;
-  children: ReactNode;
-  acceptUpdate: () => void;
+  onClose?: () => void;
+  children: string;
+  acceptUpdate?: () => void;
 }
 
 export interface ActionPickerModalProps {

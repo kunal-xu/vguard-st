@@ -7,13 +7,15 @@ import Loader from "../../../components/Loader";
 import { credentialsFields } from "../fields/credentialsFIelds";
 import Field from "../../../components/Field";
 import { NavigationProps } from "../../../utils/interfaces";
-import { registerNewUser } from "../../../utils/apiservice";
+import { loginWithPassword, registerNewUser } from "../../../utils/apiservice";
 import { useData } from "../../../hooks/useData";
 import { PasswordMatchSchema } from "../../../utils/schemas/Credentials";
 import { z } from "zod";
+import { useAuth } from "../../../hooks/useAuth";
 
 const Credentials = ({ navigation }: NavigationProps) => {
   const { state, dispatch } = useData();
+  const { login } = useAuth();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -22,22 +24,29 @@ const Credentials = ({ navigation }: NavigationProps) => {
     try {
       PasswordMatchSchema.parse(state);
       setIsLoading(true);
-      console.log(state);
       const response = await registerNewUser(state);
       const responseData = response.data;
-      console.log(responseData)
       setIsLoading(false);
       setIsPopupVisible(true);
       setPopupMessage(responseData.message);
+      const loginResponse = await loginWithPassword(state.Contact as string, state.pwd as string)
+      const loginResponseData = loginResponse.data;
       dispatch({
-        type: "CLEAR_ALL_FIELDS",
-        payload: {},
+        type: "GET_ALL_FIELDS",
+        payload: {
+          value: loginResponseData.stUser,
+        },
       });
-      setTimeout(() => {
-        navigation.navigate("login");
-      }, 1200);
+      login(loginResponseData)
+
+      // dispatch({
+      //   type: "CLEAR_ALL_FIELDS",
+      //   payload: {},
+      // });
+      // setTimeout(() => {
+      //   navigation.navigate("login");
+      // }, 1200);
     } catch (error: any) {
-      console.log(error);
       if (error instanceof z.ZodError) {
         ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
       } else {
@@ -70,7 +79,7 @@ const Credentials = ({ navigation }: NavigationProps) => {
               isVisible={isPopupVisible}
               onClose={() => setIsPopupVisible(false)}
             >
-              <Text>{popupMessage}</Text>
+              {popupMessage}
             </Popup>
           )}
           {credentialsFields.map((field) => (
