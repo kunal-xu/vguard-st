@@ -1,0 +1,107 @@
+import React from "react";
+import { View, Text, ScrollView, Image } from "react-native";
+import { RegistrationSchema } from "@/src/utils/schemas/Registration";
+import { useData } from "@/src/hooks/useData";
+import Field from "@/src/components/Field";
+import { registrationFields } from "./fields/registrationFields";
+import Buttons from "@/src/components/Buttons";
+import { height, width } from "@/src/utils/dimensions";
+import Toast from "react-native-root-toast";
+
+const Registration = () => {
+  const { state } = useData();
+
+  function validateFields() {
+    try {
+      RegistrationSchema.parse(state);
+    } catch (error: any) {
+      Toast.show(error.errors[0].message, {
+        containerStyle: {
+          backgroundColor: "black",
+          borderRadius: 20,
+          paddingHorizontal: 24,
+          paddingVertical: 12,
+          marginHorizontal: 20,
+          marginBottom: 50,
+        },
+        textStyle: {
+          color: "#fff",
+          fontSize: 14,
+        },
+        duration: Toast.durations.LONG,
+        position: Toast.positions.BOTTOM,
+        animation: true,
+        hideOnPress: true,
+        delay: 0,
+      });
+    }
+  }
+
+  return (
+    <ScrollView style={{ backgroundColor: "white" }}>
+      <View style={{ backgroundColor: "white" }}>
+        <View
+          style={{
+            backgroundColor: "white",
+            height: height / 8,
+            margin: 10,
+            flexDirection: "row",
+            width: width,
+            justifyContent: "flex-start",
+            alignItems: "center",
+            padding: 5,
+          }}
+        >
+          <Image source={require("../../assets/images/ac_icon.png")} />
+          <View
+            style={{
+              backgroundColor: "white",
+              margin: 10,
+              justifyContent: "space-evenly",
+              height: height / 10,
+              width: width,
+            }}
+          >
+            <Text style={{ color: "black" }}>Contact: {state.Contact}</Text>
+            <Text style={{ color: "black" }}>Unique ID: {state.UniqueId}</Text>
+          </View>
+        </View>
+        {registrationFields.map((field) => (
+          <Field
+            id={field.id}
+            key={field.id}
+            type={field.type}
+            data={field.data}
+            label={field.label}
+            items={field.items}
+            properties={field.properties}
+            source={field.source}
+          />
+        ))}
+        <View
+          style={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            marginVertical: 20,
+          }}
+        >
+          <Buttons
+            label="Next"
+            onPress={() => {
+              validateFields();
+            }}
+            variant="filled"
+            width={350}
+            icon={require("../../assets/images/arrow.png")}
+            iconWidth={50}
+            iconHeight={20}
+            iconGap={10}
+          />
+        </View>
+      </View>
+    </ScrollView>
+  );
+};
+
+export default Registration;

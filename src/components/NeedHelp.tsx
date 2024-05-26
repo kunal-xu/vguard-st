@@ -1,8 +1,7 @@
 
-import { View, Text, StyleSheet, Image, TouchableOpacity, Linking } from 'react-native'
+import { View, Text, StyleSheet, Image, Pressable, Linking } from 'react-native'
 import React from 'react'
-import { responsiveFontSize } from 'react-native-responsive-dimensions'
-import colors from '../../colors'
+import colors from '../utils/colors'
 
 import { useTranslation } from 'react-i18next';
 
@@ -29,7 +28,7 @@ const NeedHelp = () => {
 			<Text style={styles.textHeader}>
 				{t('strings:need_help')}
 			</Text>
-			<TouchableOpacity onPress={callPhoneNumber}>
+			<Pressable onPress={callPhoneNumber}>
 				<View style={styles.helpContainer}>
 					<Image
 						source={require('../assets/images/ic_phone_call_2.png')}
@@ -39,8 +38,8 @@ const NeedHelp = () => {
 						{phoneNumber}
 					</Text>
 				</View>
-			</TouchableOpacity>
-			<TouchableOpacity onPress={sendEmail}>
+			</Pressable>
+			<Pressable onPress={sendEmail}>
 				<View style={styles.helpContainer}>
 					<Image
 						source={require('../assets/images/ic_email.png')}
@@ -50,8 +49,8 @@ const NeedHelp = () => {
 						{email}
 					</Text>
 				</View>
-			</TouchableOpacity>
-			<TouchableOpacity onPress={openWhatsApp}>
+			</Pressable>
+			<Pressable onPress={openWhatsApp}>
 				<View style={styles.helpContainer}>
 					<Image
 						source={require('../assets/images/ic_whatsapp.webp')}
@@ -62,7 +61,7 @@ const NeedHelp = () => {
 					</Text>
 				</View>
 
-			</TouchableOpacity>
+			</Pressable>
 		</View>
 	);
 };
@@ -76,7 +75,7 @@ const styles = StyleSheet.create({
 	textHeader: {
 		fontWeight: 'bold',
 		color: colors.black,
-		fontSize: responsiveFontSize(2.5),
+		fontSize: 25,
 	},
 	helpContainer: {
 		display: 'flex',
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
 		width: 20,
 	},
 	textHelp: {
-		fontSize: responsiveFontSize(1.7),
+		fontSize: 17,
 		fontWeight: 'bold',
 		color: colors.black,
 	},

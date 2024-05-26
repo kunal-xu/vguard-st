@@ -8,7 +8,7 @@ import {
 	Image,
 } from 'react-native';
 import closeIcon from '../assets/images/ic_close.png';
-import colors from '../../colors';
+import colors from '../utils/colors';
 import {
 	responsiveFontSize,
 	responsiveHeight,

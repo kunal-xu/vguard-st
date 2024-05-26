@@ -8,9 +8,7 @@ import {
   View,
   Modal,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import colors from "../../colors";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import colors from "../utils/colors";
 
 const BonusPopup = () => {
   const [isModalVisible, setModalVisible] = useState(true);

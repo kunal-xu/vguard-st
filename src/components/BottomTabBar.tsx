@@ -7,10 +7,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import BottomTabLogo from './BottomTabLogo';
-import Icon from 'react-native-vector-icons/Ionicons';
-import colors from '../../colors';
-import { responsiveFontSize } from 'react-native-responsive-dimensions';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { getNotificationCount } from '../utils/apiservice';
+import colors from '../utils/colors';
 
 const BottomTabBar = ({ state, descriptors, navigation }) => {
   const { routes = [], index: activeIndex } = state;
@@ -73,7 +72,7 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
               <View style={{ alignItems: 'center' }}>
                 {route.name === 'Notification' && (
                   <View style={styles.badgeContainer}>
-                    <Icon name={icon} size={24} color={isFocused ? '#673ab7' : '#222'} />
+                    <Ionicons name={icon} size={24} color={isFocused ? '#673ab7' : '#222'} />
                     {count > '0' &&
                       (<View style={styles.badge}>
                         <Text style={styles.badgeText}>{count}</Text>
@@ -82,7 +81,7 @@ const BottomTabBar = ({ state, descriptors, navigation }) => {
                   </View>
                 )}
                 {route.name !== 'Notification' && (
-                  <Icon name={icon} size={24} color={isFocused ? '#673ab7' : '#222'} />
+                  <Ionicons name={icon} size={24} color={isFocused ? '#673ab7' : '#222'} />
                 )}
               </View>
             </TouchableOpacity>
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     color: colors.black,
-    fontSize: responsiveFontSize(0.8),
+    fontSize: 15,
     fontWeight: 'bold',
     textAlign: 'center'
   },

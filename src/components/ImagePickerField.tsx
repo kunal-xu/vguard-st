@@ -6,20 +6,12 @@ import {
   StyleSheet,
   Image,
   Modal,
-  Dimensions,
   ImageBackground,
 } from "react-native";
-import {
-  launchCamera,
-  launchImageLibrary,
-  ImagePickerResponse,
-} from "react-native-image-picker";
-import colors from "../../colors";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
+import colors from "../utils/colors";
 import Popup from "./Popup";
 import { getImages } from "../utils/FileUtils";
-
-const { width, height } = Dimensions.get("window");
+import { height } from "../utils/dimensions";
 
 interface ImagePickerFieldProps {
   label: string;
@@ -82,63 +74,63 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
 
   const handleCameraUpload = () => {
     setShowImagePickerModal(false);
-    launchCamera(
-      {
-        mediaType: "photo",
-        includeBase64: false,
-      },
-      (response: ImagePickerResponse) => {
-        handleImageResponse(response);
-      }
-    );
+    // launchCamera(
+    //   {
+    //     mediaType: "photo",
+    //     includeBase64: false,
+    //   },
+    //   (response: ImagePickerResponse) => {
+    //     handleImageResponse(response);
+    //   }
+    // );
   };
 
   const handleGalleryUpload = () => {
     setShowImagePickerModal(false);
-    launchImageLibrary(
-      {
-        mediaType: "photo",
-        includeBase64: false,
-      },
-      (response: ImagePickerResponse) => {
-        handleImageResponse(response);
-      }
-    );
+    // launchImageLibrary(
+    //   {
+    //     mediaType: "photo",
+    //     includeBase64: false,
+    //   },
+    //   (response: ImagePickerResponse) => {
+    //     handleImageResponse(response);
+    //   }
+    // );
   };
 
-  const handleImageResponse = async (response: ImagePickerResponse) => {
-    const fileData = {
-      uri: response.assets[0].uri,
-      type: response.assets[0].type,
-      name: response.assets[0].fileName,
-    };
+  // const handleImageResponse = async (response: ImagePickerResponse) => {
+  //   const fileData = {
+  //     uri: response.assets[0].uri,
+  //     type: response.assets[0].type,
+  //     name: response.assets[0].fileName,
+  //   };
 
-    if (response.didCancel) {
-      console.error("Image picker was canceled");
-    } else if (response.error) {
-      console.error("Image picker error: ", response.error);
-    } else {
-      setSelectedImage(response?.assets[0]?.uri);
-      setSelectedImageName(response?.assets[0]?.fileName || "Image");
-      setIsImageSelected(true);
+  //   if (response.didCancel) {
+  //     console.error("Image picker was canceled");
+  //   } else if (response.error) {
+  //     console.error("Image picker error: ", response.error);
+  //   } else {
+  //     setSelectedImage(response?.assets[0]?.uri);
+  //     setSelectedImageName(response?.assets[0]?.fileName || "Image");
+  //     setIsImageSelected(true);
 
-      try {
-        // const apiResponse = await triggerApiWithImage(fileData);
-        onImageChange(
-          response?.assets[0]?.uri,
-          response?.assets[0]?.type,
-          response?.assets[0]?.fileName,
-          label
-        );
-      } catch (error) {
-        console.error(
-          "Error triggering API with image in ImagePickerField:",
-          error
-        );
-        throw error;
-      }
-    }
-  };
+  //     try {
+  //       // const apiResponse = await triggerApiWithImage(fileData);
+  //       onImageChange(
+  //         response?.assets[0]?.uri,
+  //         response?.assets[0]?.type,
+  //         response?.assets[0]?.fileName,
+  //         label
+  //       );
+  //     } catch (error) {
+  //       console.error(
+  //         "Error triggering API with image in ImagePickerField:",
+  //         error
+  //       );
+  //       throw error;
+  //     }
+  //   }
+  // };
   return (
     <View style={styles.container}>
       <Popup isVisible={isPopupVisible} onClose={() => setPopupVisible(false)}>
@@ -278,7 +270,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   label: {
-    fontSize: responsiveFontSize(1.7),
+    fontSize: 17,
     fontWeight: "bold",
     color: colors.black,
     width: "92%",
@@ -287,7 +279,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -10,
     left: 0,
-    fontSize: responsiveFontSize(1.5),
+    fontSize: 15,
     fontWeight: "bold",
     color: colors.black,
     // backgroundColor: colors.white,
@@ -339,7 +331,7 @@ const styles = StyleSheet.create({
   },
   imageName: {
     color: colors.black,
-    fontSize: responsiveFontSize(1.5),
+    fontSize: 15,
     width: "92%",
   },
   selectedContainer: {
@@ -360,12 +352,12 @@ const styles = StyleSheet.create({
   },
   blackText: {
     color: colors.black,
-    fontSize: responsiveFontSize(2.2),
+    fontSize: 22,
     width: "100%",
   },
   blackHeading: {
     color: colors.black,
-    fontSize: responsiveFontSize(2.3),
+    fontSize: 23,
     fontWeight: "bold",
   },
 });

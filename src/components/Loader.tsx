@@ -25,12 +25,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Background color with transparency
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   loaderBackground: {
-    backgroundColor: 'white', // White background for the loader
-    borderRadius: 10, // Add rounded corners or adjust as needed
-    padding: 20, // Add padding to the loader
+    backgroundColor: 'white',
+    borderRadius: 6,
+    padding: 20,
   },
 });
 

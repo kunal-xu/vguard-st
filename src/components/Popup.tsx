@@ -10,12 +10,8 @@ import {
 } from 'react-native';
 import closeIcon from '../assets/images/ic_close.png';
 import checkIcon from '../assets/images/ic_tick_black.png';
-import colors from '../../colors';
-import {
-	responsiveFontSize,
-	responsiveHeight,
-} from 'react-native-responsive-dimensions';
 import { PopupProps } from '../utils/interfaces';
+import colors from '../utils/colors';
 
 const Popup = ({ isVisible, onClose, children, acceptUpdate }: PopupProps) => {
 	if (!isVisible) {
@@ -93,15 +89,15 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		bottom: 10,
 		right: 10,
-		width: responsiveHeight(8),
-		height: responsiveHeight(8),
+		width: 10,
+		height: 10,
 	},
 	checkButton: {
 		position: 'absolute',
 		bottom: 23,
 		right: 80,
-		width: responsiveHeight(5.5),
-		height: responsiveHeight(5.5),
+		width: 10,
+		height: 10,
 		// padding:2
 	},
 	closeButtonText: {
@@ -109,17 +105,17 @@ const styles = StyleSheet.create({
 	},
 	popupText: {
 		color: colors.black,
-		fontSize: responsiveFontSize(2.2),
+		fontSize: 22,
 		textAlign: 'center',
 		fontWeight: 'bold',
-		lineHeight: responsiveHeight(3),
+		lineHeight: 30,
 		width: '70%',
 	},
 	linkText: {
-		fontSize: responsiveFontSize(2.0),
+		fontSize: 20,
 		fontWeight: 'bold',
 		height: 21,
-		lineHeight: responsiveHeight(3.0),
+		lineHeight: 30,
 		textDecorationLine: 'underline',
 		color: 'blue',
 	}

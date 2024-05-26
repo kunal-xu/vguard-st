@@ -48,8 +48,7 @@ import { z } from "zod";
 import TDSPopup from "./TDSPopup";
 import { TDS_CONSENT_MESSAGE } from "../utils/constants";
 import ImagePickerField from "./ImagePickerField";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { ButtonProps } from "react-native-paper";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface RuleItem {
   id: number;
@@ -93,10 +92,7 @@ interface TextField extends BaseFieldProps {
   properties: StyleProp<TextStyle>;
 }
 
-interface SimulButton extends BaseFieldProps {
-  verifyButtonProperties: ButtonProps;
-  resetButtonProperties: ButtonProps;
-}
+
 
 type FieldProps =
   | FloatingLabelInputField
@@ -106,7 +102,6 @@ type FieldProps =
   | TextField
   | BaseFieldProps
   | ButtonsProps
-  | SimulButton;
 
 const Field = (props: FieldProps) => {
   const { type, source } = props;
@@ -421,7 +416,7 @@ const Field = (props: FieldProps) => {
                 disabled={Boolean(state.TDSSlab)}
               >
                 {state.TDSSlab ? (
-                  <Icon name="check" size={24} color="green" />
+                  <Ionicons name="check" size={24} color="green" />
                 ) : (
                   <Text style={styles.buttonText}>Verify</Text>
                 )}
@@ -438,7 +433,7 @@ const Field = (props: FieldProps) => {
                 disabled={Boolean(state.PaytmDetail.upiVerified)}
               >
                 {state.PaytmDetail.upiVerified ? (
-                  <Icon name="check" size={24} color="green" />
+                  <Ionicons name="check" size={24} color="green" />
                 ) : (
                   <Text style={styles.buttonText}>Verify</Text>
                 )}

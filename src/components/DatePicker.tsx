@@ -1,6 +1,6 @@
 import { StyleSheet, TextInput, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import colors from '../../colors';
+import colors from '../utils/colors';
 import { DatePickerProps } from '../utils/interfaces';
 
 

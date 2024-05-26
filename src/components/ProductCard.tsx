@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import colors from '../../colors';
-import { responsiveFontSize } from 'react-native-responsive-dimensions';
+import colors from '../utils/colors';
 
 const ProductCard = ({ product, onPress }) => {
 	return (
@@ -38,13 +37,13 @@ const styles = StyleSheet.create({
 		backgroundColor: 'yellow'
 	},
 	title: {
-		fontSize: responsiveFontSize(1.7),
+		fontSize: 17,
 		fontWeight: 'bold',
 		textAlign: 'center',
 		color: colors.black
 	},
 	price: {
-		fontSize: responsiveFontSize(1.5),
+		fontSize: 15,
 		fontWeight: 'bold',
 		color: colors.black,
 		textAlign: 'center',

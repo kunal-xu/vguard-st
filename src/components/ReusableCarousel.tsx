@@ -6,8 +6,6 @@ import {
   Dimensions,
   ImageBackground,
 } from "react-native";
-import Carousel, { Pagination } from "react-native-snap-carousel";
-import colors from "../../colors";
 
 const ReusableCarousel = ({
   data,
@@ -48,7 +46,7 @@ const ReusableCarousel = ({
 
   return (
     <View style={{ height: carouselHeight }}>
-      <Carousel
+      {/* <Carousel
         data={data}
         renderItem={renderItem}
         sliderWidth={screenWidth}
@@ -56,10 +54,10 @@ const ReusableCarousel = ({
         loop={true}
         onSnapToItem={(index) => setActiveIndex(index)}
         firstItem={activeIndex}
-      />
-      {data?.length > 0 && (
+      /> */}
+      {/* {data?.length > 0 && (
         <Pagination activeDotIndex={activeIndex} dotsLength={data.length} />
-      )}
+      )} */}
     </View>
   );
 };

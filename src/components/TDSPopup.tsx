@@ -9,12 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { RadioButton } from "react-native-paper";
-import {
-  responsiveScreenHeight,
-  responsiveScreenWidth,
-} from "react-native-responsive-dimensions";
-import colors from "../../colors";
+
+import colors from "../utils/colors";
 import Buttons from "./Buttons";
 import { TDS_CONSENT_MESSAGE } from "../utils/constants";
 import Loader from "./Loader";
@@ -134,8 +130,8 @@ const styles = StyleSheet.create({
     paddingRight: 5,
     backgroundColor: "white",
     borderRadius: 10,
-    width: responsiveScreenWidth(90),
-    minHeight: responsiveScreenHeight(20),
+    width: 90,
+    minHeight: 20,
   },
   header: {
     color: "black",
@@ -154,7 +150,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     marginTop: 5,
     marginRight: 20,
-    width: responsiveScreenWidth(90) - responsiveScreenWidth(15),
+    width: 75,
     fontSize: 15,
     // width:"85%"
   },

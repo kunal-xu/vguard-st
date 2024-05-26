@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import colors from '../../colors';
+import colors from '../utils/colors';
 import { responsiveFontSize } from 'react-native-responsive-dimensions';
 
 const MultiSelectPickerField = ({
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     borderColor: colors.grey,
   },
   label: {
-    fontSize: responsiveFontSize(1.7),
+    fontSize: 17,
     fontWeight: 'bold',
     color: colors.black,
     backgroundColor: colors.white,
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -8,
     left: 10,
-    fontSize: responsiveFontSize(1.5),
+    fontSize: 15,
     color: colors.black,
   },
   dropdownContainer: {
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dropdownText: {
-    fontSize: responsiveFontSize(1.7),
+    fontSize: 17,
     color: colors.black,
   },
   dropdownList: {
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGrey,
   },
   itemText: {
-    fontSize: responsiveFontSize(1.7),
+    fontSize: 17,
     color: colors.black,
   },
   selectedItem: {

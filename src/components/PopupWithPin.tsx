@@ -10,12 +10,7 @@ import {
 } from 'react-native';
 import closeIcon from '../assets/images/ic_close.png';
 import okIcon from '../assets/images/ic_accept_black2.png';
-
-import colors from '../../colors';
-import {
-  responsiveFontSize,
-  responsiveHeight,
-} from 'react-native-responsive-dimensions';
+import colors from '../utils/colors';
 import { useTranslation } from 'react-i18next';
 
 interface PopupProps {
@@ -97,8 +92,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   closeButton: {
-    width: responsiveHeight(8),
-    height: responsiveHeight(8),
+    width: 80,
+    height: 80,
   },
   buttons: {
     display: 'flex',
@@ -110,10 +105,10 @@ const styles = StyleSheet.create({
   },
   popupText: {
     color: colors.black,
-    fontSize: responsiveFontSize(2),
+    fontSize: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    lineHeight: responsiveHeight(3),
+    lineHeight: 30,
     width: '90%',
   },
   pinInput: {

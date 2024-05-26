@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-import messaging from "@react-native-firebase/messaging";
+// import messaging from "@react-native-firebase/messaging";
 
 // const BASE_URL = "http://192.168.148.248:5005/vguard/api";
 const BASE_URL = 'https://infra.4test.info/vguard/api';
@@ -52,22 +52,22 @@ async function createGetRequest(relativeUrl: string): Promise<AxiosResponse> {
   }
 }
 
-const update_fcm_token = async () => {
-  const path = "pushNotification/registerToken";
-  try {
-    let fcmtoken = await messaging().getToken();
-    if (fcmtoken) {
-      let body = {
-        fcmToken: fcmtoken,
-      };
-      await createPostRequest(path, body);
-    } else {
-      console.log("Error : Issue in firebase FCM generater, ", fcmtoken);
-    }
-  } catch (e) {
-    console.log("Error : ", e);
-  }
-};
+// const update_fcm_token = async () => {
+//   const path = "pushNotification/registerToken";
+//   try {
+//     let fcmtoken = await messaging().getToken();
+//     if (fcmtoken) {
+//       let body = {
+//         fcmToken: fcmtoken,
+//       };
+//       await createPostRequest(path, body);
+//     } else {
+//       console.log("Error : Issue in firebase FCM generater, ", fcmtoken);
+//     }
+//   } catch (e) {
+//     console.log("Error : ", e);
+//   }
+// };
 
 export async function loginWithPassword(
   username: string,

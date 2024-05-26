@@ -9,7 +9,7 @@ import React, {
 } from "react";
 import { User } from "../utils/interfaces";
 import { api, logoutUser, newTokens } from "../utils/apiservice";
-import { storage } from "../..";
+import SecureStore from 'expo-secure-store';
 
 interface AuthContextProps {
   setIsUserAuthenticated: Dispatch<SetStateAction<boolean>>;
@@ -31,15 +31,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     useState<boolean>(false);
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
-  const login = async (user: User) => {
-    storage.set("refreshToken", JSON.stringify(user.tokens.refreshToken));
+   async function login(user: User)  {
+    // storage.set("refreshToken", JSON.stringify(user.tokens.refreshToken));
+    await SecureStore.setItemAsync("refreshToken", JSON.stringify(user.tokens.refreshToken));
     setIsUserAuthenticated(true);
   };
-
-  const logout = async () => {
+  
+  async function logout(){
     try {
       await logoutUser();
-      storage.clearAll();
+      // storage.clearAll();
+      await SecureStore.deleteItemAsync("refreshToken")
       setIsUserAuthenticated(false);
     } catch (error) {
       console.error("Error while logging out:", error);
@@ -49,15 +51,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     (async () => {
       try {
-        const refreshToken: string = storage.getString(
-          "refreshToken"
-        ) as string;
+        // const refreshToken: string = storage.getString(
+        //   "refreshToken"
+        // ) as string;
+        const refreshToken: Promise<string> = SecureStore.getItemAsync("refreshToken") as Promise<string>;
         if (refreshToken) {
-          const refreshTokenData = JSON.parse(refreshToken);
+          const refreshTokenData = JSON.parse(await refreshToken);
           const { accessToken, newRefreshToken } = await newTokens(
             refreshTokenData
           );
-          storage.set("refreshToken", JSON.stringify(newRefreshToken));
+          // storage.set("refreshToken", JSON.stringify(newRefreshToken));
+          await SecureStore.setItemAsync("refreshToken", JSON.stringify(newRefreshToken));
           api.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${accessToken}`;

@@ -1,8 +1,4 @@
 import { Image, Modal, StyleSheet, TouchableOpacity, View } from "react-native";
-import {
-  responsiveHeight,
-  responsiveWidth,
-} from "react-native-responsive-dimensions";
 
 const ImagePreview = ({ close, imageUri, visible }) => {
   // const closeModal = () => {

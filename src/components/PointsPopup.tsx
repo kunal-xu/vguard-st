@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, Text, Linking, Image, View, Modal } from 'react-native';
-import colors from '../../colors';
+import colors from '../utils/colors';
 
 const PointsPopup = () => {
 	const [isModalVisible, setModalVisible] = useState(true);

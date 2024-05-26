@@ -1,8 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import colors from "../../colors";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { ButtonsProps } from "../utils/interfaces";
+import colors from "../utils/colors";
 
 const Buttons = (props: ButtonsProps) => {
   const {
@@ -22,14 +21,8 @@ const Buttons = (props: ButtonsProps) => {
       return [styles.outlinedButton, { width }];
     } else if (variant === "filled") {
       return [styles.filledButton, { width }];
-    } else if (variant === "verifyBank") {
-      return [styles.bankButton, { width }];
-    } else if (variant === "disabled") {
-      return [styles.disabledButton, { width }];
-    } else if (variant === "blackButton") {
-      return [styles.blackButton, { width }];
-    } else if (variant === "reduceOpacity") {
-      return [styles.disabledColor, { width }];
+    } else if (variant === "verify") {
+      return [styles.verifyButton, { width }];
     } else {
       return [styles.defaultButton, { width }];
     }
@@ -38,16 +31,12 @@ const Buttons = (props: ButtonsProps) => {
     <TouchableOpacity
       style={[styles.button, getButtonStyle(), wrapperCustomStyle]}
       onPress={onPress}
-      disabled={
-        variant === "disabled" || variant === "reduceOpacity" || disabled
-      }
     >
       <View style={[styles.buttonContent, { gap: iconGap }]}>
         <Text
           style={[
             styles.buttonText,
-            (variant === "blackButton" || variant === "verifyBank" || variant === 'disabled') &&
-              styles.whiteText,
+              variant === "verify" && styles.whiteText,
           ]}
         >
           {label}
@@ -76,7 +65,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     textAlignVertical: "top",
-    fontSize: responsiveFontSize(1.8),
+    fontSize: 15,
     color: colors.black,
     fontWeight: "bold",
   },
@@ -91,12 +80,9 @@ const styles = StyleSheet.create({
   },
   outlinedButton: {
     backgroundColor: "white",
-    borderRadius: 5,
-    paddingHorizontal: 8,
+    borderRadius: 6,
     borderWidth: 2,
-    paddingVertical: 8,
-    marginLeft: 10,
-    color: "white",
+    borderColor: colors.yellow
   },
   filledButton: {
     backgroundColor: colors.yellow,
@@ -105,8 +91,8 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowOffset: { width: 1, height: 13 },
   },
-  bankButton: {
-    backgroundColor: "blue",
+  verifyButton: {
+    backgroundColor: "#336699",
     borderRadius: 5,
     shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,

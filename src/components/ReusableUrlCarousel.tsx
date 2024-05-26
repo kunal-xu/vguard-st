@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, Dimensions, ImageBackground } from 'react-native';
-import Carousel, { Pagination } from 'react-native-snap-carousel';
-import colors from '../../colors';
 
 const ReusableUrlCarousel = ({
 	data,
@@ -46,7 +44,7 @@ const ReusableUrlCarousel = ({
 
 	return (
 		<View style={{ height: carouselHeight }}>
-			<Carousel
+			{/* <Carousel
 				data={data}
 				renderItem={renderItem}
 				sliderWidth={screenWidth}
@@ -57,7 +55,7 @@ const ReusableUrlCarousel = ({
 			/>
 			{data?.length > 0 && (
 				<Pagination activeDotIndex={activeIndex} dotsLength={data.length} />
-			)}
+			)} */}
 		</View>
 	);
 };
