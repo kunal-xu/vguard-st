@@ -7,8 +7,25 @@ import { RootSiblingParent } from "react-native-root-siblings";
 import { Redirect } from "expo-router";
 import { AuthProvider } from "../hooks/useAuth";
 import { DataProvider } from "../hooks/useData";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
+  const insets = useSafeAreaInsets();
+  const [modalVisible, setModalVisible] = useState(false);
+  const handleButton1Action = () => {
+    console.log("Dismiss pressed");
+    setModalVisible(false);
+  };
+
+  const handleButton2Action = () => {
+    console.log("Scan Out pressed");
+    setModalVisible(false);
+  };
+
   // const [location, setLocation] = useState<Location.LocationObject | null>(null);
   // const [errorMsg, setErrorMsg] = useState<string | null>(null);
   return (
@@ -18,26 +35,27 @@ export default function RootLayout() {
           <View
             style={{
               flex: 1,
+              paddingTop: insets.top,
             }}
           >
-            <Stack>
-              {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-              <Stack.Screen
+            {/* <Stack> */}
+            {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
+            {/* <Stack.Screen
                 name="(register)"
                 options={{ headerShown: false }}
-              />
-              <Stack.Screen name="lead-form" />
-              <Stack.Screen
+              /> */}
+            {/* <Stack.Screen name="lead-form" /> */}
+            {/* <Stack.Screen
                 name="login-with-number"
                 options={{ headerShown: false }}
-              />
-              <Stack.Screen
+              /> */}
+            {/* <Stack.Screen
                 name="login-with-otp"
                 options={{ headerShown: false }}
-              />
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="auto" />
+              /> */}
+            {/* <Stack.Screen name="login" options={{ headerShown: false }} /> */}
+            {/* </Stack> */}
+            <StatusBar style="dark" />
           </View>
         </RootSiblingParent>
       </DataProvider>

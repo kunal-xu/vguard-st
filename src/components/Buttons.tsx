@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     fontSize: 15,
     color: colors.black,
-    fontWeight: "bold",
+    fontWeight: "bold",lay
   },
   whiteText: {
     color: "white",

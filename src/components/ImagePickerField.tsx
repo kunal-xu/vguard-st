@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Image,
   Modal,
   ImageBackground,
+  Button,
 } from "react-native";
 import colors from "../utils/colors";
 import Popup from "./Popup";
 import { getImages } from "../utils/FileUtils";
 import { height } from "../utils/dimensions";
+import * as ImagePicker from "expo-image-picker";
+import { CameraView, useCameraPermissions } from "expo-camera";
 
 interface ImagePickerFieldProps {
   label: string;
@@ -35,6 +38,19 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   getImageRelated,
   editable = true,
 }) => {
+  const [facing, setFacing] = useState("back");
+  const [permission, requestPermission] = useCameraPermissions();
+  /*
+  if (!permission?.granted) {
+    
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+  */
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImageName, setSelectedImageName] = useState<string | null>(
     null
@@ -46,23 +62,10 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
   const [showImageModal, setShowImageModal] = useState(false);
-  // useEffect(() => {
-  //   const fetchImage = async () => {
-  //     if (initialImage) {
-  //       try {
-  //         // const image = await getFile(initialImage, imageRelated, "2");
-  //         const image = await getImages(initialImage, getImageRelated);
-  //         setIsImageSelected(true);
-  //         setSelectedImage(image);
-  //         setSelectedImageName(initialImage);
-  //       } catch (error) {
-  //         console.error("Error fetching image:", error);
-  //       }
-  //     }
-  //   };
 
-  //   fetchImage();
-  // }, [initialImage]);
+  function toggleCameraFacing() {
+    setFacing((current) => (current === "back" ? "front" : "back"));
+  }
 
   const handleImagePickerPress = () => {
     setShowImagePickerModal(true);
@@ -131,13 +134,55 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   //     }
   //   }
   // };
+  /*
+<View style={styles.containerd}>
+        <CameraView style={styles.camera} facing={facing}>
+          <View style={styles.buttonContainer}>
+            <Pressable
+              style={styles.button}
+              onPress={toggleCameraFacing}
+            >
+              <Text style={styles.text}>Flip Camera</Text>
+            </Pressable>
+          </View>
+        </CameraView>
+      </View>
+  */  const [photo, setPhoto] = useState(null);
+
+  const openCamera = async () => {
+    setShowImagePickerModal(false);
+    if (cameraRef) {
+      let photo = await cameraRef.takePictureAsync();
+      setPhoto(photo.uri);
+    }
+  };
+
+      const pickImageFromGallery = async () => {
+        setShowImagePickerModal(false);
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+    
+        if (!result.canceled) {
+          setPhoto(result.uri);
+        }
+      };
   return (
     <View style={styles.container}>
       <Popup isVisible={isPopupVisible} onClose={() => setPopupVisible(false)}>
         {popupContent}
       </Popup>
-      <TouchableOpacity
-        style={[styles.input, isImageSelected && styles.selectedContainer]}
+      <Pressable
+        style={({ pressed }) => [
+          {
+            opacity: pressed ? 0.3 : 1.0,
+          },
+          styles.input,
+          isImageSelected && styles.selectedContainer,
+        ]}
         onPress={editable ? handleImagePickerPress : undefined}
       >
         <View
@@ -158,7 +203,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
         {selectedImage ? (
           <View style={styles.imageContainer}>
             <Text style={styles.imageName}>{label}</Text>
-            <TouchableOpacity onPress={handleImageModalToggle}>
+            <Pressable onPress={handleImageModalToggle}>
               <ImageBackground
                 source={require("../assets/images/no_image.webp")}
                 style={styles.image}
@@ -171,7 +216,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
                 />
               </ImageBackground>
               {/* <Image source={{ uri: selectedImage }} style={styles.image} resizeMode="cover" /> */}
-            </TouchableOpacity>
+            </Pressable>
           </View>
         ) : (
           <View style={styles.cameraContainer}>
@@ -183,7 +228,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
             />
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
 
       <Modal
         animationType="fade"
@@ -192,13 +237,13 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
         onRequestClose={handleImageModalToggle}
       >
         <View style={styles.modalcontainer}>
-          <TouchableOpacity onPress={handleImageModalToggle}>
+          <Pressable onPress={handleImageModalToggle}>
             <Image
               resizeMode="contain"
               style={{ width: 50, height: 50 }}
               source={require("../assets/images/ic_close.png")}
             />
-          </TouchableOpacity>
+          </Pressable>
           {/* <ImageBackground
                         source={require('../assets/images/no_image.webp')}
                         style={{ width: '100%', height: '70%' }}
@@ -215,31 +260,43 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
       </Modal>
 
       <Modal
-        animationType="fade"
+        animationType="slide"
         transparent={true}
         visible={showImagePickerModal}
         hardwareAccelerated={true}
+        onRequestClose={() => setShowImagePickerModal(false)}
       >
-        <TouchableOpacity
+        {/* <Pressable
           style={styles.modalContainer}
           onPressOut={() => setShowImagePickerModal(false)}
-          activeOpacity={1}
         >
           <View style={styles.modalContent}>
             <View style={{ flexDirection: "column", gap: 15, width: "90%" }}>
               <Text style={styles.blackHeading}>Select Action</Text>
-              <TouchableOpacity onPress={() => handleCameraUpload()}>
+              <Pressable onPress={() => handleCameraUpload()}>
                 <Text style={styles.blackText}>Capture photo from camera</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleGalleryUpload()}>
+              </Pressable>
+              <Pressable onPress={() => handleGalleryUpload()}>
                 <Text style={styles.blackText}>Select photo from gallery</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
             {/* <Button mode="text" onPress={() => setShowImagePickerModal(false)}>
                             Close
                         </Button> */}
-          </View>
-        </TouchableOpacity>
+          {/* </View>
+        </Pressable>  */}
+        <View style={styles.modalView}>
+          <Text style={styles.modalText}>Choose an option</Text>
+          <Pressable style={styles.modalButton} onPress={openCamera}>
+            <Text style={styles.textStyle}>Take Photo</Text>
+          </Pressable>
+          <Pressable style={styles.modalButton} onPress={pickImageFromGallery}>
+            <Text style={styles.textStyle}>Upload from Gallery</Text>
+          </Pressable>
+          <Pressable style={styles.modalButton} onPress={() => setShowImagePickerModal(false)}>
+            <Text style={styles.textStyle}>Cancel</Text>
+          </Pressable>
+        </View>
       </Modal>
     </View>
   );
@@ -248,7 +305,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 18,
-    marginTop: 4
+    marginTop: 4,
   },
   input: {
     flexDirection: "row",
@@ -262,16 +319,20 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     position: "absolute",
-    
     top: 0,
-    left: 10,
+    left: 0,
     right: 0,
     justifyContent: "center",
     zIndex: 1,
   },
+  textStyle: {
+    color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
+  },
   label: {
-    fontSize: 17,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "light",
     color: colors.black,
     width: "92%",
   },
@@ -359,6 +420,55 @@ const styles = StyleSheet.create({
     color: colors.black,
     fontSize: 23,
     fontWeight: "bold",
+  },
+  containerd: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: "transparent",
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: "flex-end",
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 18,
+  },
+  modalButton: {
+    padding: 10,
+    margin: 10,
+    borderRadius: 10,
+    backgroundColor: '#2196F3',
   },
 });
 

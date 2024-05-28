@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { height, width } from '../utils/dimensions';
-import { black } from 'react-native-paper/lib/typescript/styles/colors';
 import colors from '../utils/colors';
 
 const ImageWithModal = ({ imageUri }) => {
