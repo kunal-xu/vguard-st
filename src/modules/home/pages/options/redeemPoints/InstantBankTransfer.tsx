@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  ToastAndroid,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, ToastAndroid } from "react-native";
 import React, { useState, useEffect } from "react";
 import {
   responsiveFontSize,
@@ -19,6 +13,7 @@ import Popup from "../../../../../components/Popup";
 import { useNavigation } from "@react-navigation/native";
 import InputField from "../../../../../components/InputField";
 import { useData } from "../../../../../hooks/useData";
+import Loader from "../../../../../components/Loader";
 
 const InstantBankTransfer = () => {
   const navigation = useNavigation();
@@ -27,6 +22,9 @@ const InstantBankTransfer = () => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
   const [points, setPoints] = useState<number>(0);
+  const [loader, showLoader] = useState(false);
+  const [redirect, setRedirect] = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
@@ -49,34 +47,37 @@ const InstantBankTransfer = () => {
       if (!points) {
         ToastAndroid.show("Enter Amount", ToastAndroid.SHORT);
       } else {
+        showLoader(true);
         let payload = {
           amount: points,
           bankDetail: state.BankDetail,
         };
         const response = await bankTransfer(payload);
         const reponseData = response.data;
-
+        showLoader(false);
         if (reponseData.code === 200) {
           setPopupContent(reponseData.message);
           setPopupVisible(true);
         } else if (reponseData.code === 400) {
           setPopupVisible(true);
           setPopupContent(reponseData.message);
-          // navigation.navigate("Update Bank and UPI");
+          setRedirect(true);
         } else {
+          setPopupVisible(true);
           setPopupContent(
             reponseData.message || "Something went wrong, Please try again"
           );
-          setPopupVisible(true);
         }
       }
     } catch (btError) {
+      showLoader(false);
       console.log("Error: ", btError);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      {loader && <Loader isLoading={loader} />}
       <View style={styles.mainWrapper}>
         <View style={styles.header}>
           <Text style={styles.textHeader}>{t("strings:bank_details")}</Text>
@@ -143,7 +144,12 @@ const InstantBankTransfer = () => {
       {isPopupVisible && (
         <Popup
           isVisible={isPopupVisible}
-          onClose={() => setPopupVisible(false)}
+          onClose={() => {
+            setPopupVisible(false);
+            if (redirect) {
+              navigation.navigate("Update Bank and UPI");
+            }
+          }}
         >
           {popupContent}
         </Popup>

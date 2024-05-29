@@ -87,6 +87,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
       const response = await loginWithPassword(username, password);
       showLoader(false);
       const responseData = response.data;
+      console.log(responseData);
       dispatch({
         type: "GET_ALL_FIELDS",
         payload: {
@@ -97,7 +98,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
     } catch (error: any) {
       showLoader(false);
       setIsPopupVisible(!isPopupVisible);
-      setPopupContent(error.response.data.message);
+      setPopupContent(error.response.data.message || "Something went wrong. Please try again");
     }
   };
 

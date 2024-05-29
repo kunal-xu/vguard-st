@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 import messaging from "@react-native-firebase/messaging";
 
 // const BASE_URL = "http://192.168.148.248:5005/vguard/api";
-const BASE_URL = 'https://infra.4test.info/vguard/api';
+const BASE_URL = "https://infra.4test.info/vguard/api";
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -35,7 +35,6 @@ async function createPostRequest(
     Accept: "application/json",
     "Content-Type": "application/json",
   };
-  // console.log(headers);
   const response: AxiosResponse = await api.post(relativeUrl, data, {
     headers,
   });
@@ -579,8 +578,8 @@ export function getReferralName(referralCode: string) {
 }
 
 export function getMonthWiseEarning(from: string, to: string) {
-  const path = `user/monthWiseEarning/${from}/${to}`;
-  return createGetRequest(path);
+  const path = `user/monthWiseEarning`;
+  return createPostRequest(path, { from, to });
 }
 
 export function getBonusPoints(transactionId: string) {
@@ -626,7 +625,7 @@ export function getSubProfessions(professionId: string) {
 
 export function logoutUser() {
   const path = "user/logout";
-  
+
   return createPostRequest(path, {});
 }
 
@@ -711,8 +710,10 @@ export function getPushNotifications() {
 }
 
 export function getCustDetByMobile(mobileNo: string) {
-  const path = `product/getCustomerDetails/${mobileNo}`;
-  return createGetRequest(path);
+  const path = `product/getCustomerDetails`;
+  return createPostRequest(path, {
+    mobileNo,
+  });
 }
 
 export function validateMobile(mobileNumber: string, dealerCategory: string) {

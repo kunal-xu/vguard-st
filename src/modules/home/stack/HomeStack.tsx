@@ -82,7 +82,6 @@ const HomeStack = () => {
             headerShown: true,
           }}
         />
-
         <Stack.Screen name="Scan QR" component={ScanStack} />
         <Stack.Screen name="Dashboard" component={DashboardStack} />
         <Stack.Screen name="Redeem Products" component={RedeemStack} />

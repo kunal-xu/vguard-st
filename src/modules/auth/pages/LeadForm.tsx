@@ -6,6 +6,7 @@ import {
   ScrollView,
   SafeAreaView,
   Image,
+  ToastAndroid,
 } from "react-native";
 import { height, width } from "../../../utils/dimensions";
 import Buttons from "../../../components/Buttons";
@@ -31,7 +32,7 @@ const LeadForm = ({ navigation, route }) => {
   const [loader, showLoader] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string[]>([""]);
+  const [selectedValue, setSelectedValue] = useState<string[]>([]);
   const items = [
     { label: "AC", value: "AC", id: "" },
     { label: "TV", value: "TV", id: "" },
@@ -50,6 +51,10 @@ const LeadForm = ({ navigation, route }) => {
   }
 
   async function addLead() {
+    if(name.length === 0 || pincode.length === 0 || selectedValue.length === 0) {
+      ToastAndroid.show("Please fill all the details", ToastAndroid.LONG);
+      return
+    }
     showLoader(true);
       try {
         const today = new Date();

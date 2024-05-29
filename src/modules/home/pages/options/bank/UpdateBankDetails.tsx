@@ -24,7 +24,6 @@ const UpdateBankDetails = ({ navigation }: NavigationProps) => {
         try {
           const response = await getUser();
           const responseData = response.data;
-          console.log(responseData.BankDetail)
           dispatch({
             type: "GET_ALL_FIELDS",
             payload: {

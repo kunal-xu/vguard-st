@@ -19,17 +19,15 @@ const Credentials = ({ navigation }: NavigationProps) => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [redirect, setRedirect] = useState(false);
 
   async function register() {
     try {
       PasswordMatchSchema.parse(state);
       setIsLoading(true);
       const response = await registerNewUser(state);
-      const responseData = response.data;
-      setIsLoading(false);
-      setIsPopupVisible(true);
-      setPopupMessage(responseData.message);
       const loginResponse = await loginWithPassword(state.Contact as string, state.pwd as string)
+      setIsLoading(false);
       const loginResponseData = loginResponse.data;
       dispatch({
         type: "GET_ALL_FIELDS",

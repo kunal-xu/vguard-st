@@ -29,6 +29,8 @@ import DatePickerField from "../../../../../components/DatePickerField";
 import { Picker } from "@react-native-picker/picker";
 import { height } from "../../../../../utils/dimensions";
 import Buttons from "../../../../../components/Buttons";
+import Loader from "../../../../../components/Loader";
+
 
 const Dashboard = () => {
   const baseURL = "https://www.vguardrishta.com/img/appImages/Profile/";
@@ -36,6 +38,7 @@ const Dashboard = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [show, setShow] = useState(false);
+  const [loader, showLoader] = useState(false);
   const items: any[] = ["Select Product", "VNS 400 DIGITAL"];
   const [selectedValue, setSelectedValue] = useState<undefined>();
   const [earnedPoints, setEarnedPoints] = useState("0");
@@ -76,12 +79,16 @@ const Dashboard = () => {
     }
     // ToastAndroid.show("Please complete a scan to download the report", ToastAndroid.LONG);
     try {
+      showLoader(true);
       const response = await getMonthWiseEarning(fromDate, toDate);
       const reponseData = response.data;
+      showLoader(false);
+      console.log(reponseData);
       setEarnedPoints(reponseData.EarnedPoints as string);
       setRedeemablePoints(reponseData.RedeemablePoints as string);
       setRedeemedPoints(reponseData.RedeemedPoints as string);
     } catch (error) {
+      showLoader(false);
       console.log(error);
     }
   };
@@ -118,6 +125,7 @@ const Dashboard = () => {
   return (
     <ScrollView>
       <View style={styles.mainWrapper}>
+      {loader && <Loader isLoading={loader} />}
         <View style={styles.profileDetails}>
           <View style={styles.ImageProfile}>
             <Image

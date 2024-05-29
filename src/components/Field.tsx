@@ -28,6 +28,7 @@ import {
   getBankDetail,
   getVPAData,
   getTDSPercentage,
+  getCustDetByMobile,
 } from "../utils/apiservice";
 import Buttons from "./Buttons";
 import { useData } from "../hooks/useData";
@@ -282,9 +283,13 @@ const Field = (props: FieldProps) => {
         <DropDownPicker
           {...properties}
           placeholder={
-            source && source === "customer" ?
-            (customerState.pinCode === null ? "Search Pincode" : `Pincode: ${customerState.pinCode}`):
-            (state.AddressDetail.currentPincode === null ? "Search Pincode" : `Pincode: ${state.AddressDetail.currentPincode}`)
+            source && source === "customer"
+              ? customerState.pinCode === null
+                ? "Search Pincode"
+                : `Pincode: ${customerState.pinCode}`
+              : state.AddressDetail.currentPincode === null
+              ? "Search Pincode"
+              : `Pincode: ${state.AddressDetail.currentPincode}`
           }
           open={open}
           setOpen={setOpen}
@@ -365,22 +370,24 @@ const Field = (props: FieldProps) => {
           const responseData = response.data;
           setIsPopupVisible(true);
           setPopupContent(responseData.message);
-          dispatch({
-            type: "UPDATE_SUB_FIELD",
-            payload: {
-              field: "PaytmDetail",
-              subfield: "upiId",
-              value: responseData.entity,
-            },
-          });
-          dispatch({
-            type: "UPDATE_SUB_FIELD",
-            payload: {
-              field: "PaytmDetail",
-              subfield: "upiVerified",
-              value: "true",
-            },
-          });
+          if (responseData.code === 1) {
+            dispatch({
+              type: "UPDATE_SUB_FIELD",
+              payload: {
+                field: "PaytmDetail",
+                subfield: "upiId",
+                value: responseData.entity,
+              },
+            });
+            dispatch({
+              type: "UPDATE_SUB_FIELD",
+              payload: {
+                field: "PaytmDetail",
+                subfield: "upiVerified",
+                value: "true",
+              },
+            });
+          }
         } catch (error: any) {
           showLoader(false);
           setIsPopupVisible(true);
@@ -478,27 +485,63 @@ const Field = (props: FieldProps) => {
           {...properties}
         />
       );
-    
-      case "CustomerButton":
-        return (
-          <View
-            style={{
-              width: "90%",
-              margin: 20,
-              marginTop: 4
-            }}
-          >
+
+    case "CustomerButton":
+      async function getCustomerData() {
+        try {
+          showLoader(true);
+          const response = await getCustDetByMobile(
+            customerState.contactNo as string
+          );
+          showLoader(false);
+          const responseData = response.data;
+          if (responseData.name !== null) {
+            customerDispatch({
+              type: "GET_ALL_FIELDS",
+              payload: {
+                value: responseData,
+              },
+            });
+          } else {
+            throw new Error("Details not found");
+          }
+        } catch (error: any) {
+          showLoader(false);
+          setIsPopupVisible(true);
+          customerDispatch({
+            type: "CLEAR_ALL_FIELDS",
+            payload: {},
+          });
+          setPopupContent("Customer details not found");
+          console.log(error.message);
+        }
+      }
+
+      return (
+        <View
+          style={{
+            width: "90%",
+            margin: 20,
+            marginTop: 4,
+          }}
+        >
+          {loader && <Loader isLoading={loader} />}
+          {isPopupVisible && (
+            <Popup isVisible={isPopupVisible} onClose={togglePopup}>
+              {popupContent}
+            </Popup>
+          )}
           <Buttons
             label={t("Get Customer Details")}
             variant="filled"
-            onPress={() => {}}
+            onPress={() => getCustomerData()}
             width="100%"
             iconHeight={10}
             iconWidth={30}
             iconGap={30}
           />
-          </View>
-        )
+        </View>
+      );
 
     case "BankSimulButton":
       const verifyButtonproperties = (props as SimulButton)
@@ -538,7 +581,9 @@ const Field = (props: FieldProps) => {
             handleFormInputChange("BankDetail", "bankDataPresent", true);
           } else {
             setIsPopupVisible(true);
-            setPopupContent(response.data.errorMessage || "Bank details not found");
+            setPopupContent(
+              response.data.errorMessage || "Bank details not found"
+            );
           }
         } catch (error: any) {
           if (error instanceof z.ZodError) {
@@ -559,7 +604,7 @@ const Field = (props: FieldProps) => {
         handleFormInputChange("BankDetail", "branchAddress", "");
         handleFormInputChange("BankDetail", "bankDataPresent", 0);
       }
-      
+
       return (
         <View
           style={{
