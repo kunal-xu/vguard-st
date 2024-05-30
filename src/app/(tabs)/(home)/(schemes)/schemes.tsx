@@ -5,6 +5,7 @@ import CustomTouchableOption from "@/src/components/CustomTouchableOption";
 import NeedHelp from "@/src/components/NeedHelp";
 import { getSchemeImages } from "@/src/utils/apiservice";
 import PagerView from "react-native-pager-view";
+import { Image } from "expo-image";
 
 const Schemes = () => {
   useEffect(() => {
@@ -44,8 +45,11 @@ const Schemes = () => {
           }}
           key="1"
         >
-          <Text>First page</Text>
-          <Text>Swipe ➡️</Text>
+          
+          <Image 
+          source={require("../../../../assets/images/schemes-1.jpeg")}
+          style={{height: "90%", width: "90%"}}
+          />
         </View>
         <View
           style={{
@@ -54,16 +58,10 @@ const Schemes = () => {
           }}
           key="2"
         >
-          <Text>Second page</Text>
-        </View>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          key="3"
-        >
-          <Text>Third page</Text>
+          <Image 
+          source={require("../../../../assets/images/schemes-2.jpeg")}
+          style={{height: "90%", width: "90%"}}
+          />
         </View>
       </PagerView>
 
@@ -73,7 +71,7 @@ const Schemes = () => {
             text="Product-wise scan base points"
             iconSource={require("../../../../assets/images/ic_product_wise_offers.webp")}
             screenName="Product-wise scan base points"
-            disabled={false}
+            disabled={true}
           />
           <CustomTouchableOption
             text="Product based scheme offers"

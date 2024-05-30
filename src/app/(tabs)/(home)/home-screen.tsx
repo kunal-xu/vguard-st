@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
   },
   greyText: {
     width: "100%",
-    color: colors.grey,
+    color: colors.black,
     fontWeight: "bold",
     textAlign: "center",
     fontSize: responsiveFontSize(1.6),

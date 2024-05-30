@@ -62,7 +62,7 @@ const CustomTouchableOption = ({
         <View
           style={{
             backgroundColor: colors.lightYellow,
-            height: responsiveHeight(4),
+            height: responsiveHeight(4.5),
             justifyContent: "center",
             borderBottomRightRadius: 16,
             borderBottomLeftRadius: 16,
@@ -104,10 +104,11 @@ const styles = StyleSheet.create({
     height: responsiveHeight(7),
   },
   nav: {
+    width: "100%",
     color: colors.black,
-    fontSize: responsiveFontSize(1.5),
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: responsiveFontSize(1.5),
   },
   disabledOval: {
     opacity: 0.9,

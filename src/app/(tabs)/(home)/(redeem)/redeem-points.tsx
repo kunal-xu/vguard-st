@@ -1,8 +1,9 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   responsiveFontSize,
+  responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import { useFocusEffect } from "@react-navigation/native";
@@ -13,19 +14,13 @@ import { useData } from "@/src/hooks/useData";
 import CustomTouchableOption from "@/src/components/CustomTouchableOption";
 import colors from "@/src/utils/colors";
 import PagerView from "react-native-pager-view";
+import { Feather } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 
-const RedeemPoints = ({ navigation }) => {
+const RedeemPoints = () => {
   const { t } = useTranslation();
-  // const carouselData = [
-  //   {
-  //     imageUrl: require("../../../../../../../../assets/images/banner_redeem_ppoints.webp"),
-  //   },
-  //   { imageUrl: require("../../../../../assets/images/banner.webp") },
-  //   {
-  //     imageUrl: require("../../../../../assets/images/banner_redeem_ppoints.webp"),
-  //   },
-  // ];
-
   const { state, dispatch } = useData();
   useEffect(() => {
     (async () => {
@@ -46,69 +41,73 @@ const RedeemPoints = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      <PagerView
+      <View
         style={{
-          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          height: "30%",
+          marginBottom: 20,
+          marginTop: 20,
         }}
-        initialPage={0}
-        useNext={false}
       >
-        <View
+        <PagerView
           style={{
-            justifyContent: "center",
-            alignItems: "center",
+            flex: 1,
           }}
-          key="1"
+          initialPage={0}
+          useNext={false}
         >
-          <Text>First page</Text>
-          <Text>Swipe ➡️</Text>
-        </View>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          key="2"
-        >
-          <Text>Second page</Text>
-        </View>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          key="3"
-        >
-          <Text>Third page</Text>
-        </View>
-      </PagerView>
-
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            key="1"
+          >
+            <Image
+              source={require("../../../../assets/images/redemption-screen.jpeg")}
+              style={{ height: "100%", width: "90%" }}
+            />
+          </View>
+        </PagerView>
+      </View>
       <View style={styles.mainWrapper}>
         <View style={styles.carousel}>
           {/* <ReusableCarousel data={carouselData} /> */}
         </View>
         <View style={styles.points}>
-          <View style={styles.leftPoint}>
-            <Text style={styles.greyText}>
-              {t("strings:redeemable_points")}
-            </Text>
-
+          <Pressable
+            // onPress={() => navigation.navigate("Unique Code History")}
+            style={styles.leftPoint}
+          >
+            <MaterialIcons name="currency-rupee" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(state.RedeemablePoints)?.toFixed(1) || 0}
+              {Number(state.RedeemablePoints)?.toFixed(2) || 0}
             </Text>
-          </View>
-          <View style={styles.middlePoint}>
-            <Text style={styles.greyText}>{t("strings:points_redeemed")}</Text>
+            <Text style={styles.greyText}>Redeemable Points</Text>
+          </Pressable>
+          <Pressable style={styles.middlePoint}>
+            <MaterialIcons name="redeem" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(state.RedeemedPoints)?.toFixed(1) || 0}
+              {Number(state.RedeemedPoints)?.toFixed(2) || 0}
             </Text>
-          </View>
-          <View style={styles.rightPoint}>
-            <Text style={styles.greyText}>{t("strings:tds_deducted")}</Text>
+            <Text style={styles.greyText}>Redeemed Points</Text>
+          </Pressable>
+          <Pressable
+            // onPress={() => navigation.navigate("Redemption History")}
+            style={styles.rightPoint}
+          >
+            <MaterialCommunityIcons
+              name="file-document-edit-outline"
+              size={40}
+              color="black"
+            />
             <Text style={styles.point}>
-              {Number(state.DeductedTDS)?.toFixed(1) || 0}
+              {Number(state.DeductedTDS)?.toFixed(2) || 0}
             </Text>
-          </View>
+            <Text style={styles.greyText}>Deducted TDS</Text>
+          </Pressable>
         </View>
         <View style={styles.dashboard}>
           <View style={styles.row}>
@@ -196,47 +195,40 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     flexDirection: "row",
-    gap: 5,
-    // marginTop: 30,
+    justifyContent: "center",
+    gap: 2,
   },
   leftPoint: {
     width: responsiveWidth(30),
-    height: 100,
+    height: responsiveHeight(13),
     backgroundColor: colors.lightYellow,
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
-    paddingTop: 20,
+    justifyContent: "space-evenly",
   },
   middlePoint: {
     width: responsiveWidth(30),
-    height: 100,
+    height: responsiveHeight(13),
     backgroundColor: colors.lightYellow,
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
-    paddingTop: 20,
+    justifyContent: "space-evenly",
   },
   rightPoint: {
     width: responsiveWidth(30),
-    height: 100,
+    height: responsiveHeight(13),
     backgroundColor: colors.lightYellow,
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
-    paddingTop: 20,
+    justifyContent: "space-evenly",
   },
   greyText: {
-    width: "80%",
-    color: colors.grey,
+    width: "100%",
+    color: colors.black,
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: responsiveFontSize(1.5),
-    marginBottom: 10,
+    fontSize: responsiveFontSize(1.6),
   },
   point: {
     fontWeight: "bold",

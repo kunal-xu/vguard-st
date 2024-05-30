@@ -30,17 +30,12 @@ import { Image } from "expo-image";
 import { blurhash } from "@/src/utils/constants";
 import { MaterialIcons } from "@expo/vector-icons";
 
-interface ScanCodeProps {
-  navigation: any;
-  route: any;
-}
-
 interface OkPopupContent {
   text: string;
   okAction: (() => void) | null;
 }
 
-const ScanCode: React.FC<ScanCodeProps> = () => {
+const ScanCode = () => {
   const { t } = useTranslation();
   const [qrCode, setQrcode] = useState<string>("");
   const [isPopupVisible, setPopupVisible] = useState(false);

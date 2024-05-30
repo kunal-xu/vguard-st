@@ -12,6 +12,9 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Schemes from "./(tabs)/(home)/(schemes)/schemes";
+
+
 
 export default function RootLayout() {
   const insets = useSafeAreaInsets();
@@ -55,6 +58,7 @@ export default function RootLayout() {
               /> */}
             {/* <Stack.Screen name="login" options={{ headerShown: false }} /> */}
             {/* </Stack> */}
+            <Schemes />
             <StatusBar style="dark" />
           </View>
         </RootSiblingParent>
