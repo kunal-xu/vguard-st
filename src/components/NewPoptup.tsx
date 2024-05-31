@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import colors from "../utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
-import { Foundation } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface NewPopUp {
@@ -36,7 +35,7 @@ const NewPopUp = ({
   iconType,
   title,
 }: NewPopUp) => {
-  const replaceLinkWithComponent = (content) => {
+  const replaceLinkWithComponent = (content: string) => {
     const textContent = String(content);
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = textContent.split(urlRegex);
@@ -67,6 +66,22 @@ const NewPopUp = ({
         return (
           <MaterialCommunityIcons
             name="alert-circle-outline"
+            size={56}
+            color={colors.yellow}
+          />
+        );
+      case "Info":
+        return (
+          <MaterialCommunityIcons
+            name="information-outline"
+            size={56}
+            color={colors.yellow}
+          />
+        );
+      case "AccountCancel":
+        return (
+          <MaterialCommunityIcons
+            name="cancel"
             size={56}
             color={colors.yellow}
           />
@@ -146,11 +161,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "space-between",
-    paddingBottom: 42,
+    paddingBottom: 32,
     paddingTop: 32,
   },
   title: {
-    fontSize: responsiveFontSize(3),
+    fontSize: responsiveFontSize(2.5),
     fontWeight: "bold",
     color: colors.black,
   },

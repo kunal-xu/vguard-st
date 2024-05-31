@@ -6,65 +6,77 @@ import NeedHelp from "@/src/components/NeedHelp";
 import { getSchemeImages } from "@/src/utils/apiservice";
 import PagerView from "react-native-pager-view";
 import { Image } from "expo-image";
-
 const Schemes = () => {
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const bannerUrl = "https://vguardrishta.com/";
-
-  const fetchData = async () => {
-    try {
-      const response = await getSchemeImages();
-      const result = await response.data;
-      const imageArray = result.map((r) => ({
-        imageUrl: bannerUrl + r.imgPath,
-      }));
-      setImageArray(imageArray);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const [imageArray, setImageArray] = useState([]);
+  const [selectedPage, setSelectedPage] = useState(0);
 
   return (
     <View style={styles.container}>
-      <PagerView
+      <View
         style={{
-          flex: 1,
+          justifyContent: "center",
+          height: "30%",
+          marginTop: 20,
         }}
-        initialPage={0}
-        useNext={false}
       >
+        <PagerView
+          style={{
+            flex: 1,
+          }}
+          initialPage={0}
+          useNext={false}
+          onPageSelected={(e) => setSelectedPage(e.nativeEvent.position)}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            key="0"
+          >
+            <Image
+              source={require("../../../../assets/images/schemes-1.jpeg")}
+              style={{ height: "100%", width: "90%" }}
+            />
+          </View>
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            key="1"
+          >
+            <Image
+              source={require("../../../../assets/images/schemes-2.jpeg")}
+              style={{ height: "100%", width: "90%" }}
+            />
+          </View>
+        </PagerView>
         <View
           style={{
+            flexDirection: "row",
             justifyContent: "center",
             alignItems: "center",
+            marginTop: 10,
           }}
-          key="1"
         >
-          
-          <Image 
-          source={require("../../../../assets/images/schemes-1.jpeg")}
-          style={{height: "90%", width: "90%"}}
-          />
+          {[0, 1].map((_, index) => (
+            <View
+              key={index}
+              style={[
+                {
+                  height: 10,
+                  width: 10,
+                  borderRadius: 5,
+                  backgroundColor: "#000",
+                  marginHorizontal: 5,
+                },
+                { opacity: index === selectedPage ? 1 : 0.3 },
+              ]}
+            />
+          ))}
         </View>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-          key="2"
-        >
-          <Image 
-          source={require("../../../../assets/images/schemes-2.jpeg")}
-          style={{height: "90%", width: "90%"}}
-          />
-        </View>
-      </PagerView>
-
+      </View>
       <View style={styles.mainWrapper}>
         <View style={styles.options}>
           <CustomTouchableOption

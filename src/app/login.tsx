@@ -3,11 +3,12 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Image,
   TextInput,
   TouchableOpacity,
   Modal,
   ToastAndroid,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -27,6 +28,9 @@ import Loader from "../components/Loader";
 import LanguagePicker from "../components/LanguagePicker";
 import { useData } from "../hooks/useData";
 import colors from "../utils/colors";
+import { height } from "../utils/dimensions";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
+import { Image } from "expo-image";
 
 const LoginScreen = ({ navigation }: NavigationProps) => {
   const { t } = useTranslation();
@@ -119,14 +123,13 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
           </View>
           {loader && <Loader isLoading={loader} />}
           <Image
-            source={require("../assets/images/ic_rishta_logo.jpg")}
-            style={styles.imageSaathi}
+            source={require("../assets/images/ic_rishta_logo_bottom_bar.jpg")}
+            style={{ height: "25%", width: "50%" }}
+            contentFit="contain"
           />
           <Text style={styles.mainHeader}>{t("strings:lbl_welcome")}</Text>
 
-          <Text style={styles.textHeader}>
-            {t("strings:lbl_login_or_register")}
-          </Text>
+          <Text style={styles.textHeader}>{t("Login to continue")}</Text>
 
           <View style={styles.formContainer}>
             <View style={styles.inputContainer}>
@@ -135,15 +138,20 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 source={require("../assets/images/mobile_icon.png")}
                 resizeMode="contain"
               />
-              <TextInput
-                style={styles.input}
-                placeholder={t("strings:lbl_registered_mobile_number_login")}
-                placeholderTextColor={placeholderColor}
-                value={username}
-                keyboardType="number-pad"
-                maxLength={10}
-                onChangeText={(text) => setUsername(text)}
-              />
+              <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1, justifyContent: "center" }}
+              >
+                <TextInput
+                  style={styles.input}
+                  placeholder={t("strings:lbl_registered_mobile_number_login")}
+                  placeholderTextColor={placeholderColor}
+                  value={username}
+                  keyboardType="number-pad"
+                  maxLength={10}
+                  onChangeText={(text) => setUsername(text)}
+                />
+              </KeyboardAvoidingView>
             </View>
             <View style={styles.inputContainer}>
               <Image
@@ -151,34 +159,22 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 source={require("../assets/images/lock_icon.png")}
                 resizeMode="contain"
               />
-              <TextInput
-                style={styles.input}
-                placeholder={t("strings:password")}
-                placeholderTextColor={placeholderColor}
-                maxLength={8}
-                secureTextEntry={true}
-                value={password}
-                onChangeText={(text) => setPassword(text)}
-              />
-            </View>
-            <View style={styles.updateAndForgot}>
-              {/* <TouchableOpacity
-                onPress={() => navigation.navigate("ReUpdateKycOTP")}
-                style={styles.button}
+              <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                style={{ flex: 1, justifyContent: "center" }}
               >
-                <Text style={styles.buttonText}>
-                  {t("strings:update_kyc_capslock")}
-                </Text>
-              </TouchableOpacity> */}
-              {/* <TouchableOpacity
-                onPress={() => navigation.navigate("forgotPassword")}
-                style={styles.forgotPasswordContainer}
-              >
-                <Text style={[styles.forgotPassword]}>
-                  {t("strings:forgot_password_question")}
-                </Text>
-              </TouchableOpacity> */}
+                <TextInput
+                  style={styles.input}
+                  placeholder={t("strings:password")}
+                  placeholderTextColor={placeholderColor}
+                  maxLength={8}
+                  secureTextEntry={true}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                />
+              </KeyboardAvoidingView>
             </View>
+            <View style={styles.updateAndForgot}></View>
             <View style={styles.buttonContainer}>
               <Buttons
                 style={styles.button}
@@ -191,22 +187,6 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 iconGap={30}
                 icon={arrowIcon}
               />
-              {/* <Buttons
-                style={styles.button}
-                label={t("strings:login_with_otp")}
-                variant="filled"
-                onPress={() => navigation.navigate("loginWithNumber")}
-                width="100%"
-              />
-              {professionId === Constants.ELECTRICAL_AND_PLUMBING_EXPERT_PID && (
-                <Buttons
-                  style={styles.button}
-                  label={t("strings:new_user_registration")}
-                  variant="blackButton"
-                  onPress={() => navigation.navigate("register")}
-                  width="100%"
-                />
-              )} */}
             </View>
           </View>
         </View>
@@ -244,7 +224,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
         </View>
         {isPopupVisible && (
           <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-              {popupContent}
+            {popupContent}
           </Popup>
         )}
         <Modal
@@ -288,9 +268,10 @@ const styles = StyleSheet.create({
   },
   mainHeader: {
     color: colors.black,
-    fontSize: 20,
+    fontSize: responsiveFontSize(2.2),
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 8,
+    marginTop: 8,
   },
   imageSaathi: {
     width: 216,
@@ -304,8 +285,7 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     justifyContent: "center",
-    padding: 16,
-    flex: 2,
+    marginTop: 32,
   },
   validationMessage: {
     color: "red",
@@ -315,13 +295,14 @@ const styles = StyleSheet.create({
 
   input: {
     color: colors.black,
-    flex: 1,
+    height: height / 16,
+    padding: 10,
   },
   inputContainer: {
     shadowColor: "rgba(0, 0, 0, 0.8)",
     marginBottom: 20,
     elevation: 5,
-    height: 40,
+    height: height / 16,
     backgroundColor: colors.white,
     borderRadius: 5,
     flexDirection: "row",

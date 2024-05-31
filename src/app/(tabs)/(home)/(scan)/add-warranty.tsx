@@ -50,7 +50,6 @@ const AddWarranty = () => {
         var couponPoints = responseData.couponPoints;
       } else {
         setPopupVisible(true);
-        
       }
     } catch (error: any) {
       if (error instanceof z.ZodError) {
@@ -60,16 +59,21 @@ const AddWarranty = () => {
         setPopupVisible(true);
       }
     }
-    
   }
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
       {loader && <Loader isLoading={loader} />}
-      <Text style={styles.heading}>Warranty Registration</Text>
-      <Text style={styles.label}>Provide customer details to earn points</Text>
-      {isPopupVisible && (
-        <NewPopUp />
-      )}
+      <View
+        style={{
+          padding: 15,
+        }}
+      >
+        <Text style={styles.heading}>Warranty Registration</Text>
+        <Text style={styles.label}>
+          Provide customer details to earn points
+        </Text>
+      </View>
+      {isPopupVisible && <NewPopUp />}
       <View>
         {customerData.map((field) => (
           <Field
@@ -82,18 +86,17 @@ const AddWarranty = () => {
             source={field.source}
           />
         ))}
-        <View style={styles.inputRow}>
-          <Buttons
-            label={t("strings:submit")}
-            variant="filled"
-            onPress={() => saveData()}
-            width="100%"
-            iconHeight={10}
-            iconWidth={30}
-            iconGap={30}
-            icon={arrowIcon}
-          />
-        </View>
+
+        <Buttons
+          label={t("strings:submit")}
+          variant="filled"
+          onPress={() => saveData()}
+          width="100%"
+          iconHeight={10}
+          iconWidth={30}
+          iconGap={30}
+          icon={arrowIcon}
+        />
       </View>
     </ScrollView>
   );
@@ -122,7 +125,6 @@ const styles = StyleSheet.create({
     width: "100%",
     color: colors.black,
     paddingHorizontal: 10,
-
     marginTop: 10,
     display: "flex",
     flexDirection: "row",

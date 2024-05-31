@@ -10,10 +10,7 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import arrowIcon from "../assets/images/arrow.png";
-import {
-  generateOtpForLogin,
-  validateLoginOtp,
-} from "../utils/apiservice";
+import { generateOtpForLogin, validateLoginOtp } from "../utils/apiservice";
 import Popup from "../components/Popup";
 import Loader from "../components/Loader";
 import { useAuth } from "../hooks/useAuth";
@@ -21,22 +18,14 @@ import { useData } from "../hooks/useData";
 import { STUser } from "../utils/types";
 import colors from "../utils/colors";
 import Buttons from "../components/Buttons";
+import { height } from "../utils/dimensions";
+import { useLocalSearchParams } from "expo-router";
+import { useNavigation } from "expo-router";
+import { CommonActions } from "@react-navigation/native";
 
-interface LoginWithOtpProps {
-  navigation: any;
-  route: {
-    params: {
-      usernumber: string;
-      jobprofession: string;
-      preferedLanguage: number;
-    };
-  };
-}
-
-const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
-  const { usernumber } = route.params;
+const LoginWithOtp = () => {
+  const { contact } = useLocalSearchParams();
   const [otp, setOtp] = useState("");
-  const [number, setnumber] = useState(usernumber);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +33,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
   const [loader, showLoader] = useState(false);
   const { login } = useAuth();
   const { state, dispatch } = useData();
-
+  const navigation = useNavigation();
   const placeholderColor = colors.grey;
 
   useEffect(() => {
@@ -66,7 +55,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
     if (countdown < 1) {
       try {
         const body = {
-          Contact: number,
+          Contact: contact,
           OtpType,
         };
         const validationResponse = await generateOtpForLogin(body);
@@ -109,7 +98,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
     }
     try {
       const body = {
-        Contact: number,
+        Contact: contact,
         Otp: otp,
       };
       const verificationResponse = await validateLoginOtp(body);
@@ -130,7 +119,19 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
             },
           });
         }
-        navigation.reset({ index: 0, routes: [{ name: "RegistrationPage" }] });
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              {
+                name: "(register)",
+                state: {
+                  routes: [{ name: "registration" }],
+                },
+              },
+            ],
+          })
+        );
       } else if (verificationResponse.status === 202) {
         showLoader(false);
         dispatch({
@@ -138,10 +139,22 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
           payload: {
             field: "Contact",
             subfield: undefined,
-            value: number,
+            value: contact,
           },
         });
-        navigation.reset({ index: 0, routes: [{ name: "Credentials" }] })
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [
+              {
+                name: "(register)",
+                state: {
+                  routes: [{ name: "credentials" }],
+                },
+              },
+            ],
+          })
+        );
       } else {
         showLoader(false);
         setIsPopupVisible(true);
@@ -154,8 +167,6 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
       setPopupMessage(error.response.data.message);
     }
   }
-
-  useEffect(() => {}, [otp, number]);
 
   const handleClose = async () => {
     setIsPopupVisible(false);
@@ -199,7 +210,7 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                 />
                 <TextInput
                   style={styles.input}
-                  value={number}
+                  value={contact as string}
                   editable={false}
                 />
               </View>
@@ -219,6 +230,11 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                   maxLength={4}
                 />
               </View>
+              <Text style={styles.textHeader}>
+                {t(
+                  "Note: Enter the 4 digits of your PAN in case of first time registration"
+                )}
+              </Text>
             </View>
             <View>
               <Buttons
@@ -247,10 +263,11 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                   <Text style={{ color: colors.yellow }}>
                     {t("strings:resend_otp")}
                     {countdown > 0 ? (
-                  <Text style={styles.greyText}>in {countdown} seconds</Text>
-                ) : null}
+                      <Text style={styles.greyText}>
+                        in {countdown} seconds
+                      </Text>
+                    ) : null}
                   </Text>
-                  
                 </TouchableOpacity>
               </View>
               {/* <Text style={styles.greyText}>{t("strings:or")}</Text> */}
@@ -260,7 +277,6 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                     {t("strings:call_to_get_otp")}
                   </Text>
                 </TouchableOpacity> */}
-                
               </View>
             </View>
           </View>
@@ -322,11 +338,10 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     padding: 16,
-    flex: 2,
   },
   input: {
     color: colors.black,
-    height: 40,
+    height: height / 16,
     padding: 10,
   },
   inputContainer: {

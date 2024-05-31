@@ -25,10 +25,6 @@ const Credentials = ({ navigation }: NavigationProps) => {
       PasswordMatchSchema.parse(state);
       setIsLoading(true);
       const response = await registerNewUser(state);
-      const responseData = response.data;
-      setIsLoading(false);
-      setIsPopupVisible(true);
-      setPopupMessage(responseData.message);
       const loginResponse = await loginWithPassword(state.Contact as string, state.pwd as string)
       const loginResponseData = loginResponse.data;
       dispatch({

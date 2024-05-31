@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { View, StyleSheet, Text } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, SplashScreen } from "expo-router";
 // import * as Location from "expo-location";
 import { useEffect, useState } from "react";
 import { RootSiblingParent } from "react-native-root-siblings";
@@ -12,22 +12,33 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Schemes from "./(tabs)/(home)/(schemes)/schemes";
 
-
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [appIsReady, setAppIsReady] = useState(false);
   const insets = useSafeAreaInsets();
   const [modalVisible, setModalVisible] = useState(false);
-  const handleButton1Action = () => {
-    console.log("Dismiss pressed");
-    setModalVisible(false);
-  };
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
 
-  const handleButton2Action = () => {
-    console.log("Scan Out pressed");
-    setModalVisible(false);
-  };
+        // Check token and fetch account details
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        await SplashScreen.hideAsync();
+        setAppIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  if (!appIsReady) {
+    return null;
+  }
 
   // const [location, setLocation] = useState<Location.LocationObject | null>(null);
   // const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -41,24 +52,23 @@ export default function RootLayout() {
               paddingTop: insets.top,
             }}
           >
-            {/* <Stack> */}
-            {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-            {/* <Stack.Screen
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
                 name="(register)"
                 options={{ headerShown: false }}
-              /> */}
-            {/* <Stack.Screen name="lead-form" /> */}
-            {/* <Stack.Screen
-                name="login-with-number"
-                options={{ headerShown: false }}
-              /> */}
-            {/* <Stack.Screen
+              />
+              <Stack.Screen name="lead-form" />
+              <Stack.Screen
                 name="login-with-otp"
                 options={{ headerShown: false }}
-              /> */}
-            {/* <Stack.Screen name="login" options={{ headerShown: false }} /> */}
-            {/* </Stack> */}
-            <Schemes />
+              />
+              <Stack.Screen
+                name="login-with-number"
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen name="login" options={{ headerShown: false }} />
+            </Stack>
             <StatusBar style="dark" />
           </View>
         </RootSiblingParent>

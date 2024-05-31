@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   TextInput,
   ScrollView,
@@ -11,6 +10,8 @@ import {
   ToastAndroid,
   Modal,
   Linking,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import language from "../assets/images/language.png";
@@ -23,13 +24,24 @@ import Loader from "../components/Loader";
 import { height } from "../utils/dimensions";
 import { generateOtpForLogin } from "../utils/apiservice";
 import LanguagePicker from "../components/LanguagePicker";
+import { useNavigation, useRouter } from "expo-router";
 import colors from "../utils/colors";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
+import { Image } from "expo-image";
+import Toast from "react-native-root-toast";
+import NewPopUp from "../components/NewPoptup";
 
-const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
+const LoginWithNumber = () => {
   const [number, setNumber] = useState("");
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
+
+  const [popUp, setPopUp] = useState(false);
+  const [popUpButtonCount, setPopUpButtonCount] = useState(1);
+  const [popUpTitle, setPopUpTitle] = useState("");
+  const [popupText, setPopupText] = useState("");
+  const [popUpIconType, setPopUpIconType] = useState("");
+  const [popUpButton2Text, setPopupButton2Text] = useState("");
+
   const [responseCode, setResponseCode] = useState(0);
   const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
@@ -37,10 +49,21 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const pkg = require("../../package.json");
   const version = pkg.version;
+  const navigation = useNavigation();
+  const router = useRouter();
 
   const handleTermsPress = () => {
     setSelectedOption(!selectedOption);
   };
+
+  function cleanupPopUp() {
+    setPopUp(false);
+    setPopUpButtonCount(1);
+    setPopUpTitle("");
+    setPopupText("");
+    setPopUpIconType("");
+    setPopupButton2Text("");
+  }
 
   const openTermsAndConditions = () => {
     const url = "https://vguardrishta.com/tnc_retailer.html";
@@ -65,29 +88,57 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
         const validationResponse = await generateOtpForLogin(body);
         showLoader(false);
         const validationResponseData = validationResponse.data;
+        console.log(validationResponseData);
         setResponseCode(validationResponseData.code);
         if (validationResponseData.entity === 1) {
           setResponseEntity(1);
+          setPopUpTitle(t("Verification Failed"));
+          setPopupButton2Text(t("Proceed"));
+          setPopUpButtonCount(2);
+          setPopUpIconType("Info");
         }
         if (validationResponseData.code === 200) {
           const successMessage = validationResponseData.message;
-          setIsPopupVisible(true);
-          setPopupMessage(successMessage);
+          setPopUp(true);
+          setPopUpButtonCount(2);
+          setPopUpTitle(t("Mobile Number Verified"));
+          setPopupButton2Text(t("Proceed"));
+          setPopupText(successMessage);
           return;
         } else {
           const errorMessage = validationResponseData.message;
-          setIsPopupVisible(true);
-          setPopupMessage(errorMessage);
+          setPopUp(true);
+          setPopUpTitle(t("Verification Failed"));
+          setPopUpIconType("AccountCancel");
+          setPopupText(errorMessage);
         }
       } catch (error: any) {
         showLoader(false);
-        setIsPopupVisible(true);
-        setPopupMessage(error.response.data.message || "An error occurred.");
+        setPopUp(true);
+        setPopupText(error.response.data.message || "An error occurred.");
         console.error("Error during validation:", error);
       }
     } else {
       showLoader(false);
-      ToastAndroid.show("Invalid number format.", ToastAndroid.LONG);
+      Toast.show("Invalid number format", {
+        containerStyle: {
+          backgroundColor: "black",
+          borderRadius: 20,
+          paddingHorizontal: 24,
+          paddingVertical: 12,
+          marginHorizontal: 20,
+          marginBottom: 50,
+        },
+        textStyle: {
+          color: "#fff",
+          fontSize: 14,
+        },
+        duration: Toast.durations.LONG,
+        position: Toast.positions.BOTTOM,
+        animation: true,
+        hideOnPress: true,
+        delay: 0,
+      });
     }
   }
 
@@ -103,25 +154,31 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
     setShowLanguagePicker(false);
   };
 
-  const handleClose = () => {
-    if (responseCode === 400 && responseEntity === 1) {
-      setResponseEntity(0);
-      navigation.navigate("leadform", { usernumber: number });
-    }
-
-    if (responseCode === 200) {
-      navigation.navigate("loginwithotp", { usernumber: number });
-    }
-    setIsPopupVisible(false);
-  };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {isPopupVisible && (
-        <Popup isVisible={isPopupVisible} onClose={handleClose}>
-          {popupMessage}
-        </Popup>
-      )}
+      <NewPopUp
+        visible={popUp}
+        numberOfButtons={popUpButtonCount}
+        button1Action={() => cleanupPopUp()}
+        button2Action={() => {
+          if (responseEntity === 1) {
+            setResponseEntity(0);
+            cleanupPopUp();
+            navigation.navigate("lead-form" as never);
+          } else {
+            cleanupPopUp();
+            router.push({
+              pathname: "login-with-otp",
+              params: { contact: number },
+            });
+          }
+        }}
+        button1Text={"Dismiss"}
+        button2Text={popUpButton2Text}
+        text={popupText}
+        iconType={popUpIconType}
+        title={popUpTitle}
+      />
       <View style={styles.registerUser}>
         <Loader isLoading={loader} />
         <View style={styles.mainWrapper}>
@@ -138,8 +195,9 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
             />
           </View>
           <Image
-            source={require("../assets/images/ic_rishta_logo.jpg")}
-            style={styles.imageSaathi}
+            source={require("../assets/images/ic_rishta_logo_bottom_bar.jpg")}
+            style={{ height: "25%", width: "50%" }}
+            contentFit="contain"
           />
           <Text style={styles.mainHeader}>{t("strings:lbl_welcome")}</Text>
           <View style={styles.formContainer}>
@@ -150,18 +208,23 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
               <View style={styles.inputContainer}>
                 <Image
                   style={styles.icon}
-                  resizeMode="contain"
+                  contentFit="contain"
                   source={require("../assets/images/mobile_icon.png")}
                 />
-                <TextInput
-                  style={styles.input}
-                  placeholder={t("strings:enter_your_mobile_number")}
-                  placeholderTextColor={placeholderColor}
-                  value={number}
-                  keyboardType="number-pad"
-                  onChangeText={(text) => setNumber(text)}
-                  maxLength={10}
-                />
+                <KeyboardAvoidingView
+                  behavior={Platform.OS === "ios" ? "padding" : "height"}
+                  style={{ flex: 1, justifyContent: "center" }}
+                >
+                  <TextInput
+                    style={styles.input}
+                    placeholder={t("strings:enter_your_mobile_number")}
+                    placeholderTextColor={placeholderColor}
+                    value={number}
+                    keyboardType="number-pad"
+                    onChangeText={(text) => setNumber(text)}
+                    maxLength={10}
+                  />
+                </KeyboardAvoidingView>
               </View>
             </View>
             <View>
@@ -176,18 +239,25 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
                 icon={arrowIcon}
               />
             </View>
-            <View style={{ flexDirection: "row", gap: 10, marginTop: 16 }}>
-                <Text style={styles.greyText}>
-                  {t("Already have an account?")}
+            <View style={{ flexDirection: "row", gap: 5, marginTop: 24 }}>
+              <Text style={styles.greyText}>
+                {t("Already have an account?")}
+              </Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("login" as never)}
+              >
+                <Text
+                  style={{
+                    color: colors.yellow,
+                    fontSize: responsiveFontSize(1.7),
+                    fontWeight: "600",
+                  }}
+                >
+                  {t("Sign In")}
                 </Text>
-                <TouchableOpacity onPress={() => navigation.navigate("login")}>
-                  <Text style={{ color: colors.yellow }}>
-                    {t("Sign In")}
-                  </Text>
-                  
-                </TouchableOpacity>
-              </View>
-            
+              </TouchableOpacity>
+            </View>
+
             {/* <TouchableOpacity
               style={styles.otpPhone}
               onPress={() => getOTP("Voice")}
@@ -203,7 +273,7 @@ const LoginWithNumber: React.FC<{ navigation: any }> = ({ navigation }) => {
           </View>
         </View>
         <View>
-          <View style={styles.footer}>
+          <View>
             <TouchableOpacity
               onPress={() => handleTermsPress()}
               style={styles.footerTextContainer}
@@ -274,7 +344,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     display: "flex",
   },
-  footer: {},
   footerTextContainer: {
     paddingBottom: 5,
     paddingHorizontal: 80,
@@ -312,9 +381,10 @@ const styles = StyleSheet.create({
   },
   mainHeader: {
     color: colors.black,
-    fontSize: 20,
+    fontSize: responsiveFontSize(2.2),
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 8,
+    marginTop: 8,
   },
   imageSaathi: {
     width: 216,
@@ -433,8 +503,9 @@ const styles = StyleSheet.create({
     width: 50,
   },
   greyText: {
-    fontSize: 14,
+    fontSize: responsiveFontSize(1.7),
     color: colors.grey,
+    fontWeight: "600",
   },
   otpPhone: {
     display: "flex",

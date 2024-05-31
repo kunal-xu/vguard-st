@@ -6,14 +6,17 @@ import Field from "@/src/components/Field";
 import { registrationFields } from "./fields/registrationFields";
 import Buttons from "@/src/components/Buttons";
 import { height, width } from "@/src/utils/dimensions";
+import { Avatar } from "react-native-paper";
 import Toast from "react-native-root-toast";
+import { useRouter } from "expo-router";
 
 const Registration = () => {
   const { state } = useData();
-
+  const router = useRouter();
   function validateFields() {
     try {
       RegistrationSchema.parse(state);
+      router.push("/(register)/registration-bank-details");
     } catch (error: any) {
       Toast.show(error.errors[0].message, {
         containerStyle: {
@@ -52,7 +55,10 @@ const Registration = () => {
             padding: 5,
           }}
         >
-          <Image source={require("../../assets/images/ac_icon.png")} />
+          <Avatar.Image
+            size={80}
+            source={require("../../assets/images/ac_icon.png")}
+          />
           <View
             style={{
               backgroundColor: "white",

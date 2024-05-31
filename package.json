@@ -56,11 +56,13 @@
     "react-native-video": "^6.1.2",
     "react-native-view-shot": "3.8.0",
     "react-native-webview": "13.8.6",
+    "rn-scratch-card": "^1.2.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
+    "@types/react-native": "^0.73.0",
     "eslint": "^8.57.0",
     "eslint-config-expo": "^7.0.0",
     "typescript": "~5.3.3"

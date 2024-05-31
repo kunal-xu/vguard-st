@@ -8,6 +8,10 @@ import {
   Image,
   ToastAndroid,
   ScrollView,
+  Pressable,
+  Button,
+  TextInput,
+  Platform,
 } from "react-native";
 import {
   responsiveFontSize,
@@ -15,10 +19,9 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
-
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { getMonthWiseEarning, getUser } from "@/src/utils/apiservice";
 // import { getImages } from "../../../../../utils/FileUtils";
-// import DatePicker from "../../../../../components/DatePicker";
 import { Picker } from "@react-native-picker/picker";
 import NeedHelp from "@/src/components/NeedHelp";
 import CustomTouchableOption from "@/src/components/CustomTouchableOption";
@@ -27,6 +30,12 @@ import { height } from "@/src/utils/dimensions";
 import Buttons from "@/src/components/Buttons";
 import colors from "@/src/utils/colors";
 import DatePicker from "@/src/components/DatePicker";
+import { Feather } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
+
+/*
+  API to fetch product details(user specific)
+*/
 
 const Dashboard = () => {
   const baseURL = "https://www.vguardrishta.com/img/appImages/Profile/";
@@ -34,12 +43,19 @@ const Dashboard = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [show, setShow] = useState(false);
-  const items: any[] = ["Select Product", "VNS 400 DIGITAL"];
+  const items: any[] = ["Select Product"];
   const [selectedValue, setSelectedValue] = useState<undefined>();
   const [earnedPoints, setEarnedPoints] = useState("0");
   const [redeemablePoints, setRedeemablePoints] = useState("0");
   const [redeemedPoints, setRedeemedPoints] = useState("0");
   const { state, dispatch } = useData();
+  const [date, setDate] = useState(new Date(1598051730000));
+  const [mode, setMode] = useState("date");
+  const [showStart, setShowStart] = useState(false);
+  const [startDate, setStartDate] = useState(new Date());
+  const [showEnd, setShowEnd] = useState(false);
+  const [endDate, setEndDate] = useState(new Date());
+
   useEffect(() => {
     (async () => {
       try {
@@ -75,7 +91,6 @@ const Dashboard = () => {
       );
       return;
     }
-    // ToastAndroid.show("Please complete a scan to download the report", ToastAndroid.LONG);
     try {
       const response = await getMonthWiseEarning(fromDate, toDate);
       const reponseData = response.data;
@@ -86,6 +101,37 @@ const Dashboard = () => {
       console.log(error);
     }
   };
+  const showDatepicker = () => {
+    showMode("date");
+  };
+  const showMode = (currentMode: React.SetStateAction<string>) => {
+    setShow(true);
+    setMode(currentMode);
+  };
+  const onChange = (event: any, selectedDate: any) => {
+    const currentDate = selectedDate;
+    setShow(false);
+    setDate(currentDate);
+  };
+  const showStartDatePicker = () => {
+    setShowStart(true);
+  };
+  const showEndDatePicker = () => {
+    setShowEnd(true);
+  };
+
+  const onChangeStartDate = (event, selectedDate) => {
+    const currentDate = selectedDate || startDate;
+    setShowStart(Platform.OS === "ios");
+    setStartDate(currentDate);
+  };
+
+  const onChangeEndDate = (event, selectedDate) => {
+    const currentDate = selectedDate || endDate;
+    setShowEnd(Platform.OS === "ios");
+    setEndDate(currentDate);
+  };
+  
   // useEffect(() => {
   //   if (userData.userRole && userData.userImage) {
 
@@ -119,21 +165,6 @@ const Dashboard = () => {
   return (
     <ScrollView>
       <View style={styles.mainWrapper}>
-        <View style={styles.profileDetails}>
-          <View style={styles.ImageProfile}>
-            <Image
-              source={{
-                uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp?pid=ImgGn",
-              }}
-              style={{ width: "100%", height: "100%", borderRadius: 100 }}
-              resizeMode="contain"
-            />
-          </View>
-          <View style={styles.profileText}>
-            <Text style={styles.textDetail}>{state.Name}</Text>
-            <Text style={styles.textDetail}>{state.RishtaID}</Text>
-          </View>
-        </View>
         <View style={styles.viewNew}>
           <Picker
             mode="dropdown"
@@ -159,53 +190,87 @@ const Dashboard = () => {
         </View>
 
         <View style={styles.points}>
-          <View style={styles.leftPoint}>
+          <Pressable
+            // onPress={() => navigation.navigate("Unique Code History")}
+            style={styles.leftPoint}
+          >
+            <Feather name="check-circle" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(earnedPoints)?.toFixed(1) || 0}
+              {Number(state.EarnedPoints)?.toFixed(2) || 0}
             </Text>
-            <Text style={styles.greyText}>{t("strings:points_earned")}</Text>
+            <Text style={styles.greyText}>Total Earnings</Text>
+          </Pressable>
+          <Pressable style={styles.middlePoint}>
+            <MaterialIcons name="currency-rupee" size={40} color="black" />
+            <Text style={styles.point}>
+              {Number(state.RedeemablePoints)?.toFixed(2) || 0}
+            </Text>
+            <Text style={styles.greyText}>Redeemable Points</Text>
+          </Pressable>
+          <Pressable
+            // onPress={() => navigation.navigate("Redemption History")}
+            style={styles.rightPoint}
+          >
+            <MaterialIcons
+              name="account-balance-wallet"
+              size={40}
+              color="black"
+            />
+            <Text style={styles.point}>
+              {Number(state.RedeemedPoints)?.toFixed(2) || 0}
+            </Text>
+            <Text style={styles.greyText}>TDS Kitty</Text>
+          </Pressable>
+        </View>
+        <View style={styles.calendarContainer}>
+          <View style={styles.datePickerContainer}>
+            <Text style={styles.label}>Date (From)</Text>
+            <TouchableOpacity
+              onPress={showStartDatePicker}
+              style={styles.inputContainer}
+            >
+              <TextInput
+                style={styles.textInput}
+                placeholder="DD/MM/YYYY"
+                value={startDate.toLocaleDateString("en-GB")}
+                editable={false}
+              />
+            </TouchableOpacity>
+            {showStart && (
+              <DateTimePicker
+                value={startDate}
+                mode="date"
+                display="default"
+                onChange={onChangeStartDate}
+                minimumDate={state.InvitationDate}
+              />
+            )}
           </View>
-          <View style={styles.middlePoint}>
-            <Text style={styles.point}>
-              {Number(redeemablePoints)?.toFixed(1) || 0}
-            </Text>
-            <Text style={styles.greyText}>
-              {t("strings:redeemable_points")}
-            </Text>
-          </View>
-          <View style={styles.rightPoint}>
-            <Text style={styles.point}>
-              {Number(redeemedPoints)?.toFixed(1) || 0}
-            </Text>
-            <Text style={styles.greyText}>{t("TDS Kitty")}</Text>
+          <View style={styles.datePickerContainer}>
+            <Text style={styles.label}>Date (To)</Text>
+            <TouchableOpacity
+              onPress={showEndDatePicker}
+              style={styles.inputContainer}
+            >
+              <TextInput
+                style={styles.textInput}
+                placeholder="DD/MM/YYYY"
+                value={endDate.toLocaleDateString("en-GB")}
+                editable={false}
+              />
+            </TouchableOpacity>
+            {showEnd && (
+              <DateTimePicker
+                value={endDate}
+                mode="date"
+                display="default"
+                onChange={onChangeEndDate}
+                minimumDate={state.InvitationDate}
+              />
+            )}
           </View>
         </View>
-
-        <View style={styles.container}>
-
-        {show && (
-        <DatePicker
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          onChange={onChange}
-        />
-      )}
-          <DatePicker
-            label="Date (From)"
-            date={fromDate}
-            onDateChange={(selectedDate) => setFromDate(selectedDate)}
-            minDate={state.InvitationDate}
-          />
-          <DatePicker
-            label="Date (To)"
-            date={toDate}
-            onDateChange={(selectedDate) => setToDate(selectedDate)}
-            minDate={state.InvitationDate}
-          />
-        </View>
-        <View style={{ alignItems: "flex-end", marginTop: 20 }}>
+        <View style={{ alignItems: "flex-end", marginTop: 10 }}>
           <Buttons
             variant="filled"
             label="Search"
@@ -249,6 +314,38 @@ const styles = StyleSheet.create({
   mainWrapper: {
     padding: 15,
     backgroundColor: "white",
+  },
+  calendarContainer: {
+    flex: 1,
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+    gap: 20,
+  },
+  datePickerContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  label: {
+    marginBottom: 5,
+    fontSize: 16,
+    color: "grey",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "grey",
+    borderRadius: 6,
+    padding: 10,
+    width: 150,
+    backgroundColor: "white",
+  },
+  textInput: {
+    fontSize: 16,
+    color: "black",
   },
   viewNew: {
     backgroundColor: "#fff",
@@ -302,49 +399,42 @@ const styles = StyleSheet.create({
     width: "100%",
     display: "flex",
     flexDirection: "row",
-    gap: 5,
-    // marginTop: 30,
+    justifyContent: "center",
+    gap: 2,
   },
   leftPoint: {
     width: responsiveWidth(30),
-    height: 100,
+    height: responsiveHeight(13),
     backgroundColor: colors.lightYellow,
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
-    paddingTop: 20,
+    justifyContent: "space-evenly",
   },
 
   rightPoint: {
     width: responsiveWidth(30),
-    height: 100,
+    height: responsiveHeight(13),
     backgroundColor: colors.lightYellow,
     borderTopRightRadius: 16,
     borderBottomRightRadius: 16,
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
-    paddingTop: 20,
+    justifyContent: "space-evenly",
   },
 
   middlePoint: {
     width: responsiveWidth(30),
-    height: 100,
+    height: responsiveHeight(13),
     backgroundColor: colors.lightYellow,
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingBottom: 20,
-    paddingTop: 20,
+    justifyContent: "space-evenly",
   },
   greyText: {
-    width: "80%",
-    color: colors.grey,
+    width: "100%",
+    color: colors.black,
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: responsiveFontSize(1.7),
-    marginBottom: 10,
+    fontSize: responsiveFontSize(1.6),
   },
   point: {
     fontWeight: "bold",
