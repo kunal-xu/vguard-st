@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
 import arrowIcon from "../../../../../assets/images/arrow.png";
-import { sendCustomerData } from "../../../../../utils/apiservice";
+import { getBonusPoints, sendCustomerData } from "../../../../../utils/apiservice";
 import RewardBox from "../../../../../components/ScratchCard";
 import Popup from "../../../../../components/Popup";
 import Loader from "../../../../../components/Loader";
@@ -16,6 +16,7 @@ import { useData } from "../../../../../hooks/useData";
 import { NavigationProps } from "../../../../../utils/interfaces";
 import { RegistrationCustomerDetailsSchema } from "../../../../../utils/schemas/Registration";
 import { z } from "zod";
+
 
 const AddWarranty = ({ navigation }: NavigationProps) => {
   const { t } = useTranslation();
@@ -130,6 +131,61 @@ const AddWarranty = ({ navigation }: NavigationProps) => {
         setPopupContent(t("strings:something_wrong"));
       }
     }
+
+    // function checkBonusPoints() {
+    //   setScratchCardProps({ ...scratchCardProps, isVisible: false });
+    //   getBonusPoints(CouponResponse?.transactId).then((response) => {
+    //     const result = response.data;
+    //     var couponPoints = result.promotionPoints;
+    //     let data = {
+    //       rewardImage: {
+    //         width: 100,
+    //         height: 100,
+    //         resourceLocation: require("../../../../../assets/images/ic_rewards_gift.png"),
+    //       },
+    //       rewardResultText: {
+    //         color: "black",
+    //         fontSize: 16,
+    //         textContent: result.errorMsg,
+    //         fontWeight: "700",
+    //       },
+    //       text1: {
+    //         color: "black",
+    //         fontSize: 16,
+    //         textContent: couponPoints,
+    //         fontWeight: "700",
+    //       },
+    //       text2: {
+    //         color: "black",
+    //         fontSize: 16,
+    //         textContent: "POINTS",
+    //         fontWeight: "700",
+    //       },
+    //       text3: {
+    //         color: "#9c9c9c",
+    //         fontSize: 12,
+    //         textContent: "",
+    //         fontWeight: "700",
+    //       },
+    //       button: {
+    //         buttonColor: "#F0C300",
+    //         buttonTextColor: "black",
+    //         buttonText: "",
+    //         buttonAction: setscratchCardProps({
+    //           ...scratchCardProps,
+    //           isVisible: false,
+    //         }),
+    //         fontWeight: "400",
+    //       },
+    //       textInput: false,
+    //       scratchable: true,
+    //       isVisible: true,
+    //       onClose: () =>
+    //         setscratchCardProps({ ...scratchCardProps, isVisible: false }),
+    //     };
+    //     setscratchCardProps(data);
+    //   });
+    // }
     /*
     const response = await sendCustomerData(customerState);
     const result = await response.data;

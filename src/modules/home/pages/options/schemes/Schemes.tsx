@@ -1,18 +1,25 @@
-import {View, Text, StyleSheet} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import ReusableCarousel from '../../../../../components/ReusableCarousel';
-import colors from '../../../../../../colors';
-import image from '../../../../../assets/images/banner_redeem_ppoints.webp';
-import CustomTouchableOption from '../../../../../components/CustomTouchableOption';
-import NeedHelp from '../../../../../components/NeedHelp';
-import {getSchemeImages} from '../../../../../utils/apiservice';
-import {bannerUrl} from '../../../../../utils/constants';
-import ReusableUrlCarousel from '../../../../../components/ReusableUrlCarousel';
+import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import ReusableCarousel from "../../../../../components/ReusableCarousel";
+import colors from "../../../../../../colors";
+import image from "../../../../../assets/images/banner_redeem_ppoints.webp";
+import CustomTouchableOption from "../../../../../components/CustomTouchableOption";
+import NeedHelp from "../../../../../components/NeedHelp";
+import { getSchemeImages } from "../../../../../utils/apiservice";
+import { bannerUrl } from "../../../../../utils/constants";
+import ReusableUrlCarousel from "../../../../../components/ReusableUrlCarousel";
 
 const Schemes = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const carouselData = [
+    {
+      imageUrl: require("../../../../../assets/images/schemes-1.jpeg"),
+    },
+    { imageUrl: require("../../../../../assets/images/schemes-2.jpeg") },
+  ];
 
   const bannerUrl = "https://vguardrishta.com/";
 
@@ -20,40 +27,42 @@ const Schemes = () => {
     try {
       const response = await getSchemeImages();
       const result = await response.data;
-      const imageArray = result.map((r) => ({ imageUrl: bannerUrl + r.imgPath }));
+      const imageArray = result.map((r) => ({
+        imageUrl: bannerUrl + r.imgPath,
+      }));
       setImageArray(imageArray);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
-  
 
   const [imageArray, setImageArray] = useState([]);
 
   return (
     <View style={styles.container}>
       <View style={styles.carousel}>
-        {imageArray &&
-        <ReusableUrlCarousel data={imageArray} />}
+        <ReusableCarousel data={carouselData} />
       </View>
       <View style={styles.mainWrapper}>
         <View style={styles.options}>
           <CustomTouchableOption
             text="strings:product_wise_offers"
-            iconSource={require('../../../../../assets/images/ic_product_wise_offers.webp')}
+            iconSource={require("../../../../../assets/images/ic_product_wise_offers.webp")}
             screenName="Product Wise Offers"
-            disabled={true} 
+            disabled={true}
           />
           <CustomTouchableOption
             text="strings:active_scheme_offers"
-            iconSource={require('../../../../../assets/images/ic_active_offers.webp')}
+            iconSource={require("../../../../../assets/images/ic_active_offers.webp")}
             screenName="Active Schemes/Offers"
-            disabled={true} 
+            disabled={true}
           />
           <CustomTouchableOption
             text="strings:special_combo_offers"
-            iconSource={require('../../../../../assets/images/ic_special_combo_offers.webp')}
-            screenName="Special Combo Offers" disabled={true}          />
+            iconSource={require("../../../../../assets/images/ic_special_combo_offers.webp")}
+            screenName="Special Combo Offers"
+            disabled={true}
+          />
         </View>
         <NeedHelp />
       </View>
@@ -69,9 +78,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   options: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginVertical: 30,
   },
   mainWrapper: {

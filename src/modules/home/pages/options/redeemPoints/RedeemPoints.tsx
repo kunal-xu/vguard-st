@@ -23,9 +23,8 @@ const RedeemPoints = ({navigation}) => {
   const {t} = useTranslation();
   const carouselData = [
     {
-      imageUrl: require('../../../../../assets/images/banner_redeem_ppoints.webp'),
+      imageUrl: require('../../../../../assets/images/redemption-screen.jpeg'),
     },
-    {imageUrl: require('../../../../../assets/images/banner.webp')},
     {
       imageUrl: require('../../../../../assets/images/banner_redeem_ppoints.webp'),
     },

@@ -219,6 +219,9 @@ const LoginWithOtp: React.FC<LoginWithOtpProps> = ({ navigation, route }) => {
                   maxLength={4}
                 />
               </View>
+              <Text style={styles.textHeader}>
+                {t("Note: Enter the 4 digits of your PAN in case of first time registration")}
+              </Text>
             </View>
             <View>
               <Buttons

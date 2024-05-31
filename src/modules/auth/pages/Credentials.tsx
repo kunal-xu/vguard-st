@@ -19,7 +19,6 @@ const Credentials = ({ navigation }: NavigationProps) => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [redirect, setRedirect] = useState(false);
 
   async function register() {
     try {
@@ -35,6 +34,14 @@ const Credentials = ({ navigation }: NavigationProps) => {
           value: loginResponseData.stUser,
         },
       });
+      dispatch({
+        type: "UPDATE_FIELD",
+        payload: {
+          field: "firstLogin",
+          subfield: undefined,
+          value: 1
+        }
+      })
       login(loginResponseData)
 
       // dispatch({

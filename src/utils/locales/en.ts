@@ -120,7 +120,7 @@ export default {
     enter_your_mobile_number: 'Enter your mobile number',
     lbl_otp_verification: 'OTP Verification',
     enter_otp_description:
-      'Please enter the 4-digit OTP\nreceived through SMS using\nmobile no. \nEnter the 4 digits of your PAN in case of first time registration',
+      'Please enter the 4-digit OTP received through SMS using mobile no.',
     new_user: 'New User',
     direct_order: "Direct Order",
     rishta_id: 'Rishta ID',

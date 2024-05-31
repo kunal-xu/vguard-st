@@ -81,7 +81,7 @@ const Profile = ({ navigation }) => {
     "Bank Details",
     "TDS Slab",
     "Profile Status",
-    "Status"
+    "Transaction Status"
   ];
   const renderField = (fieldName) => {
     const fieldMap = {
@@ -174,7 +174,7 @@ const Profile = ({ navigation }) => {
         </>
       );
     }
-    else if (fieldName === "Status") {
+    else if (fieldName === "Transaction Status") {
       return (
         <>
           <View>

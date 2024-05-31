@@ -3,37 +3,42 @@ import { StyleSheet, TouchableOpacity, Text, Linking, Image, View, Modal, Dimens
 
 import colors from '../../colors';
 import { responsiveFontSize } from 'react-native-responsive-dimensions';
+import { useData } from '../hooks/useData';
 
 const OpenPopupOnOpeningApp = () => {
     const [isModalVisible, setModalVisible] = useState(false);
-    const [userData, setUserData] = useState({
-        videoPath: "",
-        imgPath: "",
-        vdoText: "",
-        textMessage: "",
-    });
+    const {state} = useData();
+    // const [userData, setUserData] = useState({
+    //     videoPath: "",
+    //     imgPath: "",
+    //     vdoText: "",
+    //     textMessage: "",
+    // });
     const [imageHeight, setImageHeight] = useState(0);
     const [imageWidth, setImageWidth] = useState(0);
 
+    // useEffect(() => {
+    //     getDetails();
+    // }, []);
     useEffect(() => {
-        getDetails();
-    }, []);
-    useEffect(() => {
-        // getImageSize()
-        //     .then(({ width, height }) => {
-        //         setImageWidth(width);
-        //         setImageHeight(height);
-        //     })
-        //     .catch(error => {
-        //         console.error("Error:", error.message);
-        //     });
-
-        if (userData.imgPath != "") {
+        if(state.firstLogin === 1) {
             setModalVisible(true);
         }
-    }, [userData.imgPath]);
+        getImageSize()
+            .then(({ width, height }) => {
+                setImageWidth(width);
+                setImageHeight(height);
+            })
+            .catch(error => {
+                console.error("Error:", error.message);
+            });
 
-    const getDetails = async () => {
+        // if (userData.imgPath != "") {
+        //     setModalVisible(true);
+        // }
+    }, []);
+
+    // const getDetails = async () => {
         // await AsyncStorage.getItem('USER').then(r => {
         //     const value = JSON.parse(r);
         //     const welcomeBanner = value?.welcomeBanner || {};
@@ -44,7 +49,7 @@ const OpenPopupOnOpeningApp = () => {
         //         textMessage: welcomeBanner.textMessage || "Welcome!",
         //     });
         // });
-    }
+    // }
 
     const getImageSize = async () => {
         return new Promise((resolve, reject) => {
@@ -72,8 +77,8 @@ const OpenPopupOnOpeningApp = () => {
         Linking.openURL(userData.videoPath);
     };
 
-    const imageUrl = "https://www.vguardrishta.com/" + userData.imgPath;
-    // const imageUrl = "https://source.unsplash.com/low-angle-photography-of-steel-trusses-N9UuFddi7hs";
+    // const imageUrl = "https://www.vguardrishta.com/" + userData.imgPath;
+    const imageUrl = "https://source.unsplash.com/low-angle-photography-of-steel-trusses-N9UuFddi7hs";
 
     return (
         <Modal
@@ -84,21 +89,21 @@ const OpenPopupOnOpeningApp = () => {
             <View style={[styles.modalContainer]}>
                 <View style={[styles.modalContent, { height: imageHeight, width: imageWidth }]}>
                     <Image
-                        source={{ uri: imageUrl }}
+                        source={require("../assets/images/welcomepopup.jpeg")}
                         style={styles.image}
-                        resizeMode="contain"
+                        resizeMode="cover"
                     />
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.viewTouchable} onPress={handlePress}>
-                            <Text style={styles.viewText}>View</Text>
+                        <TouchableOpacity style={styles.viewTouchable} onPress={() => setModalVisible(false)}>
+                            <Text style={styles.viewText}>Close</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+                        {/* <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
                             <Image
                                 source={require('../assets/images/ic_close.png')}
                                 style={styles.closeButtonImage}
                                 resizeMode='contain'
                             />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
             </View>
