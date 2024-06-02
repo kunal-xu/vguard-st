@@ -57,7 +57,7 @@ const Registration = () => {
         >
           <Avatar.Image
             size={80}
-            source={require("../../assets/images/ac_icon.png")}
+            source={require("../../../assets/images/ac_icon.png")}
           />
           <View
             style={{
@@ -99,7 +99,7 @@ const Registration = () => {
             }}
             variant="filled"
             width={350}
-            icon={require("../../assets/images/arrow.png")}
+            icon={require("../../../assets/images/arrow.png")}
             iconWidth={50}
             iconHeight={20}
             iconGap={10}

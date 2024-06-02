@@ -9,16 +9,16 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import arrowIcon from "../assets/images/arrow.png";
-import { generateOtpForLogin, validateLoginOtp } from "../utils/apiservice";
-import Popup from "../components/Popup";
-import Loader from "../components/Loader";
-import { useAuth } from "../hooks/useAuth";
-import { useData } from "../hooks/useData";
-import { STUser } from "../utils/types";
-import colors from "../utils/colors";
-import Buttons from "../components/Buttons";
-import { height } from "../utils/dimensions";
+import arrowIcon from "../../assets/images/arrow.png";
+import { generateOtpForLogin, validateLoginOtp } from "@/src/utils/apiservice";
+import Popup from "@/src/components/Popup";
+import Loader from "@/src/components/Loader";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useData } from "@/src/hooks/useData";
+import { STUser } from "@/src/utils/types";
+import colors from "@/src/utils/colors";
+import Buttons from "@/src/components/Buttons";
+import { height } from "@/src/utils/dimensions";
 import { useLocalSearchParams } from "expo-router";
 import { useNavigation } from "expo-router";
 import { CommonActions } from "@react-navigation/native";
@@ -191,7 +191,7 @@ const LoginWithOtp = () => {
         ) : null}
         <View style={styles.mainWrapper}>
           <Image
-            source={require("../assets/images/ic_rishta_logo.jpg")}
+            source={require("../../assets/images/ic_rishta_logo.jpg")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>
@@ -206,7 +206,7 @@ const LoginWithOtp = () => {
                 <Image
                   style={styles.icon}
                   resizeMode="contain"
-                  source={require("../assets/images/mobile_icon.png")}
+                  source={require("../../assets/images/mobile_icon.png")}
                 />
                 <TextInput
                   style={styles.input}
@@ -218,7 +218,7 @@ const LoginWithOtp = () => {
                 <Image
                   style={styles.icon}
                   resizeMode="contain"
-                  source={require("../assets/images/lock_icon.png")}
+                  source={require("../../assets/images/lock_icon.png")}
                 />
                 <TextInput
                   style={styles.input}
@@ -287,7 +287,7 @@ const LoginWithOtp = () => {
               {t("strings:powered_by_v_guard")}
             </Text>
             <Image
-              source={require("../assets/images/group_910.png")}
+              source={require("../../assets/images/group_910.png")}
               style={styles.imageVguard}
             />
           </View>

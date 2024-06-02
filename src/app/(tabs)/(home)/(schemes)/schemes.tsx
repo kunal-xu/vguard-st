@@ -80,7 +80,7 @@ const Schemes = () => {
       <View style={styles.mainWrapper}>
         <View style={styles.options}>
           <CustomTouchableOption
-            text="Product-wise scan base points"
+            text="Scan base points"
             iconSource={require("../../../../assets/images/ic_product_wise_offers.webp")}
             screenName="Product-wise scan base points"
             disabled={true}
@@ -92,7 +92,7 @@ const Schemes = () => {
             disabled={true}
           />
           <CustomTouchableOption
-            text="Special non-product offers"
+            text="Non-product offers"
             iconSource={require("../../../../assets/images/ic_special_combo_offers.webp")}
             screenName="Special non-product offers"
             disabled={true}
@@ -100,7 +100,7 @@ const Schemes = () => {
         </View>
         <View style={styles.options}>
           <CustomTouchableOption
-            text="Product-wise direct order base points"
+            text="Direct order base points"
             iconSource={require("../../../../assets/images/ic_product_wise_offers.webp")}
             screenName="Product-wise scan base points"
             disabled={true}

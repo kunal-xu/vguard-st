@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, SafeAreaView, Linking, ToastAndroid } from "react-native";
 import { NavigationProps } from "@/src/utils/interfaces"
-import { loginWithPassword, registerNewUser } from "../../utils/apiservice";
+import { loginWithPassword, registerNewUser } from "@/src/utils/apiservice";
 import { z } from "zod";
 import Buttons from "@/src/components/Buttons";
 import NeedHelp from "@/src/components/NeedHelp";
@@ -92,7 +92,7 @@ const Credentials = ({ navigation }: NavigationProps) => {
               onPress={() => register()}
               variant="filled"
               width={350}
-              icon={require("../../assets/images/arrow.png")}
+              icon={require("../../../assets/images/arrow.png")}
               iconWidth={50}
               iconHeight={20}
               iconGap={10}

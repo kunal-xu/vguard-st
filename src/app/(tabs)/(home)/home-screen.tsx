@@ -129,19 +129,19 @@ const HomeScreen = () => {
               <CustomTouchableOption
                 text="strings:scan_out"
                 iconSource={require("../../../assets/images/ic_scan_code.png")}
-                screenName="Scan QR"
+                screenName="(scan)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:redeem_points"
                 iconSource={require("../../../assets/images/ic_redeem_points.webp")}
-                screenName="Redeem Products"
+                screenName="(redeem)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:dashboard"
                 iconSource={require("../../../assets/images/ic_dashboard.webp")}
-                screenName="Dashboard"
+                screenName="(dashboard)"
                 disabled={false}
               />
             </View>
@@ -149,19 +149,19 @@ const HomeScreen = () => {
               <CustomTouchableOption
                 text="strings:direct_order"
                 iconSource={require("../../../assets/images/Group_575.png")}
-                screenName="Update KYC"
+                screenName="(directorder)"
                 disabled={true}
               />
               <CustomTouchableOption
                 text="strings:scheme_offers"
                 iconSource={require("../../../assets/images/ic_scheme_offers.png")}
-                screenName="schemes"
+                screenName="(schemes)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:update_bank"
                 iconSource={require("../../../assets/images/ic_update_kyc.webp")}
-                screenName="Update Bank and UPI"
+                screenName="(bank)"
                 disabled={false}
               />
             </View>
@@ -169,19 +169,19 @@ const HomeScreen = () => {
               <CustomTouchableOption
                 text="strings:welfare"
                 iconSource={require("../../../assets/images/training_info.png")}
-                screenName="App Tutorials"
+                screenName="(training)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:info_desk"
                 iconSource={require("../../../assets/images/ic_vguard_info.webp")}
-                screenName="info"
+                screenName="(info)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:raise_ticket"
                 iconSource={require("../../../assets/images/ic_raise_ticket.webp")}
-                screenName="ticket"
+                screenName="(ticket)"
                 disabled={false}
               />
             </View>
@@ -196,12 +196,17 @@ const HomeScreen = () => {
     }
   };
   return (
-    <FlashList
-      data={data}
-      renderItem={renderItem}
-      estimatedItemSize={300}
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={{
+      flex: 1,
+      backgroundColor: "white"
+    }}>
+      <FlashList
+        data={data}
+        renderItem={renderItem}
+        estimatedItemSize={300}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 

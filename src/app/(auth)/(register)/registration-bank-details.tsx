@@ -33,7 +33,7 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
               }}
               variant="outlined"
               width={88}
-              icon={require("../../assets/images/arrow.png")}
+              icon={require("../../../assets/images/arrow.png")}
               iconWidth={24}
               iconHeight={8}
               iconGap={1}
@@ -68,7 +68,7 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
               }}
               variant="filled"
               width={350}
-              icon={require("../../assets/images/arrow.png")}
+              icon={require("../../../assets/images/arrow.png")}
               iconWidth={50}
               iconHeight={20}
               iconGap={10}

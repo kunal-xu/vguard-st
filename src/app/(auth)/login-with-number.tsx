@@ -14,22 +14,22 @@ import {
   Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import language from "../assets/images/language.png";
-import arrowIcon from "../assets/images/arrow.png";
-import selectedTickImage from "../assets/images/tick_1.png";
-import notSelectedTickImage from "../assets/images/tick_1_notSelected.png";
-import Buttons from "../components/Buttons";
-import Popup from "../components/Popup";
-import Loader from "../components/Loader";
-import { height } from "../utils/dimensions";
-import { generateOtpForLogin } from "../utils/apiservice";
-import LanguagePicker from "../components/LanguagePicker";
+import language from "../../assets/images/language.png";
+import arrowIcon from "../../assets/images/arrow.png";
+import selectedTickImage from "../../assets/images/tick_1.png";
+import notSelectedTickImage from "../../assets/images/tick_1_notSelected.png";
+import Buttons from "@/src/components/Buttons";
+
+import Loader from "@/src/components/Loader";
+import { height } from "@/src/utils/dimensions";
+import { generateOtpForLogin } from "@/src//utils/apiservice";
+import LanguagePicker from "@/src/components/LanguagePicker";
 import { useNavigation, useRouter } from "expo-router";
-import colors from "../utils/colors";
+import colors from "@/src/utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
 import Toast from "react-native-root-toast";
-import NewPopUp from "../components/NewPoptup";
+import NewPopUp from "@/src/components/NewPopup";
 
 const LoginWithNumber = () => {
   const [number, setNumber] = useState("");
@@ -47,7 +47,7 @@ const LoginWithNumber = () => {
   const [loader, showLoader] = useState(false);
   const [selectedOption, setSelectedOption] = useState(true);
 
-  const pkg = require("../../package.json");
+  const pkg = require("../../../package.json");
   const version = pkg.version;
   const navigation = useNavigation();
   const router = useRouter();
@@ -88,14 +88,13 @@ const LoginWithNumber = () => {
         const validationResponse = await generateOtpForLogin(body);
         showLoader(false);
         const validationResponseData = validationResponse.data;
-        console.log(validationResponseData);
         setResponseCode(validationResponseData.code);
         if (validationResponseData.entity === 1) {
           setResponseEntity(1);
           setPopUpTitle(t("Verification Failed"));
           setPopupButton2Text(t("Proceed"));
+          setPopUpIconType("Alert");
           setPopUpButtonCount(2);
-          setPopUpIconType("Info");
         }
         if (validationResponseData.code === 200) {
           const successMessage = validationResponseData.message;
@@ -103,6 +102,7 @@ const LoginWithNumber = () => {
           setPopUpButtonCount(2);
           setPopUpTitle(t("Mobile Number Verified"));
           setPopupButton2Text(t("Proceed"));
+          setPopUpIconType("AccountVerified");
           setPopupText(successMessage);
           return;
         } else {
@@ -195,7 +195,7 @@ const LoginWithNumber = () => {
             />
           </View>
           <Image
-            source={require("../assets/images/ic_rishta_logo_bottom_bar.jpg")}
+            source={require("../../assets/images/ic_rishta_logo_bottom_bar.jpg")}
             style={{ height: "25%", width: "50%" }}
             contentFit="contain"
           />
@@ -209,7 +209,7 @@ const LoginWithNumber = () => {
                 <Image
                   style={styles.icon}
                   contentFit="contain"
-                  source={require("../assets/images/mobile_icon.png")}
+                  source={require("../../assets/images/mobile_icon.png")}
                 />
                 <KeyboardAvoidingView
                   behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -300,7 +300,7 @@ const LoginWithNumber = () => {
                 {t("strings:powered_by_v_guard")}
               </Text>
               <Image
-                source={require("../assets/images/group_910.png")}
+                source={require("../../assets/images/group_910.png")}
                 style={styles.imageVguard}
               />
             </View>

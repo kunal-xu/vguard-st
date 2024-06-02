@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, Image, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useNavigation } from "@react-navigation/native";
 import {
   responsiveHeight,
   responsiveWidth,
@@ -11,6 +10,7 @@ import Popup from "./Popup";
 import { CustomTouchableOptionsProps } from "../utils/interfaces";
 import colors from "../utils/colors";
 import { width } from "../utils/dimensions";
+import { useNavigation } from "expo-router";
 
 const CustomTouchableOption = ({
   text,
@@ -28,7 +28,7 @@ const CustomTouchableOption = ({
       setPopupVisible(true);
       setPopupContent("Coming Soon!");
     } else {
-      navigation.navigate(screenName);
+      navigation.navigate(screenName as never);
     }
   };
 
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   optionIcon: {
-    width: responsiveHeight(7),
-    height: responsiveHeight(7),
+    width: responsiveHeight(6),
+    height: responsiveHeight(5),
   },
   nav: {
     width: "100%",

@@ -44,7 +44,6 @@ const RedeemPoints = () => {
       <View
         style={{
           justifyContent: "center",
-          alignItems: "center",
           height: "30%",
           marginBottom: 20,
           marginTop: 20,
@@ -74,7 +73,6 @@ const RedeemPoints = () => {
       </View>
       <View style={styles.mainWrapper}>
         <View style={styles.carousel}>
-          {/* <ReusableCarousel data={carouselData} /> */}
         </View>
         <View style={styles.points}>
           <Pressable
@@ -114,7 +112,7 @@ const RedeemPoints = () => {
             <CustomTouchableOption
               text="strings:bank_transfer"
               iconSource={require("../../../../assets/images/ic_bank_transfer.webp")}
-              screenName="Bank Transfer"
+              screenName="bank-transfer"
               disabled={false}
             />
             <CustomTouchableOption
@@ -126,7 +124,7 @@ const RedeemPoints = () => {
             <CustomTouchableOption
               text="strings:redemption_history"
               iconSource={require("../../../../assets/images/ic_redemption_history.webp")}
-              screenName="Redemption History"
+              screenName="redemption-history"
               disabled={false}
             />
           </View>

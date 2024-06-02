@@ -67,7 +67,7 @@ const NewPopUp = ({
           <MaterialCommunityIcons
             name="alert-circle-outline"
             size={56}
-            color={colors.yellow}
+            color={"red"}
           />
         );
       case "Info":
@@ -75,15 +75,19 @@ const NewPopUp = ({
           <MaterialCommunityIcons
             name="information-outline"
             size={56}
-            color={colors.yellow}
+            color={"blue"}
           />
         );
       case "AccountCancel":
         return (
+          <MaterialCommunityIcons name="cancel" size={56} color={"orange"} />
+        );
+      case "AccountVerified":
+        return (
           <MaterialCommunityIcons
-            name="cancel"
+            name="account-check-outline"
             size={56}
-            color={colors.yellow}
+            color={"green"}
           />
         );
     }
@@ -92,7 +96,7 @@ const NewPopUp = ({
   return (
     <Modal
       transparent={true}
-      animationType="fade"
+      animationType="slide"
       visible={visible}
       onRequestClose={() => {}}
     >
@@ -158,7 +162,7 @@ const styles = StyleSheet.create({
     width: "80%",
     padding: 8,
     backgroundColor: "white",
-    borderRadius: 10,
+    borderRadius: 6,
     alignItems: "center",
     justifyContent: "space-between",
     paddingBottom: 32,

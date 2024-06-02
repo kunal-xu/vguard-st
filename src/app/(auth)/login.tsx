@@ -12,23 +12,23 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import arrowIcon from "../assets/images/arrow.png";
-import Popup from "../components/Popup";
+import arrowIcon from "@/src/assets/images/arrow.png";
+import Popup from "@/src/components/Popup";
 import { Linking } from "react-native";
-import selectedTickImage from "../assets/images/tick_1.png";
-import notSelectedTickImage from "../assets/images/tick_1_notSelected.png";
-import language from "../assets/images/language.png";
+import selectedTickImage from "@/src/assets/images/tick_1.png";
+import notSelectedTickImage from "@/src/assets/images/tick_1_notSelected.png";
+import language from "@/src/assets/images/language.png";
 
-import { loginWithPassword } from "../utils/apiservice";
-import { NavigationProps } from "../utils/interfaces";
+import { loginWithPassword } from "@/src/utils/apiservice";
+import { NavigationProps } from "@/src/utils/interfaces";
 import React from "react";
-import Buttons from "../components/Buttons";
-import { useAuth } from "../hooks/useAuth";
-import Loader from "../components/Loader";
-import LanguagePicker from "../components/LanguagePicker";
-import { useData } from "../hooks/useData";
-import colors from "../utils/colors";
-import { height } from "../utils/dimensions";
+import Buttons from "@/src/components/Buttons";
+import { useAuth } from "@/src/hooks/useAuth";
+import Loader from "@/src/components/Loader";
+import LanguagePicker from "@/src/components/LanguagePicker";
+import { useData } from "@/src/hooks/useData";
+import colors from "@/src/utils/colors";
+import { height } from "@/src/utils/dimensions";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
 
@@ -45,7 +45,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
   const { login } = useAuth();
   const { dispatch } = useData();
 
-  const pkg = require("../../package.json");
+  const pkg = require("../../../package.json");
   const version = pkg.version;
 
   const handleLanguageButtonPress = () => {
@@ -123,7 +123,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
           </View>
           {loader && <Loader isLoading={loader} />}
           <Image
-            source={require("../assets/images/ic_rishta_logo_bottom_bar.jpg")}
+            source={require("../../assets/images/ic_rishta_logo_bottom_bar.jpg")}
             style={{ height: "25%", width: "50%" }}
             contentFit="contain"
           />
@@ -135,7 +135,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
             <View style={styles.inputContainer}>
               <Image
                 style={styles.icon}
-                source={require("../assets/images/mobile_icon.png")}
+                source={require("@/src/assets/images/mobile_icon.png")}
                 resizeMode="contain"
               />
               <KeyboardAvoidingView
@@ -156,7 +156,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
             <View style={styles.inputContainer}>
               <Image
                 style={styles.icon}
-                source={require("../assets/images/lock_icon.png")}
+                source={require("../../assets/images/lock_icon.png")}
                 resizeMode="contain"
               />
               <KeyboardAvoidingView
@@ -217,7 +217,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
             </Text>
 
             <Image
-              source={require("../assets/images/group_910.png")}
+              source={require("../../assets/images/group_910.png")}
               style={styles.imageVguard}
             />
           </View>

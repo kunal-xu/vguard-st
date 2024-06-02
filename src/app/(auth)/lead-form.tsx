@@ -10,13 +10,13 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import Popup from "@/src/components/Popup";
-import { height, width } from "../utils/dimensions";
-import Loader from "../components/Loader";
+import { height, width } from "@/src/utils/dimensions";
+import Loader from "@/src//components/Loader";
 import { Picker } from "@react-native-picker/picker";
-import Buttons from "../components/Buttons";
-import { addLeadForm } from "../utils/apiservice";
-import NeedHelp from "../components/NeedHelp";
-import colors from "../utils/colors";
+import Buttons from "@/src//components/Buttons";
+import { addLeadForm } from "@/src//utils/apiservice";
+import NeedHelp from "@/src/components/NeedHelp";
+import colors from "@/src//utils/colors";
 import { Avatar } from "react-native-paper";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { FloatingLabelInput } from "react-native-floating-label-input";
@@ -123,7 +123,7 @@ const LeadForm = () => {
           >
             <Avatar.Image
               size={80}
-              source={require("../assets/images/ac_icon.png")}
+              source={require("../../assets/images/ac_icon.png")}
             />
             <View
               style={{
@@ -201,7 +201,7 @@ const LeadForm = () => {
               onPress={() => addLead()}
               variant="filled"
               width="100%"
-              icon={require("../assets/images/arrow.png")}
+              icon={require("../../assets/images/arrow.png")}
               iconHeight={10}
               iconWidth={30}
               iconGap={10}

@@ -288,19 +288,19 @@ const Dashboard = () => {
           <CustomTouchableOption
             text="strings:product_wise_earning"
             iconSource={require("../../../../assets/images/ic_bank_transfer.webp")}
-            screenName="Product Wise Earning"
+            screenName="product-wise-earning"
             disabled={false}
           />
           <CustomTouchableOption
             text="strings:scheme_wise_earning"
             iconSource={require("../../../../assets/images/ic_paytm_transfer.webp")}
-            screenName="Scheme Wise Earning"
+            screenName="scheme-wise-earning"
             disabled={false}
           />
           <CustomTouchableOption
             text="strings:your_rewards"
             iconSource={require("../../../../assets/images/ic_egift_cards.webp")}
-            screenName="Your Rewards"
+            screenName="rewards"
             disabled={false}
           />
         </View>

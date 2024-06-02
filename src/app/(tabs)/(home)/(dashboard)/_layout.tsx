@@ -1,13 +1,28 @@
-import { Stack } from 'expo-router'
-import React from 'react'
+import { Stack } from "expo-router";
+import React from "react";
 
 export default function DashboardLayout() {
   return (
     <Stack>
-      <Stack.Screen name="dashboard" />
-      <Stack.Screen name="product-wise-earning" />
-      <Stack.Screen name="rewards" />
-      <Stack.Screen name="scheme-wise-earning" />
+      <Stack.Screen
+        name="dashboard"
+        options={{
+          title: "Dashboard",
+        }}
+      />
+      <Stack.Screen
+        name="product-wise-earning"
+        options={{
+          title: "Product Wise Earning",
+        }}
+      />
+      <Stack.Screen name="rewards" options={{
+        title: "Rewards"
+      }}/>
+      <Stack.Screen name="scheme-wise-earning" 
+      options={{
+        title: "Scheme Wise Earning"
+      }}/>
     </Stack>
-  )
+  );
 }

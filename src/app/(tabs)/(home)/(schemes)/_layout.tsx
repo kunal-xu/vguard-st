@@ -4,10 +4,13 @@ import React from 'react'
 export default function SchemesLayout() {
   return (
     <Stack>
-      <Stack.Screen name="product" />
-      <Stack.Screen name="product-wise-earning" />
-      <Stack.Screen name="rewards" />
-      <Stack.Screen name="scheme-wise-earning" />
+      <Stack.Screen name="schemes" options={{
+        title: "Schemes"
+      }}/>
+      <Stack.Screen name="product-based-schemes" />
+      <Stack.Screen name="product-wise-direct-order-base-points" />
+      <Stack.Screen name="product-wise-scan-base-points" />
+      <Stack.Screen name="special-non-product-offers" />
     </Stack>
   )
 }

@@ -9,15 +9,14 @@ import React, {
 } from "react";
 import { User } from "../utils/interfaces";
 import { api, logoutUser, newTokens } from "../utils/apiservice";
-import SecureStore from 'expo-secure-store';
+import { getItemAsync, setItemAsync, deleteItemAsync } from "expo-secure-store";
+import { useRouter } from "expo-router";
 
 interface AuthContextProps {
   setIsUserAuthenticated: Dispatch<SetStateAction<boolean>>;
   isUserAuthenticated: boolean;
   login: (user: User) => Promise<void>;
   logout: () => Promise<void>;
-  showPopup: boolean;
-  setShowPopup: Dispatch<SetStateAction<boolean>>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -29,48 +28,48 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isUserAuthenticated, setIsUserAuthenticated] =
     useState<boolean>(false);
-  const [showPopup, setShowPopup] = useState<boolean>(false);
-
-   async function login(user: User)  {
-    // storage.set("refreshToken", JSON.stringify(user.tokens.refreshToken));
-    await SecureStore.setItemAsync("refreshToken", JSON.stringify(user.tokens.refreshToken));
+  const router = useRouter();
+  async function login(user: User) {
+    await setItemAsync(
+      "refreshToken",
+      JSON.stringify(user.tokens.refreshToken)
+    );
     setIsUserAuthenticated(true);
-  };
-  
-  async function logout(){
+  }
+
+  async function logout() {
     try {
-      await logoutUser();
-      // storage.clearAll();
-      await SecureStore.deleteItemAsync("refreshToken")
+      // await logoutUser();
+      await deleteItemAsync("refreshToken");
       setIsUserAuthenticated(false);
     } catch (error) {
       console.error("Error while logging out:", error);
     }
-  };
+  }
 
   useEffect(() => {
     (async () => {
       try {
-        // const refreshToken: string = storage.getString(
-        //   "refreshToken"
-        // ) as string;
-        const refreshToken: Promise<string> = SecureStore.getItemAsync("refreshToken") as Promise<string>;
+        const refreshToken: string = (await getItemAsync(
+          "refreshToken"
+        )) as string;
         if (refreshToken) {
-          const refreshTokenData = JSON.parse(await refreshToken);
+          const refreshTokenData = JSON.parse(refreshToken);
           const { accessToken, newRefreshToken } = await newTokens(
             refreshTokenData
           );
-          // storage.set("refreshToken", JSON.stringify(newRefreshToken));
-          await SecureStore.setItemAsync("refreshToken", JSON.stringify(newRefreshToken));
+          await setItemAsync("refreshToken", JSON.stringify(newRefreshToken));
           api.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${accessToken}`;
           setIsUserAuthenticated(true);
+          router.replace("/(tabs)/(home)/home-screen");
         } else {
           throw new Error("No data in storage");
         }
       } catch (error: any) {
         console.log(error.message);
+        router.replace("/(auth)/login-with-number");
       }
     })();
   }, []);
@@ -114,8 +113,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsUserAuthenticated,
         login,
         logout,
-        showPopup,
-        setShowPopup,
       }}
     >
       {children}

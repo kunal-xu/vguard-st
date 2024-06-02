@@ -1,4 +1,4 @@
-import { height, width } from "../../../utils/dimensions";
+import { height, width } from "@/src/utils/dimensions";
 import { styles } from "./styles";
 
 export const registrationFields = [

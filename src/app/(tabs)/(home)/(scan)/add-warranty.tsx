@@ -7,7 +7,7 @@ import { sendCustomerData } from "@/src/utils/apiservice";
 import { customerData } from "./fields/customerData";
 import { RegistrationCustomerDetailsSchema } from "@/src/utils/schemas/Registration";
 import { z } from "zod";
-import NewPopUp from "@/src/components/NewPoptup";
+import NewPopUp from "@/src/components/NewPopup";
 import Loader from "@/src/components/Loader";
 import { height } from "@/src/utils/dimensions";
 import colors from "@/src/utils/colors";

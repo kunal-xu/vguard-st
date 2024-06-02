@@ -8,8 +8,8 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { getUser, updateProfile } from "@/src/utils/apiservice";
 import { useData } from "@/src/hooks/useData";
 import Buttons from "@/src/components/Buttons";
-import { registrationBankDetails } from "@/src/app/(register)/fields/registrationBankDetailsFields";
 import Field from "@/src/components/Field";
+import { registrationBankDetails } from "@/src/app/(auth)/(register)/fields/registrationBankDetailsFields";
 
 const UpdateBankDetails = ({ navigation }: NavigationProps) => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
