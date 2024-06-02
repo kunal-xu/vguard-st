@@ -1,7 +1,8 @@
 import colors from "@/src/utils/colors";
 import { Stack } from "expo-router";
 import { useHeaderHeight } from "@react-navigation/elements";
-import CustomHeader from "@/src/components/CustomHeader";
+import CustomHeader from "../../components/CustomHeader";
+
 
 export default function RegisterLayout() {
   const headerHeight = useHeaderHeight();
