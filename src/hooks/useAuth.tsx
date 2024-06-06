@@ -35,13 +35,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       JSON.stringify(user.tokens.refreshToken)
     );
     setIsUserAuthenticated(true);
+    router.replace("/(tabs)/(home)/home-screen");
   }
 
   async function logout() {
     try {
-      // await logoutUser();
+      await logoutUser();
       await deleteItemAsync("refreshToken");
       setIsUserAuthenticated(false);
+      router.replace("/(auth)/login-with-number");
     } catch (error) {
       console.error("Error while logging out:", error);
     }

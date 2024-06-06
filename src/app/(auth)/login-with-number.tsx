@@ -34,15 +34,12 @@ import NewPopUp from "@/src/components/NewPopup";
 const LoginWithNumber = () => {
   const [number, setNumber] = useState("");
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-
   const [popUp, setPopUp] = useState(false);
   const [popUpButtonCount, setPopUpButtonCount] = useState(1);
   const [popUpTitle, setPopUpTitle] = useState("");
   const [popupText, setPopupText] = useState("");
   const [popUpIconType, setPopUpIconType] = useState("");
   const [popUpButton2Text, setPopupButton2Text] = useState("");
-
-  const [responseCode, setResponseCode] = useState(0);
   const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
   const [selectedOption, setSelectedOption] = useState(true);
@@ -88,12 +85,11 @@ const LoginWithNumber = () => {
         const validationResponse = await generateOtpForLogin(body);
         showLoader(false);
         const validationResponseData = validationResponse.data;
-        setResponseCode(validationResponseData.code);
         if (validationResponseData.entity === 1) {
           setResponseEntity(1);
           setPopUpTitle(t("Verification Failed"));
           setPopupButton2Text(t("Proceed"));
-          setPopUpIconType("Alert");
+          setPopUpIconType("Info");
           setPopUpButtonCount(2);
         }
         if (validationResponseData.code === 200) {
