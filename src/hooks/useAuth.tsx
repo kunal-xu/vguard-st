@@ -17,6 +17,19 @@ interface AuthContextProps {
   isUserAuthenticated: boolean;
   login: (user: User) => Promise<void>;
   logout: () => Promise<void>;
+  popUp: boolean;
+  setPopUp: Dispatch<SetStateAction<boolean>>;
+  popUpButtonCount: number;
+  setPopUpButtonCount: Dispatch<SetStateAction<number>>;
+  popUpTitle: string;
+  setPopUpTitle: Dispatch<SetStateAction<string>>;
+  popupText: string;
+  setPopupText: Dispatch<SetStateAction<string>>;
+  popUpIconType: string;
+  setPopUpIconType: Dispatch<SetStateAction<string>>;
+  popUpButton2Text: string;
+  setPopupButton2Text: Dispatch<SetStateAction<string>>;
+  cleanupPopUp: () => void
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -28,7 +41,23 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isUserAuthenticated, setIsUserAuthenticated] =
     useState<boolean>(false);
+  const [popUp, setPopUp] = useState(false);
+  const [popUpButtonCount, setPopUpButtonCount] = useState(1);
+  const [popUpTitle, setPopUpTitle] = useState("");
+  const [popupText, setPopupText] = useState("");
+  const [popUpIconType, setPopUpIconType] = useState("");
+  const [popUpButton2Text, setPopupButton2Text] = useState("");
   const router = useRouter();
+  function cleanupPopUp() {
+    setPopUp(false);
+    setPopUpButtonCount(1);
+    setPopUpTitle("");
+    setPopupText("");
+    setPopUpIconType("");
+    setPopupButton2Text("");
+  }
+
+
   async function login(user: User) {
     await setItemAsync(
       "refreshToken",
@@ -71,6 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } catch (error: any) {
         console.log(error.message);
+        // router.replace("/(tabs)/(home)/home-screen");
         router.replace("/(auth)/login-with-number");
       }
     })();
@@ -115,6 +145,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsUserAuthenticated,
         login,
         logout,
+        popUp,
+        setPopUp,
+        popUpButtonCount,
+        setPopUpButtonCount,
+        popUpTitle,
+        setPopUpTitle,
+        popupText,
+        setPopupText,
+        popUpIconType,
+        setPopUpIconType,
+        popUpButton2Text,
+        setPopupButton2Text,
+        cleanupPopUp
       }}
     >
       {children}

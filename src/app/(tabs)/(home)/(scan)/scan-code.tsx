@@ -19,202 +19,146 @@ import {
 } from "expo-camera";
 import { validateCoupon } from "@/src/utils/apiservice";
 import colors from "@/src/utils/colors";
-import Popup from "@/src/components/Popup";
 import Loader from "@/src/components/Loader";
-import PopupWithOkAndCancel from "@/src/components/PopupWithOkAndCancel";
 import NeedHelp from "@/src/components/NeedHelp";
-import getLocation from "@/src/utils/geolocation";
 import Buttons from "@/src/components/Buttons";
 import { useData } from "@/src/hooks/useData";
 import { Image } from "expo-image";
 import { blurhash } from "@/src/utils/constants";
 import { MaterialIcons } from "@expo/vector-icons";
-
-interface OkPopupContent {
-  text: string;
-  okAction: (() => void) | null;
-}
+import usePopup from "@/src/hooks/usePopup";
+import { CouponRedeem, CouponRedeemResponse } from "@/src/utils/types";
+import { getLocation } from "@/src/utils/geolocation";
+import { showToast } from "@/src/utils/showToast";
+import { useRouter } from "expo-router";
+import NewPopUp from "@/src/components/NewPopup";
 
 const ScanCode = () => {
   const { t } = useTranslation();
   const [qrCode, setQrcode] = useState<string>("");
-  const [isPopupVisible, setPopupVisible] = useState(false);
-  const [isOkPopupVisible, setOkPopupVisible] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
   const [loader, showLoader] = useState(false);
   const [camera, setCamera] = useState(false);
   const [torch, setTorch] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
-  const [okPopupContent, setOkPopupContent] = useState<OkPopupContent>({
-    text: "",
-    okAction: null,
-  });
-  const [CouponData, setCouponData] = useState({
-    couponCode: "",
-    pin: "",
-    latitude: "",
-    longitude: "",
-    geolocation: "",
-  });
-  const [isFocused, setIsFocused] = useState(false);
-
-  const { state, customerState, customerDispatch } = useData();
-
-  async function isValidBarcode(CouponData: any, pinFourDigit: string) {
-    var result = null;
-    if (pinFourDigit == "") {
-      result = await validateCoupon(CouponData);
-      return result;
-    } else {
-      CouponData.pin = pinFourDigit;
-      result = await validateCoupon(CouponData);
-      return result;
-    }
-  }
-
-  const getUserLocation = () => {
-    getLocation()
-      .then((position) => {
-        if (position != null) {
-          setCouponData((prevData) => ({
-            ...prevData,
-            latitude: position.latitude.toString(),
-            longitude: position.longitude.toString(),
-          }));
-          showLoader(false);
-        } else {
-          console.error("Position is undefined or null");
-          showLoader(false);
-        }
-      })
-      .catch((error) => {
-        console.error("Error getting location:", error);
-        showLoader(false);
-      });
-  };
-
-  const handleQrText = (coupon: string) => {
-    setQrcode(coupon);
-    setCouponData((prevCouponData) => ({
-      ...prevCouponData,
-      couponCode: coupon,
-    }));
-  };
+  const [couponRedeemData, setCouponRedeemData] = useState<CouponRedeem>(
+    new CouponRedeem()
+  );
+  const { state, customerDispatch } = useData();
+  const {
+    popUp,
+    setPopUp,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    cleanupPopUp,
+  } = usePopup();
+  const router = useRouter();
 
   async function sendBarcode() {
-    getUserLocation();
-    if (qrCode && qrCode != "") {
-      if (qrCode.length < 16) {
-        setPopupContent("Please enter valid 16 character barcode");
-        setPopupVisible(true);
-        return;
+    const locationPermission = await getLocation();
+    if (!locationPermission) {
+      showToast(t("Please allow the location permission to continue."));
+      return;
+    }
+    if (qrCode.length < 16) {
+      showToast(t("Please provide a 16 digit QR Code to continue."));
+      return;
+    }
+    try {
+      showLoader(true);
+      const response = await validateCoupon(couponRedeemData);
+      showLoader(false);
+      const status: CouponRedeemResponse = new CouponRedeemResponse(
+        response.data
+      );
+      if (status.errorCode === 1) {
+        customerDispatch({
+          type: "UPDATE_SUB_FIELD",
+          payload: {
+            field: "cresp",
+            subfield: "couponCode",
+            value: status.couponCode as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_SUB_FIELD",
+          payload: {
+            field: "cresp",
+            subfield: "skuDetail",
+            value: status.partName as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_SUB_FIELD",
+          payload: {
+            field: "cresp",
+            subfield: "couponPoints",
+            value: status.couponPoints as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_SUB_FIELD",
+          payload: {
+            field: "cresp",
+            subfield: "partNumber",
+            value: status.partNumber as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "dealerNumber",
+            subfield: undefined,
+            value: state.Contact as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "dealerAdd",
+            subfield: undefined,
+            value: state.AddressDetail.currentAddressLine1 as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "dealerState",
+            subfield: undefined,
+            value: state.AddressDetail.currentState as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "dealerName",
+            subfield: undefined,
+            value: state.Name as string,
+          },
+        });
+        customerDispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "dealerPinCode",
+            subfield: undefined,
+            value: state.AddressDetail.currentPincode as string,
+          },
+        });
+        router.push({
+          pathname: "add-warranty",
+        });
+      } else {
+        setPopUp(true);
+        setPopUpIconType("Alert");
+        setPopUpTitle(t("Validation Failed"));
+        setPopupText(status.errorMsg as string);
       }
-      var apiResponse;
-      try {
-        apiResponse = await isValidBarcode(CouponData, "");
-        const r = await apiResponse.data;
-
-        if (r.errorCode == 1) {
-          showLoader(false);
-          setQrcode("");
-          setOkPopupVisible(true);
-          customerDispatch({
-            type: "UPDATE_SUB_FIELD",
-            payload: {
-              field: "cresp",
-              subfield: "couponCode",
-              value: r.couponCode,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_SUB_FIELD",
-            payload: {
-              field: "cresp",
-              subfield: "skuDetail",
-              value: r.partName,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_SUB_FIELD",
-            payload: {
-              field: "cresp",
-              subfield: "couponPoints",
-              value: r.couponPoints,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_SUB_FIELD",
-            payload: {
-              field: "cresp",
-              subfield: "partNumber",
-              value: r.partNumber,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_FIELD",
-            payload: {
-              field: "dealerNumber",
-              subfield: undefined,
-              value: state.Contact as string,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_FIELD",
-            payload: {
-              field: "dealerAdd",
-              subfield: undefined,
-              value: state.AddressDetail.currentAddressLine1 as string,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_FIELD",
-            payload: {
-              field: "dealerState",
-              subfield: undefined,
-              value: state.AddressDetail.currentState as string,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_FIELD",
-            payload: {
-              field: "dealerName",
-              subfield: undefined,
-              value: state.Name as string,
-            },
-          });
-          customerDispatch({
-            type: "UPDATE_FIELD",
-            payload: {
-              field: "dealerPinCode",
-              subfield: undefined,
-              value: state.AddressDetail.currentPincode as string,
-            },
-          });
-
-          setOkPopupContent({
-            text: t("strings:valid_coupon_please_proceed_to_prod_regi"),
-            okAction: () => navigation.navigate("Add Warranty"),
-          });
-        } else if (r.errorCode == 2) {
-          showLoader(false);
-        } else if (r.errorMsg && r.errorMsg != "") {
-          setPopupVisible(true);
-          setPopupContent(r.errorMsg);
-          showLoader(false);
-          // setPinPopupVisible(true);
-        } else {
-          setPopupVisible(true);
-          setPopupContent(t("strings:something_wrong"));
-          showLoader(false);
-        }
-      } catch (error) {
-        showLoader(false);
-        setPopupVisible(true);
-        setPopupContent(t("strings:something_wrong"));
-      }
-    } else {
-      setPopupVisible(true);
-      setPopupContent("Please enter Coupon Code or Scan a QR");
+    } catch (error) {
+      showLoader(false);
+      showToast(t("strings:something_wrong"));
     }
   }
 
@@ -222,6 +166,14 @@ const ScanCode = () => {
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       {<Loader isLoading={loader} />}
       <View style={styles.mainWrapper}>
+        <NewPopUp
+          visible={popUp}
+          button1Action={() => cleanupPopUp()}
+          button1Text={"Dismiss"}
+          text={popupText}
+          iconType={popUpIconType}
+          title={popUpTitle}
+        />
         <View
           style={{
             marginTop: 16,
@@ -340,16 +292,8 @@ const ScanCode = () => {
             placeholder={t("Enter QR Code Manually")}
             placeholderTextColor={colors.grey}
             textAlign="center"
-            onChangeText={(text) => handleQrText(text)}
             keyboardType="numeric"
             maxLength={16}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            selection={
-              isFocused
-                ? { start: qrCode.length, end: qrCode.length }
-                : { start: 0, end: 0 }
-            }
           />
         </View>
         <Buttons
@@ -366,26 +310,6 @@ const ScanCode = () => {
         />
         <NeedHelp />
       </View>
-      {isPopupVisible && (
-        <Popup
-          isVisible={isPopupVisible}
-          onClose={() => setPopupVisible(false)}
-        >
-          {popupContent}
-        </Popup>
-      )}
-      <PopupWithOkAndCancel
-        isVisible={isOkPopupVisible}
-        onClose={() => {
-          setOkPopupVisible(false);
-        }}
-        onOk={() => {
-          setOkPopupVisible(false);
-          okPopupContent.okAction();
-        }}
-      >
-        {okPopupContent.text}
-      </PopupWithOkAndCancel>
     </ScrollView>
   );
 };

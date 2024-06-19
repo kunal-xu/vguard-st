@@ -1,8 +1,13 @@
+import colors from "@/src/utils/colors";
 import { Stack } from "expo-router";
 
 export default function RegisterLayout() {
   return (
-    <Stack>
+    <Stack screenOptions={{
+      headerStyle: {
+        backgroundColor: colors.yellow,
+      },
+    }}>
       <Stack.Screen
         name="registration"
         options={{

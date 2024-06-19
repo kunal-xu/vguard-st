@@ -6,20 +6,17 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
-  Alert,
-  ToastAndroid,
   Modal,
   Linking,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import language from "../../assets/images/language.png";
-import arrowIcon from "../../assets/images/arrow.png";
-import selectedTickImage from "../../assets/images/tick_1.png";
-import notSelectedTickImage from "../../assets/images/tick_1_notSelected.png";
+import language from "@/src/assets/images/language.png";
+import arrowIcon from "@/src/assets/images/arrow.png";
+import selectedTickImage from "@/src/assets/images/tick_1.png";
+import notSelectedTickImage from "@/src/assets/images/tick_1_notSelected.png";
 import Buttons from "@/src/components/Buttons";
-
 import Loader from "@/src/components/Loader";
 import { height } from "@/src/utils/dimensions";
 import { generateOtpForLogin } from "@/src//utils/apiservice";
@@ -28,21 +25,32 @@ import { useNavigation, useRouter } from "expo-router";
 import colors from "@/src/utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
-import Toast from "react-native-root-toast";
 import NewPopUp from "@/src/components/NewPopup";
+import { showToast } from "@/src/utils/showToast";
+import { useAuth } from "@/src/hooks/useAuth";
 
 const LoginWithNumber = () => {
   const [number, setNumber] = useState("");
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  const [popUp, setPopUp] = useState(false);
-  const [popUpButtonCount, setPopUpButtonCount] = useState(1);
-  const [popUpTitle, setPopUpTitle] = useState("");
-  const [popupText, setPopupText] = useState("");
-  const [popUpIconType, setPopUpIconType] = useState("");
-  const [popUpButton2Text, setPopupButton2Text] = useState("");
   const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
   const [selectedOption, setSelectedOption] = useState(true);
+
+  const {
+    popUp,
+    setPopUp,
+    popUpButtonCount,
+    setPopUpButtonCount,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    popUpButton2Text,
+    setPopupButton2Text,
+    cleanupPopUp,
+  } = useAuth();
 
   const pkg = require("../../../package.json");
   const version = pkg.version;
@@ -52,15 +60,6 @@ const LoginWithNumber = () => {
   const handleTermsPress = () => {
     setSelectedOption(!selectedOption);
   };
-
-  function cleanupPopUp() {
-    setPopUp(false);
-    setPopUpButtonCount(1);
-    setPopUpTitle("");
-    setPopupText("");
-    setPopUpIconType("");
-    setPopupButton2Text("");
-  }
 
   const openTermsAndConditions = () => {
     const url = "https://vguardrishta.com/tnc_retailer.html";
@@ -72,7 +71,7 @@ const LoginWithNumber = () => {
   async function getOTP(OtpType: string) {
     const numberRegex = /^[6789]\d{9}$/;
     if (selectedOption === false) {
-      ToastAndroid.show(t("strings:please_accept_terms"), ToastAndroid.SHORT);
+      showToast(t("strings:please_accept_terms"));
       return;
     }
     showLoader(true);
@@ -86,26 +85,27 @@ const LoginWithNumber = () => {
         showLoader(false);
         const validationResponseData = validationResponse.data;
         if (validationResponseData.entity === 1) {
+          setPopUp(true);
+          setPopUpIconType("Info");
           setResponseEntity(1);
           setPopUpTitle(t("Verification Failed"));
           setPopupButton2Text(t("Proceed"));
-          setPopUpIconType("Info");
           setPopUpButtonCount(2);
         }
         if (validationResponseData.code === 200) {
           const successMessage = validationResponseData.message;
           setPopUp(true);
+          setPopUpIconType(t("AccountVerified"));
           setPopUpButtonCount(2);
           setPopUpTitle(t("Mobile Number Verified"));
           setPopupButton2Text(t("Proceed"));
-          setPopUpIconType("AccountVerified");
           setPopupText(successMessage);
           return;
         } else {
           const errorMessage = validationResponseData.message;
           setPopUp(true);
-          setPopUpTitle(t("Verification Failed"));
           setPopUpIconType("AccountCancel");
+          setPopUpTitle(t("Verification Failed"));
           setPopupText(errorMessage);
         }
       } catch (error: any) {
@@ -116,25 +116,7 @@ const LoginWithNumber = () => {
       }
     } else {
       showLoader(false);
-      Toast.show("Invalid number format", {
-        containerStyle: {
-          backgroundColor: "black",
-          borderRadius: 20,
-          paddingHorizontal: 24,
-          paddingVertical: 12,
-          marginHorizontal: 20,
-          marginBottom: 50,
-        },
-        textStyle: {
-          color: "#fff",
-          fontSize: 14,
-        },
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-      });
+      showToast(t("Invalid number format"));
     }
   }
 
@@ -160,7 +142,10 @@ const LoginWithNumber = () => {
           if (responseEntity === 1) {
             setResponseEntity(0);
             cleanupPopUp();
-            navigation.navigate("lead-form" as never);
+            router.push({
+              pathname: "lead-form",
+              params: { contact: number },
+            });
           } else {
             cleanupPopUp();
             router.push({
@@ -191,7 +176,7 @@ const LoginWithNumber = () => {
             />
           </View>
           <Image
-            source={require("../../assets/images/ic_rishta_logo_bottom_bar.jpg")}
+            source={require("@/src/assets/images/ic_rishta_logo_bottom_bar.jpg")}
             style={{ height: "25%", width: "50%" }}
             contentFit="contain"
           />
@@ -205,7 +190,7 @@ const LoginWithNumber = () => {
                 <Image
                   style={styles.icon}
                   contentFit="contain"
-                  source={require("../../assets/images/mobile_icon.png")}
+                  source={require("@/src/assets/images/mobile_icon.png")}
                 />
                 <KeyboardAvoidingView
                   behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -296,7 +281,7 @@ const LoginWithNumber = () => {
                 {t("strings:powered_by_v_guard")}
               </Text>
               <Image
-                source={require("../../assets/images/group_910.png")}
+                source={require("@/src/assets/images/group_910.png")}
                 style={styles.imageVguard}
               />
             </View>

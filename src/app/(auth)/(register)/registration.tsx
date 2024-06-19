@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Image } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { RegistrationSchema } from "@/src/utils/schemas/Registration";
 import { useData } from "@/src/hooks/useData";
 import Field from "@/src/components/Field";
@@ -7,8 +7,8 @@ import { registrationFields } from "./fields/registrationFields";
 import Buttons from "@/src/components/Buttons";
 import { height, width } from "@/src/utils/dimensions";
 import { Avatar } from "react-native-paper";
-import Toast from "react-native-root-toast";
 import { useRouter } from "expo-router";
+import { showToast } from "@/src/utils/showToast";
 
 const Registration = () => {
   const { state } = useData();
@@ -18,25 +18,7 @@ const Registration = () => {
       RegistrationSchema.parse(state);
       router.push("/(register)/registration-bank-details");
     } catch (error: any) {
-      Toast.show(error.errors[0].message, {
-        containerStyle: {
-          backgroundColor: "black",
-          borderRadius: 20,
-          paddingHorizontal: 24,
-          paddingVertical: 12,
-          marginHorizontal: 20,
-          marginBottom: 50,
-        },
-        textStyle: {
-          color: "#fff",
-          fontSize: 14,
-        },
-        duration: Toast.durations.LONG,
-        position: Toast.positions.BOTTOM,
-        animation: true,
-        hideOnPress: true,
-        delay: 0,
-      });
+      showToast(`${error.errors[0].message}`);
     }
   }
 

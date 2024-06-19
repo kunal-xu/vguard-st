@@ -11,7 +11,6 @@ import {
 import { useTranslation } from "react-i18next";
 import arrowIcon from "../../assets/images/arrow.png";
 import { generateOtpForLogin, validateLoginOtp } from "@/src/utils/apiservice";
-import Popup from "@/src/components/Popup";
 import Loader from "@/src/components/Loader";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useData } from "@/src/hooks/useData";
@@ -22,18 +21,33 @@ import { height } from "@/src/utils/dimensions";
 import { useLocalSearchParams } from "expo-router";
 import { useNavigation } from "expo-router";
 import { CommonActions } from "@react-navigation/native";
+import { showToast } from "@/src/utils/showToast";
+import NewPopUp from "@/src/components/NewPopup";
 
 const LoginWithOtp = () => {
   const { contact } = useLocalSearchParams();
   const [otp, setOtp] = useState("");
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [loader, showLoader] = useState(false);
-  const { login } = useAuth();
-  const { state, dispatch } = useData();
+  const {
+    login,
+    popUp,
+    setPopUp,
+    popUpButtonCount,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    popUpButton2Text,
+    setPopupButton2Text,
+    cleanupPopUp,
+  } = useAuth();
+  const { dispatch } = useData();
   const navigation = useNavigation();
+  const { t } = useTranslation();
   const placeholderColor = colors.grey;
 
   useEffect(() => {
@@ -59,40 +73,37 @@ const LoginWithOtp = () => {
           OtpType,
         };
         const validationResponse = await generateOtpForLogin(body);
-        if (validationResponse.status === 200) {
-          showLoader(false);
-          const validationResponseData = validationResponse.data;
-          if (validationResponseData.code === 200) {
-            const successMessage = validationResponseData.message;
-            setIsPopupVisible(true);
-            setPopupMessage(successMessage);
-          } else {
-            const errorMessage = validationResponseData.message;
-            setIsPopupVisible(true);
-            setPopupMessage(errorMessage);
-          }
-          setCountdown(60);
+        showLoader(false);
+        const validationResponseData = validationResponse.data;
+        if (validationResponseData.code === 200) {
+          const successMessage = validationResponseData.message;
+          setPopUp(true);
+          setPopupText(successMessage);
         } else {
-          throw new Error("Something went wrong!");
+          const errorMessage = validationResponseData.message;
+          setPopUp(true);
+          setPopupText(errorMessage);
         }
+        setCountdown(60);
       } catch (error: any) {
         showLoader(false);
-        setIsPopupVisible(true);
-        setPopupMessage(error.message);
+        setPopUp(true);
+        setPopupText(error.message);
         console.error("Error during validation:", error);
       }
     } else {
       showLoader(false);
-      setIsPopupVisible(true);
-      setPopupMessage(`Wait for ${countdown} seconds to send OTP again!`);
+      setPopUpIconType("Info")
+      setPopUp(true);
+      setPopUpTitle(t("Error"))
+      setPopupText(`Wait for ${countdown} seconds to send OTP again!`);
     }
   }
 
   async function validateotp() {
     showLoader(true);
     if (!otp) {
-      setIsPopupVisible(true);
-      setPopupMessage("Please Enter the OTP to proceed");
+      showToast(t("Please enter the otp to proceed"));
       showLoader(false);
       return;
     }
@@ -157,32 +168,28 @@ const LoginWithOtp = () => {
         );
       } else {
         showLoader(false);
-        setIsPopupVisible(true);
-        setPopupMessage("Wrong OTP. Please try again!");
+        showToast(t("Wrong OTP. Please try again!"));
         throw new Error("Something went wrong!");
       }
     } catch (error: any) {
       showLoader(false);
-      setIsPopupVisible(true);
-      setPopupMessage(error.response.data.message);
+      showToast(error.response.data.message);
     }
   }
-
-  const handleClose = async () => {
-    setIsPopupVisible(false);
-  };
-
-  const { t } = useTranslation();
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {loader && <Loader isLoading={loader} />}
-
-      {isPopupVisible && (
-        <Popup isVisible={isPopupVisible} onClose={handleClose}>
-          {popupMessage}
-        </Popup>
-      )}
+      <NewPopUp
+        visible={popUp}
+        numberOfButtons={popUpButtonCount}
+        button1Action={() => cleanupPopUp()}
+        button1Text={"Dismiss"}
+        button2Text={popUpButton2Text}
+        text={popupText}
+        iconType={popUpIconType}
+        title={popUpTitle}
+      />
       <View style={styles.registerUser}>
         {isLoading == true ? (
           <View style={{ flex: 1 }}>

@@ -190,7 +190,7 @@ export const registrationFields = [
     data: "AddressDetail.currentAddressLine3",
     properties: {
       keyboardType: "default",
-      maxLength: 60,
+      maxLength: 20,
       staticLabel: true,
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,

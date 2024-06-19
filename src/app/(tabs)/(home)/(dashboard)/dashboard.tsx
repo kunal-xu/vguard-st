@@ -1,15 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  Image,
   ToastAndroid,
   ScrollView,
   Pressable,
-  Button,
   TextInput,
   Platform,
 } from "react-native";
@@ -21,7 +18,6 @@ import {
 import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { getMonthWiseEarning, getUser } from "@/src/utils/apiservice";
-// import { getImages } from "../../../../../utils/FileUtils";
 import { Picker } from "@react-native-picker/picker";
 import NeedHelp from "@/src/components/NeedHelp";
 import CustomTouchableOption from "@/src/components/CustomTouchableOption";
@@ -29,7 +25,6 @@ import { useData } from "@/src/hooks/useData";
 import { height } from "@/src/utils/dimensions";
 import Buttons from "@/src/components/Buttons";
 import colors from "@/src/utils/colors";
-import DatePicker from "@/src/components/DatePicker";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 

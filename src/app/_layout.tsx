@@ -1,23 +1,19 @@
-import { StatusBar } from "expo-status-bar";
-import { View, StyleSheet, Text } from "react-native";
-import { Stack, SplashScreen, Slot } from "expo-router";
+import { SplashScreen, Slot } from "expo-router";
 // import * as Location from "expo-location";
 import { useEffect, useState } from "react";
-import { Redirect } from "expo-router";
 import { AuthProvider } from "../hooks/useAuth";
 import { DataProvider } from "../hooks/useData";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { RootSiblingParent } from "react-native-root-siblings";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ScratchCard from "../components/ScratchCard";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [appIsReady, setAppIsReady] = useState(false);
   const insets = useSafeAreaInsets();
-
+  const [appIsReady, setAppIsReady] = useState(false);
   useEffect(() => {
     async function prepare() {
       try {
@@ -40,14 +36,19 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <DataProvider>
-        <View
-          style={{
-            flex: 1,
-            paddingTop: insets.top,
-          }}
-        >
-          <Slot />
-        </View>
+        <RootSiblingParent>
+          <GestureHandlerRootView>
+            <View
+              style={{
+                flex: 1,
+                paddingTop: insets.top,
+              }}
+            >
+              {/* <ScratchCard children={undefined} /> */}
+              <Slot />
+            </View>
+          </GestureHandlerRootView>
+        </RootSiblingParent>
       </DataProvider>
     </AuthProvider>
   );

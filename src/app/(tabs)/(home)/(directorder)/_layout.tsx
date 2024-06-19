@@ -2,18 +2,16 @@ import colors from '@/src/utils/colors'
 import { Stack } from 'expo-router'
 import React from 'react'
 
-export default function TicketLayout() {
+export default function BankLayout() {
+  
   return (
     <Stack screenOptions={{
       headerStyle: {
         backgroundColor: colors.yellow,
       }
     }}>
-      <Stack.Screen name="ticket" options={{
-        title: "Ticket"
-      }}/>
-      <Stack.Screen name="ticket-history" options={{
-        title: "Ticket History"
+      <Stack.Screen name="direct-order" options={{
+        title: "Direct Order"
       }}/>
     </Stack>
   )

@@ -1,9 +1,16 @@
+import colors from "@/src/utils/colors";
 import { Stack } from "expo-router";
 import React from "react";
 
 export default function DashboardLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.yellow,
+        },
+      }}
+    >
       <Stack.Screen
         name="dashboard"
         options={{
@@ -16,13 +23,18 @@ export default function DashboardLayout() {
           title: "Product Wise Earning",
         }}
       />
-      <Stack.Screen name="rewards" options={{
-        title: "Rewards"
-      }}/>
-      <Stack.Screen name="scheme-wise-earning" 
-      options={{
-        title: "Scheme Wise Earning"
-      }}/>
+      <Stack.Screen
+        name="rewards"
+        options={{
+          title: "Rewards",
+        }}
+      />
+      <Stack.Screen
+        name="scheme-wise-earning"
+        options={{
+          title: "Scheme Wise Earning",
+        }}
+      />
     </Stack>
   );
 }

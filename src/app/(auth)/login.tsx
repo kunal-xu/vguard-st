@@ -6,19 +6,16 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
-  ToastAndroid,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import arrowIcon from "@/src/assets/images/arrow.png";
-import Popup from "@/src/components/Popup";
 import { Linking } from "react-native";
 import selectedTickImage from "@/src/assets/images/tick_1.png";
 import notSelectedTickImage from "@/src/assets/images/tick_1_notSelected.png";
 import language from "@/src/assets/images/language.png";
-
 import { loginWithPassword } from "@/src/utils/apiservice";
 import { NavigationProps } from "@/src/utils/interfaces";
 import React from "react";
@@ -31,20 +28,25 @@ import colors from "@/src/utils/colors";
 import { height } from "@/src/utils/dimensions";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
+import { showToast } from "@/src/utils/showToast";
+import NewPopUp from "@/src/components/NewPopup";
 
 const LoginScreen = ({ navigation }: NavigationProps) => {
   const { t } = useTranslation();
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [loader, showLoader] = useState(false);
-  const placeholderColor = colors.grey;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedOption, setSelectedOption] = useState(true);
-  const [popupContent, setPopupContent] = useState("");
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [popUp, setPopUp] = useState(false);
+  const [popUpButtonCount, setPopUpButtonCount] = useState(1);
+  const [popUpTitle, setPopUpTitle] = useState("");
+  const [popupText, setPopupText] = useState("");
+  const [popUpIconType, setPopUpIconType] = useState("");
   const { login } = useAuth();
   const { dispatch } = useData();
 
+  const placeholderColor = colors.grey;
   const pkg = require("../../../package.json");
   const version = pkg.version;
 
@@ -67,21 +69,22 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
     );
   };
 
-  const togglePopup = () => {
-    setIsPopupVisible(!isPopupVisible);
-  };
+  function cleanupPopUp() {
+    setPopUp(false);
+    setPopUpButtonCount(1);
+    setPopUpTitle("");
+    setPopupText("");
+    setPopUpIconType("");
+  }
 
   const handleLogin = async () => {
     if (!username.trim().length || !password.trim().length) {
-      ToastAndroid.show(
-        "Please enter a username and password.",
-        ToastAndroid.SHORT
-      );
+      showToast(t("Please enter a username and password."));
       return;
     }
 
     if (selectedOption === false) {
-      ToastAndroid.show(t("strings:please_accept_terms"), ToastAndroid.SHORT);
+      showToast(t("strings:please_accept_terms"));
       return;
     }
 
@@ -100,13 +103,24 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
       login(responseData);
     } catch (error: any) {
       showLoader(false);
-      setIsPopupVisible(!isPopupVisible);
-      setPopupContent(error.response.data.message);
+      setPopUp(true);
+      setPopUpTitle(t("Verification Failed"));
+      setPopupText(error.response.data.message);
+      setPopUpIconType("Alert");
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <NewPopUp
+        visible={popUp}
+        numberOfButtons={popUpButtonCount}
+        button1Action={() => cleanupPopUp()}
+        button1Text={"Dismiss"}
+        text={popupText}
+        iconType={popUpIconType}
+        title={popUpTitle}
+      />
       <View style={styles.loginScreen}>
         <View style={styles.mainWrapper}>
           <View style={styles.buttonLanguageContainer}>
@@ -222,11 +236,6 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
             />
           </View>
         </View>
-        {isPopupVisible && (
-          <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-            {popupContent}
-          </Popup>
-        )}
         <Modal
           animationType="slide"
           transparent={true}

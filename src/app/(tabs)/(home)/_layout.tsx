@@ -1,12 +1,15 @@
 import { Stack } from "expo-router";
 import React from "react";
+import { View } from "react-native";
 
 export default function HomeLayout() {
   return (
-    <Stack screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="home-screen" options={{headerShown: false}}/>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="home-screen" />
       <Stack.Screen name="(bank)" />
       <Stack.Screen name="(dashboard)" />
       <Stack.Screen name="(directorder)" />

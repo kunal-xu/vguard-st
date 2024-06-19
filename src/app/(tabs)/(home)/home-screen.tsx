@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import CustomTouchableOption from "../../../components/CustomTouchableOption";
 import {
@@ -10,8 +10,9 @@ import {
 import NeedHelp from "../../../components/NeedHelp";
 import { getUser } from "../../../utils/apiservice";
 import { getImages } from "../../../utils/FileUtils";
+import { router } from "expo-router";
 import { useData } from "../../../hooks/useData";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "expo-router";
 import { useAuth } from "../../../hooks/useAuth";
 import colors from "@/src/utils/colors";
 import CustomTabHeader from "@/src/components/CustomTabHeader";
@@ -24,10 +25,11 @@ const HomeScreen = () => {
   const { t } = useTranslation();
   const { state, dispatch, customerDispatch } = useData();
   const { logout } = useAuth();
+
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       const fetchData = async () => {
         try {
           const response = await getUser();
@@ -53,7 +55,6 @@ const HomeScreen = () => {
           console.log(error.message);
         }
       };
-
       fetchData();
     }, [])
   );
@@ -93,8 +94,11 @@ const HomeScreen = () => {
             </View>
             <View style={styles.points}>
               <Pressable
-                // onPress={() => navigation.navigate("Unique Code History")}
-                style={styles.leftPoint}
+                onPress={() => router.push("/(scan)/unique-code-history")}
+                style={({ pressed }) => [
+                  { opacity: pressed ? 0.5 : 10 },
+                  styles.leftPoint,
+                ]}
               >
                 <Feather name="check-circle" size={40} color="black" />
                 <Text style={styles.point}>
@@ -111,7 +115,11 @@ const HomeScreen = () => {
               </Pressable>
               <Pressable
                 // onPress={() => navigation.navigate("Redemption History")}
-                style={styles.rightPoint}
+                onPress={() => router.push("/(redeem)/redemption-history")}
+                style={({ pressed }) => [
+                  { opacity: pressed ? 0.5 : 10 },
+                  styles.rightPoint,
+                ]}
               >
                 <MaterialIcons name="redeem" size={40} color="black" />
                 <Text style={styles.point}>
@@ -150,7 +158,7 @@ const HomeScreen = () => {
                 text="strings:direct_order"
                 iconSource={require("../../../assets/images/Group_575.png")}
                 screenName="(directorder)"
-                disabled={true}
+                disabled={false}
               />
               <CustomTouchableOption
                 text="strings:scheme_offers"
@@ -196,10 +204,12 @@ const HomeScreen = () => {
     }
   };
   return (
-    <View style={{
-      flex: 1,
-      backgroundColor: "white"
-    }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+      }}
+    >
       <FlashList
         data={data}
         renderItem={renderItem}

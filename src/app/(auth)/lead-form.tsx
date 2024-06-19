@@ -1,28 +1,25 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
-  Image,
-  ToastAndroid,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import Popup from "@/src/components/Popup";
 import { height, width } from "@/src/utils/dimensions";
 import Loader from "@/src//components/Loader";
-import { Picker } from "@react-native-picker/picker";
 import Buttons from "@/src//components/Buttons";
 import { addLeadForm } from "@/src//utils/apiservice";
 import NeedHelp from "@/src/components/NeedHelp";
 import colors from "@/src//utils/colors";
 import { Avatar } from "react-native-paper";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
-import { FloatingLabelInput } from "react-native-floating-label-input";
+import {
+  CustomLabelProps,
+  FloatingLabelInput,
+} from "react-native-floating-label-input";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { showToast } from "@/src/utils/showToast";
+import MultiSelectPicker from "@/src/components/MultiSelectPicker";
 
 const LeadForm = () => {
-  // const { usernumber } = route.params;
+  const { contact } = useLocalSearchParams();
   const { t } = useTranslation();
   const [name, setName] = useState("");
   const [pincode, setPincode] = useState("");
@@ -30,6 +27,8 @@ const LeadForm = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string[]>([]);
+  const navigation = useNavigation();
+
   const items = [
     { label: "AC", value: "AC", id: "" },
     { label: "TV", value: "TV", id: "" },
@@ -53,7 +52,7 @@ const LeadForm = () => {
       pincode.length === 0 ||
       selectedValue.length === 0
     ) {
-      ToastAndroid.show("Please fill all the details", ToastAndroid.LONG);
+      showToast(t("Please fill all the details"));
       return;
     }
     showLoader(true);
@@ -69,7 +68,7 @@ const LeadForm = () => {
       const body = {
         Name: name,
         DateOfLead: formattedDate,
-        ContactNumber: usernumber,
+        ContactNumber: contact,
         Pincode: pincode,
         ServiceCategories: values,
       };
@@ -94,122 +93,124 @@ const LeadForm = () => {
   }
 
   const handleClose = () => {
-    navigation.navigate("loginWithNumber");
+    navigation.navigate("loginWithNumber" as never);
     setIsPopupVisible(false);
   };
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [selectedItems, setSelectedItems] = useState([]);
 
   return (
-    
-      <ScrollView style={{ backgroundColor: "white" }}>
-        {isPopupVisible && (
-          <Popup isVisible={isPopupVisible} onClose={handleClose}>
-            {popupMessage}
-          </Popup>
-        )}
-        <Loader isLoading={loader} />
-        <View style={{ backgroundColor: "white", margin: 25 }}>
+    <ScrollView style={{ backgroundColor: "white" }}>
+      {isPopupVisible && (
+        <Popup isVisible={isPopupVisible} onClose={handleClose}>
+          {popupMessage}
+        </Popup>
+      )}
+      <Loader isLoading={loader} />
+      <View style={{ backgroundColor: "white", margin: 25 }}>
+        <View
+          style={{
+            backgroundColor: "white",
+            height: height / 8,
+            margin: 10,
+            flexDirection: "row",
+            width: width,
+            justifyContent: "flex-start",
+            alignItems: "center",
+            padding: 5,
+          }}
+        >
+          <Avatar.Image
+            size={80}
+            source={require("../../assets/images/ac_icon.png")}
+          />
           <View
             style={{
-              backgroundColor: "white",
-              height: height / 8,
-              margin: 10,
-              flexDirection: "row",
-              width: width,
-              justifyContent: "flex-start",
+              marginLeft: 10,
+              width: width / 2,
+              justifyContent: "center",
               alignItems: "center",
               padding: 5,
             }}
           >
-            <Avatar.Image
-              size={80}
-              source={require("../../assets/images/ac_icon.png")}
-            />
-            <View
+            <Text
               style={{
-                marginLeft: 10,
-                width: width / 2,
-                justifyContent: "center",
-                alignItems: "center",
-                padding: 5,
+                fontSize: responsiveFontSize(2.5),
+                fontWeight: "bold",
+                color: "black",
               }}
             >
-              <Text
-                style={{
-                  fontSize: responsiveFontSize(2.5),
-                  fontWeight: "bold",
-                  color: "black",
-                }}
-              >
-                {t("Lead Form")}
-              </Text>
-            </View>
+              {t("Lead Form")}
+            </Text>
           </View>
-          <FloatingLabelInput
-            staticLabel={true}
-            containerStyles={styles.floatingContainer}
-            labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
-            inputStyles={styles.inputStyles}
-            onChangeText={(text: string) => setName(text)}
-            value={name}
-            label={t("Name")}
-          />
-
-          <FloatingLabelInput
-            staticLabel={true}
-            editable={false}
-            containerStyles={styles.floatingContainer}
-            labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
-            inputStyles={styles.inputStyles}
-            value={"number"}
-            label={t("Contact")}
-          />
-
-          <FloatingLabelInput
-            staticLabel={true}
-            keyboardType="number-pad"
-            containerStyles={styles.floatingContainer}
-            labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
-            inputStyles={styles.inputStyles}
-            onChangeText={(text: string) => setPincode(text)}
-            value={pincode}
-            label={t("Pincode")}
-          />
-          {/*
-          <PickerField
-            label={"Service Categories"}
-            selectedValue={selectedValue}
-            onValueChange={(text: string) => setSelectedValue(text)}
-            items={items}
-            errorMessage={undefined}
-            disabled={undefined}
-            setIndex={undefined}
-          />*/}
-          <View
-            style={{
-              display: "flex",
-              width: "100%",
-              alignItems: "center",
-              marginVertical: 20,
-            }}
-          >
-            <Buttons
-              label="Submit"
-              onPress={() => addLead()}
-              variant="filled"
-              width="100%"
-              icon={require("../../assets/images/arrow.png")}
-              iconHeight={10}
-              iconWidth={30}
-              iconGap={10}
-            />
-          </View>
-          <NeedHelp />
         </View>
-      </ScrollView>
+        <FloatingLabelInput
+          staticLabel={true}
+          containerStyles={styles.floatingContainer}
+          labelStyles={styles.labelStyles}
+          customLabelStyles={styles.customLabelStyles as CustomLabelProps}
+          inputStyles={styles.inputStyles}
+          onChangeText={(text: string) => setName(text)}
+          value={name}
+          label={t("Name")}
+        />
+
+        <FloatingLabelInput
+          staticLabel={true}
+          editable={false}
+          containerStyles={styles.floatingContainer}
+          labelStyles={styles.labelStyles}
+          customLabelStyles={styles.customLabelStyles as CustomLabelProps}
+          inputStyles={styles.inputStyles}
+          value={contact as string}
+          label={t("Contact")}
+        />
+
+        <FloatingLabelInput
+          staticLabel={true}
+          keyboardType="number-pad"
+          containerStyles={styles.floatingContainer}
+          labelStyles={styles.labelStyles}
+          customLabelStyles={styles.customLabelStyles as CustomLabelProps}
+          inputStyles={styles.inputStyles}
+          onChangeText={(text: string) => setPincode(text)}
+          value={pincode}
+          label={t("Pincode")}
+        />
+
+        <View style={styles.container}>
+          <Text>
+            Selected Items: {selectedItems.map((item) => item.label).join(", ")}
+          </Text>
+          <MultiSelectPicker
+            items={items}
+            selectedItems={selectedItems}
+            onValueChange={setSelectedItems}
+          />
+        </View>
+
+        <View
+          style={{
+            display: "flex",
+            width: "100%",
+            alignItems: "center",
+            marginVertical: 20,
+          }}
+        >
+          <Buttons
+            label="Submit"
+            onPress={() => addLead()}
+            variant="filled"
+            width="100%"
+            icon={require("../../assets/images/arrow.png")}
+            iconHeight={10}
+            iconWidth={30}
+            iconGap={10}
+          />
+        </View>
+        <NeedHelp />
+      </View>
+    </ScrollView>
   );
 };
 

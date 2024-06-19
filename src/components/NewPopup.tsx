@@ -14,11 +14,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface NewPopUp {
   visible: boolean;
-  numberOfButtons: number;
+  numberOfButtons?: number;
   button1Action: () => void;
-  button2Action: () => void;
+  button2Action?: () => void;
   button1Text: string;
-  button2Text: string;
+  button2Text?: string;
   text: string;
   iconType: string;
   title: string;
@@ -67,7 +67,7 @@ const NewPopUp = ({
           <MaterialCommunityIcons
             name="alert-circle-outline"
             size={56}
-            color={"red"}
+            color="red"
           />
         );
       case "Info":
@@ -75,12 +75,12 @@ const NewPopUp = ({
           <MaterialCommunityIcons
             name="information-outline"
             size={56}
-            color={"blue"}
+            color="blue"
           />
         );
       case "AccountCancel":
         return (
-          <MaterialCommunityIcons name="cancel" size={56} color={"orange"} />
+          <MaterialCommunityIcons name="cancel" size={56} color="orange" />
         );
       case "AccountVerified":
         return (
@@ -88,6 +88,14 @@ const NewPopUp = ({
             name="account-check-outline"
             size={56}
             color={"green"}
+          />
+        );
+      case "Check":
+        return (
+          <MaterialCommunityIcons
+            name="check-circle-outline"
+            size={56}
+            color="green"
           />
         );
     }
@@ -162,7 +170,7 @@ const styles = StyleSheet.create({
     width: "80%",
     padding: 8,
     backgroundColor: "white",
-    borderRadius: 6,
+    borderRadius: 2,
     alignItems: "center",
     justifyContent: "space-between",
     paddingBottom: 32,
@@ -194,7 +202,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     padding: 10,
-    borderRadius: 6,
+    borderRadius: 2,
     alignItems: "center",
     marginHorizontal: 5,
   },

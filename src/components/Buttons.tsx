@@ -21,8 +21,10 @@ const Buttons = (props: ButtonsProps) => {
       return [styles.outlinedButton, { width }];
     } else if (variant === "filled") {
       return [styles.filledButton, { width }];
-    } else if (variant === "verify") {
+    } else if (variant === "verifyBank") {
       return [styles.verifyButton, { width }];
+    } else if(variant === "verified") { 
+      return [styles.verifiedButton, { width }];
     } else {
       return [styles.defaultButton, { width }];
     }
@@ -36,7 +38,7 @@ const Buttons = (props: ButtonsProps) => {
         <Text
           style={[
             styles.buttonText,
-              variant === "verify" && styles.whiteText,
+              variant === "verifyBank" && styles.whiteText,
           ]}
         >
           {label}
@@ -80,20 +82,26 @@ const styles = StyleSheet.create({
   },
   outlinedButton: {
     backgroundColor: "white",
-    borderRadius: 6,
+    borderRadius: 1,
     borderWidth: 2,
     borderColor: colors.yellow
   },
+  verifiedButton: {
+    backgroundColor: "white",
+    borderRadius: 1,
+    borderWidth: 2,
+    borderColor: "green"
+  },
   filledButton: {
     backgroundColor: colors.yellow,
-    borderRadius: 5,
+    borderRadius: 1,
     shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,
     shadowOffset: { width: 1, height: 13 },
   },
   verifyButton: {
-    backgroundColor: "#336699",
-    borderRadius: 5,
+    backgroundColor: "blue",
+    borderRadius: 1,
     shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,
     shadowOffset: { width: 1, height: 13 },

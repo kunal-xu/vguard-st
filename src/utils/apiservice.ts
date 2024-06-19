@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 // import messaging from "@react-native-firebase/messaging";
 
-// const BASE_URL = "http://192.168.148.248:5005/vguard/api";
+// const BASE_URL = "http://192.168.29.15:5005/vguard/api";
 const BASE_URL = 'https://infra.4test.info/vguard/api';
 
 export const api: AxiosInstance = axios.create({
@@ -35,7 +35,6 @@ async function createPostRequest(
     Accept: "application/json",
     "Content-Type": "application/json",
   };
-  // console.log(headers);
   const response: AxiosResponse = await api.post(relativeUrl, data, {
     headers,
   });
@@ -722,8 +721,6 @@ export function validateMobile(mobileNumber: string, dealerCategory: string) {
 
 export function validateCoupon(couponData: any) {
   const path = "coupon/validateCoupon";
-  console.log(path);
-  console.log(couponData);
   return createPostRequest(path, couponData);
 }
 

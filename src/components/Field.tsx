@@ -42,14 +42,16 @@ import {
   STUser,
   WelcomeBanner,
 } from "../utils/types";
-import Popup from "./Popup";
 import Loader from "./Loader";
 import { BankDetailsSchema } from "../utils/schemas/BankDetails";
 import { z } from "zod";
 import TDSPopup from "./TDSPopup";
 import { TDS_CONSENT_MESSAGE } from "../utils/constants";
 import ImagePickerField from "./ImagePickerField";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import NewPopUp from "./NewPopup";
+import usePopup from "../hooks/usePopup";
+import { showToast } from "../utils/showToast";
 
 interface RuleItem {
   id: number;
@@ -107,11 +109,21 @@ const Field = (props: FieldProps) => {
   const { t } = useTranslation();
   const { state, dispatch, customerState, customerDispatch } = useData();
   const [loader, showLoader] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const togglePopup = () => {
-    setIsPopupVisible(!isPopupVisible);
-  };
+  const {
+    popUp,
+    setPopUp,
+    popUpButtonCount,
+    setPopUpButtonCount,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    popUpButton2Text,
+    setPopupButton2Text,
+    cleanupPopUp,
+  } = usePopup();
 
   const handleFormInputChange = (
     field: keyof STUser,
@@ -325,10 +337,20 @@ const Field = (props: FieldProps) => {
       );
 
     case "floatingLabelInputWithButton":
-      const [tdsConsent, setTdsConsent] = useState(false);
+      function tdsPopUp() {
+        setPopUp(true);
+        setPopUpTitle(t("TDS Consent"));
+        setPopUpButtonCount(2);
+        setPopupButton2Text(t("Proceed"))
+        setPopUpIconType("Info");
+        setPopupText(
+          t(
+            "Dear User, please review your PAN & Aadhar details and provide your consent and authorize V Guard Industries Ltd. to deduct TDS under section 194R which can be credited back at the FY end if the redemption amount is less than 20000.\n\nTDS percentages can be 10% or 20% depending on PAN information (Pan Status, Aadhar & PAN Link Status, ITR Status)."
+          )
+        );
+      }
 
       async function tds() {
-        setTdsConsent(false);
         showLoader(true);
         try {
           const response = await getTDSPercentage({
@@ -336,8 +358,10 @@ const Field = (props: FieldProps) => {
           });
           showLoader(false);
           const responseData = response.data;
-          setIsPopupVisible(true);
-          setPopupContent(responseData.message);
+          setPopUp(true);
+          setPopUpIconType("Info");
+          setPopUpTitle(t("TDS Percentage"));
+          setPopupText(responseData.message);
           dispatch({
             type: "UPDATE_FIELD",
             payload: {
@@ -348,8 +372,10 @@ const Field = (props: FieldProps) => {
           });
         } catch (error: any) {
           showLoader(false);
-          setIsPopupVisible(true);
-          setPopupContent(error.response.data.message);
+          setPopUp(true);
+          setPopUpIconType("Info");
+          setPopUpTitle(t("TDS Percentage"));
+          setPopupText(error.response.data.message);
         }
       }
 
@@ -361,9 +387,12 @@ const Field = (props: FieldProps) => {
           });
           showLoader(false);
           const responseData = response.data;
-          setIsPopupVisible(true);
-          setPopupContent(responseData.message);
+          setPopUp(true);
           if (responseData.code === 1) {
+            setPopUpIconType("Check");
+            setPopUpButtonCount(1);
+            setPopUpTitle(t("Verification Successful"));
+            setPopupText(response.data.message);
             dispatch({
               type: "UPDATE_SUB_FIELD",
               payload: {
@@ -380,28 +409,35 @@ const Field = (props: FieldProps) => {
                 value: "true",
               },
             });
+          } else {
+            setPopUpIconType("Alert");
+            setPopUpButtonCount(2);
+            setPopUpTitle(t("Verification Failed"));
+            setPopupText(response.data.message);
+            setPopupButton2Text(t("Verify Again"));
           }
         } catch (error: any) {
           showLoader(false);
-          setIsPopupVisible(true);
-          setPopupContent(error.response.data.message);
+          console.log(error);
         }
       }
       return (
         <View style={styles.container}>
           {loader && <Loader isLoading={loader} />}
-          {isPopupVisible && (
-            <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-              {popupContent}
-            </Popup>
-          )}
-          {tdsConsent && (
-            <TDSPopup
-              popupContent={TDS_CONSENT_MESSAGE.UPLOADED}
-              onClose={() => setTdsConsent(false)}
-              onSubmit={tds}
-            />
-          )}
+          <NewPopUp
+            visible={popUp}
+            numberOfButtons={popUpButtonCount}
+            button1Action={() => cleanupPopUp()}
+            button2Action={() => {
+              cleanupPopUp();
+              source && source === "upi" ? vpa() : tds();
+            }}
+            button1Text={"Dismiss"}
+            button2Text={popUpButton2Text}
+            text={popupText}
+            iconType={popUpIconType}
+            title={popUpTitle}
+          />
           <Text style={styles.label}>{t(props.label || "")}</Text>
           <View style={styles.inputContainer}>
             <TextInput
@@ -416,12 +452,16 @@ const Field = (props: FieldProps) => {
             {source === "tds" ? (
               <TouchableOpacity
                 style={state.TDSSlab ? styles.greenButton : styles.button}
-                onPress={state.TDSSlab ? () => {} : () => setTdsConsent(true)}
+                onPress={state.TDSSlab ? () => {} : () => tdsPopUp()}
                 activeOpacity={state.TDSSlab ? 1 : 0.7}
                 disabled={Boolean(state.TDSSlab)}
               >
                 {state.TDSSlab ? (
-                  <Ionicons name="check" size={24} color="green" />
+                  <MaterialCommunityIcons
+                    name="check"
+                    size={24}
+                    color="green"
+                  />
                 ) : (
                   <Text style={styles.buttonText}>Verify</Text>
                 )}
@@ -438,7 +478,11 @@ const Field = (props: FieldProps) => {
                 disabled={Boolean(state.PaytmDetail.upiVerified)}
               >
                 {state.PaytmDetail.upiVerified ? (
-                  <Ionicons name="check" size={24} color="green" />
+                  <MaterialCommunityIcons
+                    name="check"
+                    size={24}
+                    color="green"
+                  />
                 ) : (
                   <Text style={styles.buttonText}>Verify</Text>
                 )}
@@ -519,108 +563,22 @@ const Field = (props: FieldProps) => {
           }}
         >
           {loader && <Loader isLoading={loader} />}
-          {isPopupVisible && (
-            <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-              {popupContent}
-            </Popup>
-          )}
+          <NewPopUp
+            visible={popUp}
+            numberOfButtons={popUpButtonCount}
+            button1Action={() => cleanupPopUp()}
+            button2Action={() => {}}
+            button1Text={"Dismiss"}
+            button2Text={popUpButton2Text}
+            text={popupText}
+            iconType={popUpIconType}
+            title={popUpTitle}
+          />
           <Buttons
             label={t("Get Customer Details")}
             variant="filled"
             onPress={() => getCustomerData()}
             width="100%"
-          />
-        </View>
-      );
-
-    case "BankSimulButton":
-      const verifyButtonproperties = (props as SimulButton)
-        .verifyButtonProperties;
-      const resetButtonProperties = (props as SimulButton)
-        .resetButtonProperties;
-      async function getBankDetails() {
-        try {
-          BankDetailsSchema.parse(state.BankDetail);
-          showLoader(true);
-          const response = await getBankDetail({
-            UniqueId: state.UniqueId,
-            BankDetail: {
-              bankAccNo: state.BankDetail.bankAccNo,
-              bankIfsc: state.BankDetail.bankIfsc,
-            },
-          });
-          const responseData: BankDetail = response.data;
-          showLoader(false);
-          if (responseData.bankDataPresent === true) {
-            //todo lock bankaccount number and ifsc
-            handleFormInputChange(
-              "BankDetail",
-              "bankAccHolderName",
-              responseData.bankAccHolderName as string
-            );
-            handleFormInputChange(
-              "BankDetail",
-              "bankNameAndBranch",
-              responseData.bankNameAndBranch as string
-            );
-            handleFormInputChange(
-              "BankDetail",
-              "branchAddress",
-              responseData.branchAddress as string
-            );
-            handleFormInputChange("BankDetail", "bankDataPresent", true);
-          } else {
-            setIsPopupVisible(true);
-            setPopupContent(
-              response.data.errorMessage || "Bank details not found"
-            );
-          }
-        } catch (error: any) {
-          if (error instanceof z.ZodError) {
-            ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
-          } else {
-            console.log(error);
-            showLoader(false);
-            setIsPopupVisible(true);
-            setPopupContent("Something went wrong");
-          }
-        }
-      }
-      function resetBankDetails() {
-        handleFormInputChange("BankDetail", "bankAccNo", "");
-        handleFormInputChange("BankDetail", "bankIfsc", "");
-        handleFormInputChange("BankDetail", "bankAccHolderName", "");
-        handleFormInputChange("BankDetail", "bankNameAndBranch", "");
-        handleFormInputChange("BankDetail", "branchAddress", "");
-        handleFormInputChange("BankDetail", "bankDataPresent", 0);
-      }
-
-      return (
-        <View
-          style={{
-            flexDirection: "row-reverse",
-            justifyContent: "space-evenly",
-            marginBottom: 20,
-          }}
-        >
-          {loader && <Loader isLoading={loader} />}
-          {isPopupVisible && (
-            <Popup isVisible={isPopupVisible} onClose={togglePopup}>
-              {popupContent}
-            </Popup>
-          )}
-          {state.BankDetail.bankDataPresent ? (
-            <Buttons variant="disabled" label="Verified" width={width / 3} />
-          ) : (
-            <Buttons {...verifyButtonproperties} onPress={getBankDetails} />
-          )}
-          <Buttons
-            {...resetButtonProperties}
-            onPress={resetBankDetails}
-            icon={require("../assets/images/update.png")}
-            iconWidth={16}
-            iconHeight={16}
-            iconGap={8}
           />
         </View>
       );
@@ -669,7 +627,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "blue",
-    borderRadius: 5,
+    borderRadius: 2,
     paddingVertical: 8,
     paddingHorizontal: 12,
     marginLeft: 10,
