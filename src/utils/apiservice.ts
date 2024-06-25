@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 // import messaging from "@react-native-firebase/messaging";
 
 // const BASE_URL = "http://192.168.220.248:5005/vguard/api";
-const BASE_URL = 'https://infra.4test.info/vguard/api';
+const BASE_URL = "https://infra.4test.info/vguard/api";
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -47,6 +47,25 @@ async function createGetRequest(relativeUrl: string): Promise<AxiosResponse> {
     return response;
   } catch (error) {
     console.error("Error:", relativeUrl, error);
+    throw error;
+  }
+}
+
+async function createPutRequest(
+  signedUrl: string,
+  fileBuffer: Buffer,
+  mime: string
+): Promise<AxiosResponse> {
+  try {
+    const headers = {
+      "Content-Type": `${mime}`,
+    };
+    const response = await api.put(signedUrl, fileBuffer, {
+      headers,
+    });
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
     throw error;
   }
 }
@@ -111,19 +130,17 @@ export function getFile(uuid: String, imageRelated: String, userRole: String) {
   return createGetRequest(path);
 }
 
-export const sendFile = async (formData: FormData): Promise<any> => {
-  const config = {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
-  try {
-    const response = await api.post("file", formData, config);
-    return response;
-  } catch (error: any) {
-    console.error("Error", error);
-    throw error;
-  }
+export const sendFile = async (data: any): Promise<any> => {
+  const path = "file/generateSignedUrl";
+  return createPostRequest(path, data);
+};
+
+export const sendFileToAWS = async (
+  signedUrl: string,
+  fileBuffer: Buffer,
+  mime: string | undefined
+): Promise<any> => {
+  return createPutRequest(signedUrl, fileBuffer, mime as string);
 };
 
 export function getDistributorList() {
@@ -622,7 +639,7 @@ export function getSubProfessions(professionId: string) {
 
 export function logoutUser() {
   const path = "user/logout";
-  
+
   return createPostRequest(path, {});
 }
 

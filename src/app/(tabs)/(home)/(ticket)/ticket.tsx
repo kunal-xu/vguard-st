@@ -34,6 +34,7 @@ import Loader from "@/src/components/Loader";
 import { getImages } from "@/src/utils/FileUtils";
 import { useData } from "@/src/hooks/useData";
 import useProfile from "@/src/hooks/useProfile";
+import ImagePickerModal from "@/src/components/ImagePicker";
 
 const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { t } = useTranslation();
@@ -52,6 +53,10 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [popupContent, setPopupContent] = useState("");
   const [loader, showLoader] = useState(false);
   const { profile } = useProfile();
+  const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
+  const toggleModal = () => {
+    setIsImagePickerVisible(!isImagePickerVisible);
+  };
 
   useEffect(() => {
     (async () => {
@@ -68,21 +73,6 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   if (userData.userRole && userData.userImage) {
-  //     const getImage = async () => {
-  //       try {
-  //         const profileImage = getImages(userData.userImage, "PROFILE");
-  //         setProfileImage(profileImage);
-  //       } catch (error) {
-  //         console.log("Error while fetching profile image:", error);
-  //       }
-  //     };
-
-  //     getImage();
-  //   }
-  // }, [userData.userRole, userData.userImage]);
-
   const handleOptionChange = (value) => {
     setSelectedOption(value);
   };
@@ -96,35 +86,6 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
       "https://vguardrishta.com/frequently-questions-retailer.html"
     );
   };
-
-  // const { state, dispatch } = useData();
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const fetchData = async () => {
-  //       try {
-  //         const response = await getUser();
-  //         const responseData = response.data;
-  //         dispatch({
-  //           type: "GET_ALL_FIELDS",
-  //           payload: {
-  //             value: responseData,
-  //           },
-  //         });
-  //         if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
-  //           dispatch({
-  //             type: "CLEAR_ALL_FIELDS",
-  //             payload: {},
-  //           });
-  //           logout();
-  //         }
-  //       } catch (error: any) {
-  //         console.log(error.message);
-  //       }
-  //     };
-
-  //     fetchData();
-  //   }, [])
-  // );
 
   const handleSubmission = async () => {
     showLoader(true);
@@ -164,32 +125,6 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  const triggerApiWithImage = async (fileData: {
-    uri: string;
-    type: string;
-    name: string;
-  }) => {
-    if (fileData.uri != "") {
-      const formData = new FormData();
-      formData.append("userRole", "1");
-      formData.append("imageRelated", "TICKET");
-      formData.append("file", {
-        uri: fileData.uri,
-        name: fileData.name,
-        type: fileData.type,
-      });
-      try {
-        const response = await sendFile(formData);
-        setEntityUid(response.data.entityUid);
-        return response.data.entityUid;
-      } catch (error) {
-        setPopupContent("Error uploading image");
-        setPopupVisible(true);
-        console.error("API Error:", error);
-      }
-    }
-    return "";
-  };
 
   return (
     <ScrollView style={styles.mainWrapper}>
@@ -224,35 +159,18 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
       <Text style={[styles.blackText, { marginTop: responsiveFontSize(2) }]}>
         {t("strings:issue_type")}
       </Text>
-      {isOptionsLoading ? (
-        <Text style={styles.blackText}>Loading options...</Text>
-      ) : options.length === 0 ? (
-        <Text style={styles.blackText}>No options available.</Text>
-      ) : (
-        <View style={styles.inputContainer}>
-          <Picker
-            dropdownIconColor={colors.black}
-            selectedValue={selectedOption}
-            onValueChange={handleOptionChange}
-            style={styles.picker}
-            label={t("strings:select_ticket_type")}
-          >
-            <Picker.Item key={""} label={"Select Issue Type"} value={""} />
-            {options.map((option) => (
-              <Picker.Item
-                key={option.issueTypeId}
-                label={option.name}
-                value={option.issueTypeId}
-              />
-            ))}
-          </Picker>
-        </View>
-      )}
       <ImagePickerField
         label="Upload Picture (optional)"
+        isVisible={isImagePickerVisible}
+        toggleModal={toggleModal}
         onImageChange={handleImageChange}
         imageRelated="Ticket"
         disabled={false}
+      />
+      <ImagePickerModal
+        isVisible={isImagePickerVisible}
+        toggleModal={toggleModal}
+        type={"Profile"}
       />
       <Text style={styles.blackText}>{t("strings:description_remarks")}</Text>
       <TextInput
@@ -301,7 +219,7 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.footer}>
-          <NeedHelp />
+          {/* <NeedHelp /> */}
         </View>
       </View>
       {isPopupVisible && (

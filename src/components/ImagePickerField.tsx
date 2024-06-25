@@ -8,13 +8,18 @@ import {
   Modal,
   ImageBackground,
   Button,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
 } from "react-native";
 import colors from "../utils/colors";
 import Popup from "./Popup";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { getImages } from "../utils/FileUtils";
 import { height } from "../utils/dimensions";
 import * as ImagePicker from "expo-image-picker";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { sendFile } from "../utils/apiservice";
+import { useData } from "../hooks/useData";
 
 interface ImagePickerFieldProps {
   label: string;
@@ -37,6 +42,9 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   initialImage,
   getImageRelated,
   editable = true,
+  isVisible,
+  toggleModal,
+  type
 }) => {
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
@@ -62,7 +70,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
   const [showImageModal, setShowImageModal] = useState(false);
-
+  
   function toggleCameraFacing() {
     setFacing((current) => (current === "back" ? "front" : "back"));
   }
@@ -147,29 +155,69 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
           </View>
         </CameraView>
       </View>
-  */  const [photo, setPhoto] = useState(null);
-
+  */ const [photo, setPhoto] = useState(null);
+  const [image, setImage] = useState<string | null>(null);
+  const { dispatch } = useData();
   const openCamera = async () => {
-    setShowImagePickerModal(false);
-    if (cameraRef) {
-      let photo = await cameraRef.takePictureAsync();
-      setPhoto(photo.uri);
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      dispatch({
+        type: "UPDATE_FIELD",
+        payload: {
+          field: "Selfie",
+          subfield: undefined,
+          value: result.assets[0].uri,
+        },
+      });
+      try {
+        const body = {
+          imageRelated: type === "profile" ? "PROFILE" : "TICKET",
+          fileExtension: "jpg",
+        };
+        const response = await sendFile(body);
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
-      const pickImageFromGallery = async () => {
-        setShowImagePickerModal(false);
-        let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 1,
-        });
-    
-        if (!result.canceled) {
-          setPhoto(result.uri);
-        }
-      };
+  const openGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+      dispatch({
+        type: "UPDATE_FIELD",
+        payload: {
+          field: "Selfie",
+          subfield: undefined,
+          value: result.assets[0].uri,
+        },
+      });
+      try {
+        const body = {
+          imageRelated: type === "profile" ? "PROFILE" : "TICKET",
+          fileExtension: "jpg",
+        };
+        const response = await sendFile(body);
+        const responseData = response.data;
+        const signedUrl = responseData.entity;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   return (
     <View style={styles.container}>
       <Popup isVisible={isPopupVisible} onClose={() => setPopupVisible(false)}>
@@ -260,43 +308,37 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
       </Modal>
 
       <Modal
-        animationType="slide"
+        visible={isVisible}
         transparent={true}
-        visible={showImagePickerModal}
-        hardwareAccelerated={true}
-        onRequestClose={() => setShowImagePickerModal(false)}
+        animationType="fade"
+        onRequestClose={toggleModal}
       >
-        {/* <Pressable
-          style={styles.modalContainer}
-          onPressOut={() => setShowImagePickerModal(false)}
-        >
-          <View style={styles.modalContent}>
-            <View style={{ flexDirection: "column", gap: 15, width: "90%" }}>
-              <Text style={styles.blackHeading}>Select Action</Text>
-              <Pressable onPress={() => handleCameraUpload()}>
-                <Text style={styles.blackText}>Capture photo from camera</Text>
-              </Pressable>
-              <Pressable onPress={() => handleGalleryUpload()}>
-                <Text style={styles.blackText}>Select photo from gallery</Text>
-              </Pressable>
-            </View>
-            {/* <Button mode="text" onPress={() => setShowImagePickerModal(false)}>
-                            Close
-                        </Button> */}
-          {/* </View>
-        </Pressable>  */}
-        <View style={styles.modalView}>
-          <Text style={styles.modalText}>Choose an option</Text>
-          <Pressable style={styles.modalButton} onPress={openCamera}>
-            <Text style={styles.textStyle}>Take Photo</Text>
-          </Pressable>
-          <Pressable style={styles.modalButton} onPress={pickImageFromGallery}>
-            <Text style={styles.textStyle}>Upload from Gallery</Text>
-          </Pressable>
-          <Pressable style={styles.modalButton} onPress={() => setShowImagePickerModal(false)}>
-            <Text style={styles.textStyle}>Cancel</Text>
-          </Pressable>
-        </View>
+        <TouchableWithoutFeedback onPress={toggleModal}>
+          <View style={styles.modalContainer}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContent}>
+                <View style={styles.optionContainer}>
+                  <TouchableOpacity style={styles.option} onPress={openCamera}>
+                    <View style={styles.iconStyle}>
+                      <Ionicons name="camera" size={38} color={colors.yellow} />
+                    </View>
+                    <Text style={styles.optionText}>Camera</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.option} onPress={openGallery}>
+                    <View style={styles.iconStyle}>
+                      <MaterialIcons
+                        name="photo-library"
+                        size={38}
+                        color={colors.yellow}
+                      />
+                    </View>
+                    <Text style={styles.optionText}>Gallery</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
     </View>
   );
@@ -306,6 +348,13 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: 18,
     marginTop: 4,
+  },
+  iconStyle: {
+    borderStyle: "solid",
+    borderWidth: 0.5,
+    borderColor: "white",
+    padding: 8,
+    borderRadius: 16,
   },
   input: {
     flexDirection: "row",
@@ -326,8 +375,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   textStyle: {
-    color: 'white',
-    textAlign: 'center',
+    color: "white",
+    textAlign: "center",
     fontSize: 16,
   },
   label: {
@@ -446,11 +495,11 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -461,14 +510,25 @@ const styles = StyleSheet.create({
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
   },
   modalButton: {
     padding: 10,
     margin: 10,
     borderRadius: 10,
-    backgroundColor: '#2196F3',
+    backgroundColor: "#2196F3",
+  },
+  optionContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+  },
+  option: {
+    alignItems: "center",
+  },
+  optionText: {
+    color: "white",
+    marginTop: 5,
   },
 });
 

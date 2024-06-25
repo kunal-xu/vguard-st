@@ -7,6 +7,7 @@ import { RootSiblingParent } from "react-native-root-siblings";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import ScratchCard from "../components/ScratchCard";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -42,7 +43,8 @@ export default function RootLayout() {
                 paddingTop: insets.top,
               }}
             >
-              <Slot />
+              {/* <Slot /> */}
+              <ScratchCard />
             </View>
           </GestureHandlerRootView>
         </RootSiblingParent>

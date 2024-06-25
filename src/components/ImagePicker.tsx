@@ -1,22 +1,109 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  TouchableWithoutFeedback,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import colors from "../utils/colors";
+import { sendFile, sendFileToAWS, updateProfile } from "../utils/apiservice";
+import useProfile from "../hooks/useProfile";
+import { useData } from "../hooks/useData";
+import { showToast } from "../utils/showToast";
+import Loader from "./Loader";
+import NewPopUp from "./NewPopup";
+import usePopup from "../hooks/usePopup";
+import { useTranslation } from "react-i18next";
 
-const ImagePickerModal = ({ isVisible, toggleModal }) => {
-  const [image, setImage] = useState<string | null>(null);
+const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
+  const { t } = useTranslation();
+  const [loader, showLoader] = useState(false);
+  const { profile } = useProfile();
+  const { dispatch } = useData();
+  const {
+    popUp,
+    setPopUp,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    cleanupPopUp,
+  } = usePopup();
+
+  const fileUpload = async (
+    type: string,
+    fileExt: string | undefined,
+    base64Data: string | null | undefined,
+    mime: string | undefined
+  ) => {
+    showLoader(true);
+    try {
+      const body = {
+        imageRelated: type === "profile" ? "PROFILE" : "TICKET",
+        fileExtension: fileExt,
+      };
+      const fileStatus = await sendFile(body);
+      const fileStatusData = fileStatus.data;
+      const fileName = fileStatusData.entityUid;
+      const signedUrl = fileStatusData.entity;
+      const fileBuffer = Buffer.from(base64Data as string, "base64");
+      // const awsupload = await sendFileToAWS(signedUrl, fileBuffer, mime);
+      showLoader(false);
+      // const awsuploadStatus = awsupload.status;
+      console.log("Hi");
+      // if (awsuploadStatus === 200) {
+      //   const data = {
+      //     UniqueId: profile.UniqueId,
+      //     Selfie: fileName,
+      //   };
+      //   const response = await updateProfile(data);
+      //   const responseData = response.data;
+      //   showLoader(false);
+      //   if (responseData.code == 200) {
+      //     setPopUp(true);
+      //     setPopUpIconType("Info");
+      //     setPopUpTitle(t("Profile"));
+      //     setPopupText(responseData.message);
+      //   } else {
+      //     showToast(responseData.message);
+      //   }
+      // } else {
+      //   throw new Error("Internal Server Error");
+      // }
+    } catch (error: any) {
+      showLoader(false);
+      showToast(`${error.message}` || "Something went wrong! Please try again");
+    }
+  };
 
   const openCamera = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
+      base64: true,
     });
-    console.log(result);
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const fileExt = (result.assets[0].mimeType as string).split("/").pop();
+      const base64Image = result.assets[0].base64;
+      const mime = result.assets[0].mimeType;
+      await fileUpload(type, fileExt, base64Image, mime);
+      if (type === "profile") {
+        dispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "Selfie",
+            subfield: undefined,
+            value: result.assets[0].uri,
+          },
+        });
+      }
     }
   };
 
@@ -24,12 +111,24 @@ const ImagePickerModal = ({ isVisible, toggleModal }) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4, 3],
       quality: 1,
+      base64: true,
     });
-    console.log(result);
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const fileExt = (result.assets[0].mimeType as string).split("/").pop();
+      const base64Image = result.assets[0].base64;
+      const mime = result.assets[0].mimeType;
+      await fileUpload(type, fileExt, base64Image, mime);
+      if (type === "profile") {
+        dispatch({
+          type: "UPDATE_FIELD",
+          payload: {
+            field: "Selfie",
+            subfield: undefined,
+            value: result.assets[0].uri,
+          },
+        });
+      }
     }
   };
 
@@ -37,9 +136,18 @@ const ImagePickerModal = ({ isVisible, toggleModal }) => {
     <Modal
       visible={isVisible}
       transparent={true}
-      animationType="fade"
+      animationType="slide"
       onRequestClose={toggleModal}
     >
+      {loader && <Loader isLoading={loader} />}
+      <NewPopUp
+        visible={popUp}
+        button1Action={() => cleanupPopUp()}
+        button1Text={"Dismiss"}
+        text={popupText}
+        iconType={popUpIconType}
+        title={popUpTitle}
+      />
       <TouchableWithoutFeedback onPress={toggleModal}>
         <View style={styles.modalContainer}>
           <TouchableWithoutFeedback>
@@ -53,7 +161,11 @@ const ImagePickerModal = ({ isVisible, toggleModal }) => {
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.option} onPress={openGallery}>
                   <View style={styles.iconStyle}>
-                    <MaterialIcons name="photo-library" size={38} color={colors.yellow} />
+                    <MaterialIcons
+                      name="photo-library"
+                      size={38}
+                      color={colors.yellow}
+                    />
                   </View>
                   <Text style={styles.optionText}>Gallery</Text>
                 </TouchableOpacity>
