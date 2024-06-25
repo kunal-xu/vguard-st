@@ -9,8 +9,9 @@ import {
 import Popup from "./Popup";
 import { CustomTouchableOptionsProps } from "../utils/interfaces";
 import colors from "../utils/colors";
-import { width } from "../utils/dimensions";
 import { useNavigation } from "expo-router";
+import usePopup from "../hooks/usePopup";
+import NewPopUp from "./NewPopup";
 
 const CustomTouchableOption = ({
   text,
@@ -20,15 +21,24 @@ const CustomTouchableOption = ({
 }: CustomTouchableOptionsProps) => {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const [isPopupVisible, setPopupVisible] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
-
-  
+  const {
+    popUp,
+    setPopUp,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    cleanupPopUp,
+  } = usePopup();
 
   const handlePress = () => {
     if (disabled == true) {
-      setPopupVisible(true);
-      setPopupContent("Coming Soon!");
+      setPopUp(true);
+      setPopUpIconType("Info");
+      setPopUpTitle(t("Information"));
+      setPopupText("Coming Soon!");
     } else {
       navigation.navigate(screenName as never);
     }
@@ -76,14 +86,14 @@ const CustomTouchableOption = ({
           </Text>
         </View>
       </Pressable>
-      {isPopupVisible && (
-        <Popup
-          isVisible={isPopupVisible}
-          onClose={() => setPopupVisible(false)}
-        >
-          {popupContent}
-        </Popup>
-      )}
+      <NewPopUp
+        visible={popUp}
+        button1Action={() => cleanupPopUp()}
+        button1Text={"Dismiss"}
+        text={popupText}
+        iconType={popUpIconType}
+        title={popUpTitle}
+      />
     </>
   );
 };

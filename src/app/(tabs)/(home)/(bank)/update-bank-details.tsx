@@ -50,7 +50,6 @@ const UpdateBankDetails = () => {
   } = usePopup();
 
   const items: string[] = [
-    "Select Account Type",
     "Savings",
     "Current",
     "Salary",
@@ -315,7 +314,7 @@ const UpdateBankDetails = () => {
             variant="filled"
             onPress={handleProceed}
             width={350}
-            icon={require("../../../../assets/images/arrow.png")}
+            icon={require("@/src/assets/images/arrow.png")}
             iconWidth={50}
             iconHeight={20}
             iconGap={10}

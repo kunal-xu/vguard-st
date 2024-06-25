@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, ToastAndroid } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   responsiveFontSize,
   responsiveHeight,
@@ -8,67 +8,86 @@ import { useTranslation } from "react-i18next";
 import arrowIcon from "../../../../assets/images/arrow.png";
 import { bankTransfer, getUser } from "@/src/utils/apiservice";
 import Popup from "@/src/components/Popup";
-import { useNavigation } from "@react-navigation/native";
-import { useData } from "@/src/hooks/useData";
 import Loader from "@/src/components/Loader";
 import colors from "@/src/utils/colors";
 import Buttons from "@/src/components/Buttons";
 import { FloatingLabelInput } from "react-native-floating-label-input";
 import { height } from "@/src/utils/dimensions";
+import { showToast } from "@/src/utils/showToast";
+import useProfile from "@/src/hooks/useProfile";
+import { useRouter } from "expo-router";
+import usePopup from "@/src/hooks/usePopup";
+import NewPopUp from "@/src/components/NewPopup";
 
 const InstantBankTransfer = () => {
-  const navigation = useNavigation();
   const { t } = useTranslation();
-  const { state, dispatch } = useData();
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
-  const [points, setPoints] = useState<string>();
+  const [points, setPoints] = useState<number>();
   const [loader, showLoader] = useState(false);
-  const [redirect, setRedirect] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await getUser();
-        const responseData = response.data;
-        dispatch({
-          type: "GET_ALL_FIELDS",
-          payload: {
-            value: responseData,
-          },
-        });
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    })();
-  }, []);
+  const { profile } = useProfile();
+  const router = useRouter();
+  const {
+    popUp,
+    setPopUp,
+    popUpButtonCount,
+    setPopUpButtonCount,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    popUpButton2Text,
+    setPopupButton2Text,
+    cleanupPopUp,
+  } = usePopup();
 
   const handleProceed = async () => {
+    if (!points) {
+      showToast("Enter Amount");
+      return;
+    }
+    if (points < 150) {
+      showToast(t("Minimum 150 points required to do the bank transfer"));
+      return;
+    }
+    if (!profile.BankDetail.bankDataPresent) {
+      setPopUp(true);
+      setPopUpIconType("Alert");
+      setPopUpTitle(t("Bank Details"));
+      setPopupText(t("Please verify your bank details."));
+      setPopUpButtonCount(2);
+      setPopupButton2Text(t("Verify"));
+      return;
+    }
+    if (points > Number(profile.RedeemablePoints)) {
+      showToast(t("You do not have sufficient balance in your account."));
+      return;
+    }
     try {
-      if (!points) {
-        ToastAndroid.show("Enter Amount", ToastAndroid.SHORT);
+      showLoader(true);
+      let payload = {
+        amount: points,
+        bankDetail: profile.BankDetail,
+      };
+      const response = await bankTransfer(payload);
+      const reponseData = response.data;
+      console.log(reponseData);
+      showLoader(false);
+      setPopUp(true);
+      if (reponseData.code === 200) {
+        setPopUpIconType("Check");
+        setPopUpTitle(t("Bank Transfer"));
+        setPopupText(reponseData.message);
+      } else if (reponseData.code === 400) {
+        setPopUpIconType("Alert");
+        setPopUpTitle(t("Bank Transfer"));
+        setPopupText(reponseData.message);
       } else {
-        showLoader(true);
-        let payload = {
-          amount: points,
-          bankDetail: state.BankDetail,
-        };
-        const response = await bankTransfer(payload);
-        const reponseData = response.data;
-        showLoader(false);
-        if (reponseData.code === 200) {
-          setPopupContent(reponseData.message);
-          setPopupVisible(true);
-        } else if (reponseData.code === 400) {
-          setPopupVisible(true);
-          setPopupContent(reponseData.message);
-          setRedirect(true);
-        } else {
-          setPopupVisible(true);
-          setPopupContent(
-            reponseData.message || "Something went wrong, Please try again"
-          );
-        }
+        setPopUpIconType("Alert");
+        setPopUpTitle(t("Bank Transfer"));
+        setPopupText(reponseData.message || "Something went wrong");
       }
     } catch (btError) {
       showLoader(false);
@@ -79,6 +98,20 @@ const InstantBankTransfer = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {loader && <Loader isLoading={loader} />}
+      <NewPopUp
+        visible={popUp}
+        numberOfButtons={popUpButtonCount}
+        button1Action={() => cleanupPopUp()}
+        button2Action={() => {
+          cleanupPopUp();
+          router.push("(home)/update-bank-details");
+        }}
+        button1Text={"Dismiss"}
+        button2Text={popUpButton2Text}
+        text={popupText}
+        iconType={popUpIconType}
+        title={popUpTitle}
+      />
       <View style={styles.mainWrapper}>
         <View style={styles.header}>
           <Text style={styles.textHeader}>{t("strings:bank_details")}</Text>
@@ -106,7 +139,7 @@ const InstantBankTransfer = () => {
             labelStyles={styles.labelStyles}
             customLabelStyles={styles.customLabelStyles}
             inputStyles={styles.inputStyles}
-            value={state.BankDetail.bankAccNo as string}
+            value={profile.BankDetail.bankAccNo as string}
             label={t("strings:lbl_account_number")}
           />
 
@@ -117,7 +150,7 @@ const InstantBankTransfer = () => {
             labelStyles={styles.labelStyles}
             customLabelStyles={styles.customLabelStyles}
             inputStyles={styles.inputStyles}
-            value={state.BankDetail.bankAccHolderName as string}
+            value={profile.BankDetail.bankAccHolderName as string}
             label={t("strings:lbl_account_holder_name")}
           />
 
@@ -128,7 +161,7 @@ const InstantBankTransfer = () => {
             labelStyles={styles.labelStyles}
             customLabelStyles={styles.customLabelStyles}
             inputStyles={styles.inputStyles}
-            value={state.BankDetail.bankNameAndBranch as string}
+            value={profile.BankDetail.bankNameAndBranch as string}
             label={t("strings:bank_name")}
           />
 
@@ -139,7 +172,7 @@ const InstantBankTransfer = () => {
             labelStyles={styles.labelStyles}
             customLabelStyles={styles.customLabelStyles}
             inputStyles={styles.inputStyles}
-            value={state.BankDetail.bankIfsc as string}
+            value={profile.BankDetail.bankIfsc as string}
             label={t("strings:ifsc")}
           />
         </View>

@@ -29,7 +29,7 @@ interface AuthContextProps {
   setPopUpIconType: Dispatch<SetStateAction<string>>;
   popUpButton2Text: string;
   setPopupButton2Text: Dispatch<SetStateAction<string>>;
-  cleanupPopUp: () => void
+  cleanupPopUp: () => void;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -56,7 +56,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setPopUpIconType("");
     setPopupButton2Text("");
   }
-
 
   async function login(user: User) {
     await setItemAsync(
@@ -100,10 +99,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       } catch (error: any) {
         console.log(error.message);
-        // router.replace("/(tabs)/(home)/home-screen");
         router.replace("/(auth)/login-with-number");
       }
-    })();
+    })();   
   }, []);
 
   // useEffect(() => {
@@ -157,7 +155,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setPopUpIconType,
         popUpButton2Text,
         setPopupButton2Text,
-        cleanupPopUp
+        cleanupPopUp,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Text } from "react-native";
 import { loginWithPassword, registerNewUser } from "@/src/utils/apiservice";
 import { z } from "zod";
 import Buttons from "@/src/components/Buttons";
@@ -14,6 +14,7 @@ import { showToast } from "@/src/utils/showToast";
 import usePopup from "@/src/hooks/usePopup";
 import NewPopUp from "@/src/components/NewPopup";
 import { useTranslation } from "react-i18next";
+import colors from "@/src/utils/colors";
 
 const Credentials = () => {
   const { t } = useTranslation();
@@ -112,6 +113,20 @@ const Credentials = () => {
             iconHeight={20}
             iconGap={10}
           />
+          <Text
+            style={{
+              textAlign: "center",
+              width: "80%",
+              color: colors.grey,
+              fontSize: 14,
+              fontWeight: "bold",
+              marginTop: 24,
+            }}
+          >
+            {t(
+              "Note: Password length should be 8 characters long."
+            )}
+          </Text>
         </View>
         <View style={{ margin: 20 }}>
           <NeedHelp />

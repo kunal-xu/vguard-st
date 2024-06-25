@@ -5,7 +5,6 @@ import {
   Text,
   TextInput,
   TextStyle,
-  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -25,7 +24,6 @@ import React from "react";
 import {
   getDetailsByPinCode,
   getPincodeList,
-  getBankDetail,
   getVPAData,
   getTDSPercentage,
   getCustDetByMobile,
@@ -43,15 +41,10 @@ import {
   WelcomeBanner,
 } from "../utils/types";
 import Loader from "./Loader";
-import { BankDetailsSchema } from "../utils/schemas/BankDetails";
-import { z } from "zod";
-import TDSPopup from "./TDSPopup";
-import { TDS_CONSENT_MESSAGE } from "../utils/constants";
 import ImagePickerField from "./ImagePickerField";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NewPopUp from "./NewPopup";
 import usePopup from "../hooks/usePopup";
-import { showToast } from "../utils/showToast";
 
 interface RuleItem {
   id: number;
@@ -221,11 +214,11 @@ const Field = (props: FieldProps) => {
                 handleFormInputChange(
                   props.data as keyof STUser,
                   undefined,
-                  value
+                  value as string
                 );
               }}
             >
-              {items?.map((item, index) => {
+              {items?.map((item: string, index: number) => {
                 return (
                   <Picker.Item
                     label={item}
@@ -341,7 +334,7 @@ const Field = (props: FieldProps) => {
         setPopUp(true);
         setPopUpTitle(t("TDS Consent"));
         setPopUpButtonCount(2);
-        setPopupButton2Text(t("Proceed"))
+        setPopupButton2Text(t("Proceed"));
         setPopUpIconType("Info");
         setPopupText(
           t(

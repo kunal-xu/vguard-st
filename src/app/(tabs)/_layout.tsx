@@ -1,6 +1,7 @@
 import NewPopUp from "@/src/components/NewPopup";
 import { TabBarIcon } from "@/src/components/TabBarIcon";
 import { useAuth } from "@/src/hooks/useAuth";
+import colors from "@/src/utils/colors";
 import { Tabs } from "expo-router";
 import React, { useState } from "react";
 import { Pressable, Text } from "react-native";
@@ -12,7 +13,10 @@ export default function TabLayout() {
     <>
       <Tabs
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: colors.yellow,
+          },
         }}
       >
         <Tabs.Screen
@@ -39,6 +43,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="(profile)"
           options={{
+            headerShown: false,
             title: "Profile",
             tabBarIcon: ({ focused }) => (
               <TabBarIcon name={focused ? "person" : "person-outline"} />

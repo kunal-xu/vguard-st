@@ -1,13 +1,26 @@
+import colors from "@/src/utils/colors";
 import { Stack } from "expo-router";
 import React from "react";
 
 export default function ProfileLayout() {
   return (
-    <Stack screenOptions={{
-      headerShown: false
-    }}>
-      <Stack.Screen name="profile" options={{headerShown: false}}/>
-      <Stack.Screen name="edit-profile" />
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.yellow,
+        },
+      }}
+    >
+      <Stack.Screen name="profile" options={{
+          title: "Profile",
+        }} />
+      <Stack.Screen
+        name="edit-profile"
+        options={{
+          title: "Edit Profile",
+          headerTitleAlign: "center",
+        }}
+      />
     </Stack>
   );
 }

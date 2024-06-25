@@ -30,22 +30,7 @@ const MultiSelectPicker = ({ items, selectedItems, onValueChange }) => {
       </TouchableOpacity>
       {isOpen && (
         <View style={styles.dropdown}>
-          <FlatList
-            data={items}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.item}>
-                <Checkbox
-                  style={styles.checkbox}
-                  value={selected.some((i) => i.id === item.id)}
-                  onValueChange={() => handleSelectItem(item)}
-                />
-                <TouchableOpacity onPress={() => handleSelectItem(item)}>
-                  <Text style={styles.itemText}>{item.label}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          />
+          
           <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
             <Text style={styles.doneButtonText}>Done</Text>
           </TouchableOpacity>

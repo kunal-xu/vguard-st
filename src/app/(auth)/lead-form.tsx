@@ -1,7 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 import { useTranslation } from "react-i18next";
-import Popup from "@/src/components/Popup";
 import { height, width } from "@/src/utils/dimensions";
 import Loader from "@/src//components/Loader";
 import Buttons from "@/src//components/Buttons";
@@ -14,9 +20,14 @@ import {
   CustomLabelProps,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { showToast } from "@/src/utils/showToast";
-import MultiSelectPicker from "@/src/components/MultiSelectPicker";
+import { Ionicons } from "@expo/vector-icons";
+import Checkbox from "expo-checkbox";
+import NewPopUp from "@/src/components/NewPopup";
+import usePopup from "@/src/hooks/usePopup";
+import { useNavigation } from "expo-router";
+import { CommonActions } from "@react-navigation/native";
 
 const LeadForm = () => {
   const { contact } = useLocalSearchParams();
@@ -24,17 +35,31 @@ const LeadForm = () => {
   const [name, setName] = useState("");
   const [pincode, setPincode] = useState("");
   const [loader, showLoader] = useState(false);
-  const [popupMessage, setPopupMessage] = useState("");
-  const [isPopupVisible, setIsPopupVisible] = useState(false);
-  const [selectedValue, setSelectedValue] = useState<string[]>([]);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const {
+    popUp,
+    setPopUp,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    cleanupPopUp,
+  } = usePopup();
+
+  const handlePress = () => {
+    setIsExpanded(!isExpanded);
+  };
   const navigation = useNavigation();
 
-  const items = [
-    { label: "AC", value: "AC", id: "" },
-    { label: "TV", value: "TV", id: "" },
-    { label: "Refrigerator", value: "Refrigerator", id: "" },
-    { label: "Washing machine", value: "Washing machine", id: "" },
-    { label: "Others", value: "Others", id: "" },
+  const data = [
+    { label: "AC", value: "AC", id: "1" },
+    { label: "TV", value: "TV", id: "2" },
+    { label: "Refrigerator", value: "Refrigerator", id: "3" },
+    { label: "Washing machine", value: "Washing machine", id: "4" },
+    { label: "Others", value: "Others", id: "5" },
   ];
 
   function formatDate(date: string | number | Date) {
@@ -47,11 +72,7 @@ const LeadForm = () => {
   }
 
   async function addLead() {
-    if (
-      name.length === 0 ||
-      pincode.length === 0 ||
-      selectedValue.length === 0
-    ) {
+    if (name.length === 0 || pincode.length === 0 || selected.length === 0) {
       showToast(t("Please fill all the details"));
       return;
     }
@@ -60,8 +81,8 @@ const LeadForm = () => {
       const today = new Date();
       const formattedDate = formatDate(today);
       let values = "";
-      selectedValue.map((item: string) => {
-        values += item;
+      selected.map((item: object) => {
+        values += item.value;
         values += ", ";
       });
       values = values.substring(0, values.length - 2);
@@ -77,17 +98,23 @@ const LeadForm = () => {
       const validationResponseData = validationResponse.data;
       if (validationResponseData.code === 200) {
         const successMessage = validationResponseData.message;
-        setIsPopupVisible(true);
-        setPopupMessage(successMessage);
+        setPopUp(true);
+        setPopUpIconType("Check");
+        setPopUpTitle("Lead Form");
+        setPopupText(successMessage);
       } else {
         const errorMessage = validationResponseData.message;
-        setIsPopupVisible(true);
-        setPopupMessage(errorMessage);
+        setPopUp(true);
+        setPopUpIconType("Alert");
+        setPopUpTitle("Lead Form");
+        setPopupText(errorMessage);
       }
     } catch (error: any) {
       showLoader(false);
-      setIsPopupVisible(true);
-      setPopupMessage(error.response.data.message || "An error occurred.");
+      setPopUp(true);
+      setPopUpIconType("Alert");
+      setPopUpTitle("Lead Form");
+      setPopupText(error.response.data.message || "An error occurred.");
       console.error("Error during validation:", error);
     }
   }
@@ -97,15 +124,42 @@ const LeadForm = () => {
     setIsPopupVisible(false);
   };
 
-  const [selectedItems, setSelectedItems] = useState([]);
+  const handleSelectItem = (item) => {
+    if (
+      selected.find((selectedItem: { id: any }) => selectedItem.id === item.id)
+    ) {
+      setSelected(selected.filter((i: { id: any }) => i.id !== item.id));
+    } else {
+      setSelected([...selected, item]);
+    }
+  };
 
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
-      {isPopupVisible && (
-        <Popup isVisible={isPopupVisible} onClose={handleClose}>
-          {popupMessage}
-        </Popup>
-      )}
+      {loader && <Loader isLoading={loader} />}
+      <NewPopUp
+        visible={popUp}
+        button1Action={() => {
+          cleanupPopUp();
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name: "(auth)",
+                  state: {
+                    routes: [{ name: "login-with-number" }],
+                  },
+                },
+              ],
+            })
+          );
+        }}
+        button1Text={"Dismiss"}
+        text={popupText}
+        iconType={popUpIconType}
+        title={popUpTitle}
+      />
       <Loader isLoading={loader} />
       <View style={{ backgroundColor: "white", margin: 25 }}>
         <View
@@ -174,20 +228,66 @@ const LeadForm = () => {
           customLabelStyles={styles.customLabelStyles as CustomLabelProps}
           inputStyles={styles.inputStyles}
           onChangeText={(text: string) => setPincode(text)}
+          maxLength={6}
           value={pincode}
           label={t("Pincode")}
         />
-
-        <View style={styles.container}>
-          <Text>
-            Selected Items: {selectedItems.map((item) => item.label).join(", ")}
-          </Text>
-          <MultiSelectPicker
-            items={items}
-            selectedItems={selectedItems}
-            onValueChange={setSelectedItems}
-          />
+        <View
+          style={{
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity style={styles.itemContainer} onPress={handlePress}>
+            <Text style={styles.itemText}>Categories</Text>
+            {isExpanded ? (
+              <Ionicons
+                name="arrow-up-circle"
+                size={24}
+                color={colors.yellow}
+              />
+            ) : (
+              <Ionicons
+                name="arrow-down-circle"
+                size={24}
+                color={colors.yellow}
+              />
+            )}
+          </TouchableOpacity>
         </View>
+        {isExpanded && (
+          <View
+            style={{
+              paddingHorizontal: 15,
+            }}
+          >
+            <FlatList
+              data={data}
+              keyExtractor={(item) => item.id.toString()}
+              renderItem={({ item }) => (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    padding: 10,
+                    borderBottomWidth: 1,
+                    borderBottomColor: "#ccc",
+                  }}
+                >
+                  <Checkbox
+                    style={{
+                      margin: 8,
+                    }}
+                    value={selected.some((i) => i.id === item.id)}
+                    onValueChange={() => handleSelectItem(item)}
+                  />
+                  <TouchableOpacity onPress={() => handleSelectItem(item)}>
+                    <Text style={styles.itemText}>{item.label}</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          </View>
+        )}
 
         <View
           style={{
@@ -234,6 +334,19 @@ const styles = StyleSheet.create({
     colorFocused: "black",
     colorBlurred: "black",
     fontSizeFocused: 16,
+  },
+  itemContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    width: "90%",
+    borderBottomColor: "#eee",
+  },
+  itemText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
   },
   inputStyles: {
     color: "black",

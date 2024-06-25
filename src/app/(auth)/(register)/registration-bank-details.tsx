@@ -52,7 +52,6 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
   } = usePopup();
 
   const items: string[] = [
-    "Select Account Type",
     "Savings",
     "Current",
     "Salary",

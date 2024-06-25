@@ -6,38 +6,19 @@ import {
   responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
-import { useFocusEffect } from "@react-navigation/native";
 import NeedHelp from "@/src/components/NeedHelp";
-import ReusableCarousel from "@/src/components/ReusableCarousel";
-import { getUser } from "@/src/utils/apiservice";
 import { useData } from "@/src/hooks/useData";
 import CustomTouchableOption from "@/src/components/CustomTouchableOption";
 import colors from "@/src/utils/colors";
 import PagerView from "react-native-pager-view";
-import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import useProfile from "@/src/hooks/useProfile";
 
 const RedeemPoints = () => {
-  const { t } = useTranslation();
-  const { state, dispatch } = useData();
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await getUser();
-        const responseData = response.data;
-        dispatch({
-          type: "GET_ALL_FIELDS",
-          payload: {
-            value: responseData,
-          },
-        });
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    })();
-  }, []);
+  const { profile } = useProfile();
 
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
@@ -72,28 +53,23 @@ const RedeemPoints = () => {
         </PagerView>
       </View>
       <View style={styles.mainWrapper}>
-        <View style={styles.carousel}>
-        </View>
+        <View style={styles.carousel}></View>
         <View style={styles.points}>
-          <Pressable
-            // onPress={() => navigation.navigate("Unique Code History")}
-            style={styles.leftPoint}
-          >
+          <Pressable style={styles.leftPoint}>
             <MaterialIcons name="currency-rupee" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(state.RedeemablePoints)?.toFixed(2) || 0}
+              {Number(profile.RedeemablePoints)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Redeemable Points</Text>
           </Pressable>
           <Pressable style={styles.middlePoint}>
             <MaterialIcons name="redeem" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(state.RedeemedPoints)?.toFixed(2) || 0}
+              {Number(profile.RedeemedPoints)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Redeemed Points</Text>
           </Pressable>
           <Pressable
-            // onPress={() => navigation.navigate("Redemption History")}
             style={styles.rightPoint}
           >
             <MaterialCommunityIcons
@@ -102,7 +78,7 @@ const RedeemPoints = () => {
               color="black"
             />
             <Text style={styles.point}>
-              {Number(state.DeductedTDS)?.toFixed(2) || 0}
+              {Number(profile.DeductedTDS)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Deducted TDS</Text>
           </Pressable>
@@ -128,25 +104,6 @@ const RedeemPoints = () => {
               disabled={false}
             />
           </View>
-          {/* <View style={styles.row}>
-            <CustomTouchableOption
-              text="strings:e_gift_cards"
-              iconSource={require('../../../../../assets/images/ic_egift_cards.webp')}
-              screenName="Gift Voucher"
-              disabled={true}
-            />
-            <CustomTouchableOption
-              text="strings:track_your_redemption"
-              iconSource={require('../../../../../assets/images/ic_track_your_redemption.webp')}
-              screenName="Track Redemption"
-              disabled={true}
-            />
-            <CustomTouchableOption
-              text="strings:redemption_history"
-              iconSource={require('../../../../../assets/images/ic_redemption_history.webp')}
-              screenName="Redemption History"
-            />
-          </View> */}
         </View>
         <NeedHelp />
       </View>

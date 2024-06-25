@@ -30,6 +30,7 @@ import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
 import { showToast } from "@/src/utils/showToast";
 import NewPopUp from "@/src/components/NewPopup";
+import { useRouter } from "expo-router";
 
 const LoginScreen = ({ navigation }: NavigationProps) => {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
   const [popUpIconType, setPopUpIconType] = useState("");
   const { login } = useAuth();
   const { dispatch } = useData();
+  const router = useRouter();
 
   const placeholderColor = colors.grey;
   const pkg = require("../../../package.json");
@@ -188,7 +190,24 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 />
               </KeyboardAvoidingView>
             </View>
-            <View style={styles.updateAndForgot}></View>
+            <View style={{ flexDirection: "row", gap: 5, marginTop: 12, marginBottom: 16 }}>
+              <Text style={styles.greyText}>
+                {t("Forgot Password?")}
+              </Text>
+              <TouchableOpacity
+                onPress={() => router.push("forgot-password-number-verification" as never)}
+              >
+                <Text
+                  style={{
+                    color: colors.yellow,
+                    fontSize: responsiveFontSize(1.7),
+                    fontWeight: "600",
+                  }}
+                >
+                  {t("Click here")}
+                </Text>
+              </TouchableOpacity>
+            </View>
             <View style={styles.buttonContainer}>
               <Buttons
                 style={styles.button}
@@ -281,6 +300,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 8,
     marginTop: 8,
+  },
+  greyText: {
+    fontSize: responsiveFontSize(1.7),
+    color: colors.grey,
+    fontWeight: "600",
   },
   imageSaathi: {
     width: 216,
@@ -386,7 +410,7 @@ const styles = StyleSheet.create({
   updateAndForgot: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+
     marginBottom: 10,
     alignItems: "center",
   },

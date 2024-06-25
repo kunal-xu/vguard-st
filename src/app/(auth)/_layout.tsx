@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { View } from "react-native";
 
 export default function AuthLayout() {
   return (
@@ -9,6 +8,8 @@ export default function AuthLayout() {
       <Stack.Screen name="login-with-number" />
       <Stack.Screen name="login-with-otp" />
       <Stack.Screen name="login" />
+      <Stack.Screen name="forgot-password-number-verification" />
+      <Stack.Screen name="forgot-password" />
     </Stack>
   );
 }

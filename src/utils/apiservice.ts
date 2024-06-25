@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 // import messaging from "@react-native-firebase/messaging";
 
-// const BASE_URL = "http://192.168.29.15:5005/vguard/api";
+// const BASE_URL = "http://192.168.220.248:5005/vguard/api";
 const BASE_URL = 'https://infra.4test.info/vguard/api';
 
 export const api: AxiosInstance = axios.create({
@@ -519,11 +519,8 @@ export function getRedemptionHistory() {
   return createGetRequest(path);
 }
 
-export function forgotPassword(number: string) {
+export function forgotPassword(body: any) {
   const path = "user/forgotPassword";
-  const body = {
-    mobileNo: number,
-  };
   return createPostRequest(path, body);
 }
 

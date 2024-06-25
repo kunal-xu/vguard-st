@@ -27,6 +27,8 @@ import Buttons from "@/src/components/Buttons";
 import colors from "@/src/utils/colors";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useFocusEffect } from "expo-router";
+import { useAuth } from "@/src/hooks/useAuth";
 
 /*
   API to fetch product details(user specific)
@@ -38,7 +40,7 @@ const Dashboard = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [show, setShow] = useState(false);
-  const items: any[] = ["Select Product"];
+  const items: any[] = ["All Products"];
   const [selectedValue, setSelectedValue] = useState<undefined>();
   const [earnedPoints, setEarnedPoints] = useState("0");
   const [redeemablePoints, setRedeemablePoints] = useState("0");
@@ -50,26 +52,39 @@ const Dashboard = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [showEnd, setShowEnd] = useState(false);
   const [endDate, setEndDate] = useState(new Date());
+  const { logout } = useAuth();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await getUser();
-        const responseData = response.data;
-        dispatch({
-          type: "GET_ALL_FIELDS",
-          payload: {
-            value: responseData,
-          },
-        });
-        setEarnedPoints(state.EarnedPoints as string);
-        setRedeemablePoints(state.RedeemablePoints as string);
-        setRedeemedPoints(state.RedeemedPoints as string);
-      } catch (error: any) {
-        console.log(error.message);
-      }
-    })();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getUser();
+          const responseData = response.data;
+          dispatch({
+            type: "GET_ALL_FIELDS",
+            payload: {
+              value: responseData,
+            },
+          });
+          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
+            dispatch({
+              type: "CLEAR_ALL_FIELDS",
+              payload: {},
+            });
+            logout();
+          }
+          setEarnedPoints(state.EarnedPoints as string);
+          setRedeemablePoints(state.RedeemablePoints as string);
+          setRedeemedPoints(state.RedeemedPoints as string);
+        } catch (error: any) {
+          logout();
+          console.log(error.message);
+        }
+      };
+      fetchData();
+    }, [])
+  );
+
   const handleSearch = async () => {
     if (fromDate === "") {
       ToastAndroid.show("Please select the starting date", ToastAndroid.LONG);
@@ -126,36 +141,7 @@ const Dashboard = () => {
     setShowEnd(Platform.OS === "ios");
     setEndDate(currentDate);
   };
-  
-  // useEffect(() => {
-  //   if (userData.userRole && userData.userImage) {
 
-  //     const getImage = async () => {
-  //       try {
-  //         const profileImage = getImages(
-  //           userData.userImage,
-  //           'PROFILE',
-  //         );
-  //         setProfileImage(profileImage);
-  //       } catch (error) {
-  //         console.log('Error while fetching profile image:', error);
-  //       }
-  //     };
-
-  //     getImage();
-  //   }
-  // }, [userData.userRole, userData.userImage]);
-  // const [selectedYear, setSelectedYear] = useState(moment().format("YYYY"));
-  // const [selectedMonth, setSelectedMonth] = useState(moment().format("MM"));
-  // const [selectedDay, setSelectedDay] = useState(moment().format("DD"));
-  // useEffect(() => {
-  //   getMonthWiseEarning(selectedMonth, selectedYear)
-  //     .then((data) => data.data)
-  //     .then((data) => {
-  //       console.log(data, "-------");
-  //       setPointsData(data);
-  //     });
-  // }, []);
 
   return (
     <ScrollView>

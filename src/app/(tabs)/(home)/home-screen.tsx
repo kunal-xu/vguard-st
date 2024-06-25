@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable } from "react-native";
-import React, { useCallback } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import CustomTouchableOption from "../../../components/CustomTouchableOption";
 import {
@@ -8,56 +8,22 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import NeedHelp from "../../../components/NeedHelp";
-import { getUser } from "../../../utils/apiservice";
 import { getImages } from "../../../utils/FileUtils";
 import { router } from "expo-router";
-import { useData } from "../../../hooks/useData";
-import { useFocusEffect } from "expo-router";
-import { useAuth } from "../../../hooks/useAuth";
 import colors from "@/src/utils/colors";
 import CustomTabHeader from "@/src/components/CustomTabHeader";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import useProfile from "@/src/hooks/useProfile";
 
 const HomeScreen = () => {
   const { t } = useTranslation();
-  const { state, dispatch, customerDispatch } = useData();
-  const { logout } = useAuth();
-
+  const { profile } = useProfile();
   const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const response = await getUser();
-          const responseData = response.data;
-          dispatch({
-            type: "GET_ALL_FIELDS",
-            payload: {
-              value: responseData,
-            },
-          });
-          customerDispatch({
-            type: "CLEAR_ALL_FIELDS",
-            payload: {},
-          });
-          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
-            dispatch({
-              type: "CLEAR_ALL_FIELDS",
-              payload: {},
-            });
-            logout();
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-      fetchData();
-    }, [])
-  );
+
   interface Item {
     type: "header" | "dashboard" | "needHelp";
   }
@@ -86,9 +52,9 @@ const HomeScreen = () => {
                 />
               </View>
               <View style={styles.profileText}>
-                <Text style={styles.textDetail}>{state.Name || "Kunal"}</Text>
+                <Text style={styles.textDetail}>{profile.Name || "Kunal"}</Text>
                 <Text style={{ fontSize: responsiveFontSize(1.7) }}>
-                  Rishta ID: {state.RishtaID || "VGIL30001"}
+                  Rishta ID: {profile.RishtaID || "VGIL30001"}
                 </Text>
               </View>
             </View>
@@ -102,19 +68,18 @@ const HomeScreen = () => {
               >
                 <Feather name="check-circle" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(state.EarnedPoints)?.toFixed(2) || 0}
+                  {Number(profile.EarnedPoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Total Earnings</Text>
               </Pressable>
               <Pressable style={styles.middlePoint}>
                 <MaterialIcons name="currency-rupee" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(state.RedeemablePoints)?.toFixed(2) || 0}
+                  {Number(profile.RedeemablePoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Redeemable Points</Text>
               </Pressable>
               <Pressable
-                // onPress={() => navigation.navigate("Redemption History")}
                 onPress={() => router.push("/(redeem)/redemption-history")}
                 style={({ pressed }) => [
                   { opacity: pressed ? 0.5 : 10 },
@@ -123,7 +88,7 @@ const HomeScreen = () => {
               >
                 <MaterialIcons name="redeem" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(state.RedeemedPoints)?.toFixed(2) || 0}
+                  {Number(profile.RedeemedPoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Redeemed Points</Text>
               </Pressable>
@@ -158,7 +123,7 @@ const HomeScreen = () => {
                 text="strings:direct_order"
                 iconSource={require("../../../assets/images/Group_575.png")}
                 screenName="(directorder)"
-                disabled={false}
+                disabled={true}
               />
               <CustomTouchableOption
                 text="strings:scheme_offers"

@@ -17,9 +17,14 @@ import {
   responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
-import { sendTicket, getTicketTypes, getUser, getFile, sendFile } from "@/src/utils/apiservice";
+import {
+  sendTicket,
+  getTicketTypes,
+  getUser,
+  getFile,
+  sendFile,
+} from "@/src/utils/apiservice";
 import { Picker } from "@react-native-picker/picker";
-import { useFocusEffect } from "@react-navigation/native";
 import colors from "@/src/utils/colors";
 import NeedHelp from "@/src/components/NeedHelp";
 import Buttons from "@/src/components/Buttons";
@@ -28,22 +33,11 @@ import ImagePickerField from "@/src/components/ImagePickerField";
 import Loader from "@/src/components/Loader";
 import { getImages } from "@/src/utils/FileUtils";
 import { useData } from "@/src/hooks/useData";
+import useProfile from "@/src/hooks/useProfile";
 
 const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const baseURL = "https://www.vguardrishta.com/img/appImages/Profile/";
-
   const { t } = useTranslation();
-
-  const [userData, setUserData] = useState({
-    userName: "",
-    userId: "",
-    userCode: "",
-    userImage: "",
-    userRole: "",
-  });
-
   const [profileImage, setProfileImage] = useState(null);
-
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState("");
   const [isOptionsLoading, setIsOptionsLoading] = useState(true);
@@ -57,48 +51,37 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
   const [loader, showLoader] = useState(false);
+  const { profile } = useProfile();
 
   useEffect(() => {
-    // AsyncStorage.getItem('USER').then((r) => {
-    //   const user = JSON.parse(r);
-    //   const data = {
-    //     userName: user.name,
-    //     userCode: user.userCode,
-    //     pointsBalance: user.pointsSummary.pointsBalance,
-    //     redeemedPoints: user.pointsSummary.redeemedPoints,
-    //     userImage: user.kycDetails.selfie,
-    //     userRole: user.professionId,
-    //     userId: user.contactNo
-    //   };
-    //   setUserData(data);
-    // });
-    getTicketTypes()
-      .then((response) => response.data)
-      .then((data) => {
-        setOptions(data);
+    (async () => {
+      try {
+        const response = await getTicketTypes();
+        const responseData = response.data;
+        setOptions(responseData);
         showLoader(false);
         setIsOptionsLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching options:", error);
         setIsOptionsLoading(false);
-      });
+      }
+    })();
   }, []);
 
-  useEffect(() => {
-    if (userData.userRole && userData.userImage) {
-      const getImage = async () => {
-        try {
-          const profileImage = getImages(userData.userImage, "PROFILE");
-          setProfileImage(profileImage);
-        } catch (error) {
-          console.log("Error while fetching profile image:", error);
-        }
-      };
+  // useEffect(() => {
+  //   if (userData.userRole && userData.userImage) {
+  //     const getImage = async () => {
+  //       try {
+  //         const profileImage = getImages(userData.userImage, "PROFILE");
+  //         setProfileImage(profileImage);
+  //       } catch (error) {
+  //         console.log("Error while fetching profile image:", error);
+  //       }
+  //     };
 
-      getImage();
-    }
-  }, [userData.userRole, userData.userImage]);
+  //     getImage();
+  //   }
+  // }, [userData.userRole, userData.userImage]);
 
   const handleOptionChange = (value) => {
     setSelectedOption(value);
@@ -114,34 +97,34 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
     );
   };
 
-  const { state, dispatch } = useData();
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const response = await getUser();
-          const responseData = response.data;
-          dispatch({
-            type: "GET_ALL_FIELDS",
-            payload: {
-              value: responseData,
-            },
-          });
-          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
-            dispatch({
-              type: "CLEAR_ALL_FIELDS",
-              payload: {},
-            });
-            logout();
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
+  // const { state, dispatch } = useData();
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const fetchData = async () => {
+  //       try {
+  //         const response = await getUser();
+  //         const responseData = response.data;
+  //         dispatch({
+  //           type: "GET_ALL_FIELDS",
+  //           payload: {
+  //             value: responseData,
+  //           },
+  //         });
+  //         if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
+  //           dispatch({
+  //             type: "CLEAR_ALL_FIELDS",
+  //             payload: {},
+  //           });
+  //           logout();
+  //         }
+  //       } catch (error: any) {
+  //         console.log(error.message);
+  //       }
+  //     };
 
-      fetchData();
-    }, [])
-  );
+  //     fetchData();
+  //   }, [])
+  // );
 
   const handleSubmission = async () => {
     showLoader(true);
@@ -152,17 +135,17 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
       description: descriptionInput,
     };
     console.log("POSTDATA", postData);
-      try {
-        const response = await sendTicket(postData);
-        const responseData = response.data;
-        setPopupVisible(true);
-        showLoader(false);
-        setPopupContent(responseData.message);
-      } catch (error) {
-        showLoader(false);
-        setPopupVisible(true);
-        setPopupContent("Failed to create ticket");
-      }
+    try {
+      const response = await sendTicket(postData);
+      const responseData = response.data;
+      setPopupVisible(true);
+      showLoader(false);
+      setPopupContent(responseData.message);
+    } catch (error) {
+      showLoader(false);
+      setPopupVisible(true);
+      setPopupContent("Failed to create ticket");
+    }
   };
   const handleImageChange = async (
     image: string,
@@ -227,8 +210,8 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
             </ImageBackground>
           </View>
           <View style={styles.profileText}>
-            <Text style={styles.textDetail}>{state.Contact}</Text>
-            <Text style={styles.textDetail}>{state.RishtaID}</Text>
+            <Text style={styles.textDetail}>{profile.Contact}</Text>
+            <Text style={styles.textDetail}>{profile.RishtaID}</Text>
           </View>
         </View>
         <TouchableOpacity

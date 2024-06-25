@@ -1,5 +1,12 @@
 import { useTranslation } from "react-i18next";
-import { View, Pressable, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
 import colors from "../utils/colors";
 import { useState } from "react";
 import { Image } from "expo-image";
@@ -9,6 +16,7 @@ import {
   responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
+import LanguagePicker from "./LanguagePicker";
 
 export default function CustomTabHeader() {
   const { t, i18n } = useTranslation();
@@ -30,10 +38,12 @@ export default function CustomTabHeader() {
         marginRight: 32,
       }}
     >
-      <View style={{
+      <View
+        style={{
           height: responsiveHeight(3),
           flexDirection: "row",
-        }}>
+        }}
+      >
         <Pressable
           style={styles.languageContainer}
           onPress={handleLanguageButtonPress}
@@ -44,7 +54,7 @@ export default function CustomTabHeader() {
               color: colors.black,
               borderBottomWidth: 2,
               fontSize: responsiveFontSize(1.7),
-              marginLeft: 4
+              marginLeft: 4,
             }}
           >
             {t("strings:language")}
@@ -60,6 +70,20 @@ export default function CustomTabHeader() {
           height: responsiveHeight(4),
         }}
       />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={showLanguagePicker}
+        onRequestClose={handleCloseLanguagePicker}
+      >
+        <View style={styles.languagePickerContainer}>
+          <LanguagePicker onCloseModal={handleCloseLanguagePicker} />
+          <TouchableOpacity onPress={handleCloseLanguagePicker}>
+            <Text style={styles.closeText}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -68,5 +92,20 @@ const styles = StyleSheet.create({
   languageContainer: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  languagePickerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.white,
+  },
+  closeText: {
+    marginTop: 20,
+    color: colors.black,
+    backgroundColor: colors.yellow,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 5,
+    fontWeight: "bold",
   },
 });

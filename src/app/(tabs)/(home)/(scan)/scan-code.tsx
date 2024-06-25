@@ -32,6 +32,7 @@ import { getLocation } from "@/src/utils/geolocation";
 import { showToast } from "@/src/utils/showToast";
 import { useRouter } from "expo-router";
 import NewPopUp from "@/src/components/NewPopup";
+import { LocationObject, LocationObjectCoords } from "expo-location";
 
 const ScanCode = () => {
   const { t } = useTranslation();
@@ -40,9 +41,6 @@ const ScanCode = () => {
   const [camera, setCamera] = useState(false);
   const [torch, setTorch] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
-  const [couponRedeemData, setCouponRedeemData] = useState<CouponRedeem>(
-    new CouponRedeem()
-  );
   const { state, customerDispatch } = useData();
   const {
     popUp,
@@ -58,18 +56,27 @@ const ScanCode = () => {
   const router = useRouter();
 
   async function sendBarcode() {
-    const locationPermission = await getLocation();
+    const locationPermission: LocationObject | boolean = await getLocation();
+    const regex = /^\d{16}$/;
     if (!locationPermission) {
       showToast(t("Please allow the location permission to continue."));
       return;
     }
-    if (qrCode.length < 16) {
+    if (!regex.test(qrCode)) {
       showToast(t("Please provide a 16 digit QR Code to continue."));
       return;
     }
+    const { latitude, longitude }: LocationObjectCoords =
+      locationPermission.coords;
+    const requestBody = {
+      couponCode: qrCode,
+      latitude: String(latitude),
+      longitude: String(longitude),
+    };
     try {
       showLoader(true);
-      const response = await validateCoupon(couponRedeemData);
+      const response = await validateCoupon(requestBody);
+      console.log(response.data);
       showLoader(false);
       const status: CouponRedeemResponse = new CouponRedeemResponse(
         response.data
@@ -276,7 +283,7 @@ const ScanCode = () => {
             }}
           >
             <Image
-              source={require("../../../../assets/images/ic_scan_code_2-transformed.png")}
+              source={require("@/src/assets/images/ic_scan_code_2-transformed.png")}
               style={{ flex: 1, width: "60%" }}
               contentFit="contain"
               contentPosition="center"
@@ -289,6 +296,7 @@ const ScanCode = () => {
           <TextInput
             value={qrCode}
             style={styles.input}
+            onChangeText={(text: string) => setQrcode(text)}
             placeholder={t("Enter QR Code Manually")}
             placeholderTextColor={colors.grey}
             textAlign="center"
@@ -305,7 +313,11 @@ const ScanCode = () => {
         <Buttons
           label={t("Go to History")}
           variant="outlined"
-          onPress={async () => await sendBarcode()}
+          onPress={async () =>
+            router.push({
+              pathname: "unique-code-history",
+            })
+          }
           width="90%"
         />
         <NeedHelp />
@@ -371,9 +383,9 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: responsiveHeight(2),
-    textAlign: "center",
     color: colors.black,
     fontWeight: "bold",
+    textAlign: "center",
   },
 });
 
