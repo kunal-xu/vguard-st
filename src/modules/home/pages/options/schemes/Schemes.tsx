@@ -49,7 +49,7 @@ const Schemes = () => {
             text="strings:product_wise_offers"
             iconSource={require("../../../../../assets/images/ic_product_wise_offers.webp")}
             screenName="Product Wise Offers"
-            disabled={true}
+            disabled={false}
           />
           <CustomTouchableOption
             text="strings:active_scheme_offers"

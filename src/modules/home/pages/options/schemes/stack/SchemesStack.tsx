@@ -23,7 +23,7 @@ const SchemesStack = () => {
           headerShown: true
         }}
       />                                             
-      <Stack.Screen name="Product Wise Offers" component={ProductWise} 
+      <Stack.Screen name="Product Wise Offers" component={ProductWiseOfferTable} 
         options={{
           headerShown: true
         }}

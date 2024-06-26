@@ -356,7 +356,10 @@ const Field = (props: FieldProps) => {
         } catch (error: any) {
           showLoader(false);
           setIsPopupVisible(true);
-          setPopupContent(error.response.data.message);
+          setPopupContent(
+            error.response.data.message ||
+              "Something went wrong! Please try again"
+          );
         }
       }
 
@@ -391,7 +394,10 @@ const Field = (props: FieldProps) => {
         } catch (error: any) {
           showLoader(false);
           setIsPopupVisible(true);
-          setPopupContent(error.response.data.message);
+          setPopupContent(
+            error.response.data.message ||
+              "Something went wrong! Please try again"
+          );
         }
       }
       return (
@@ -497,9 +503,38 @@ const Field = (props: FieldProps) => {
           const responseData = response.data;
           if (responseData.name !== null) {
             customerDispatch({
-              type: "GET_ALL_FIELDS",
+              type: "UPDATE_FIELD",
               payload: {
-                value: responseData,
+                field: "name",
+                value: responseData.name,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "pinCode",
+                value: responseData.pinCode,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "state",
+                value: responseData.state,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "district",
+                value: responseData.district,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "city",
+                value: responseData.city,
               },
             });
           } else {
@@ -508,10 +543,10 @@ const Field = (props: FieldProps) => {
         } catch (error: any) {
           showLoader(false);
           setIsPopupVisible(true);
-          customerDispatch({
-            type: "CLEAR_ALL_FIELDS",
-            payload: {},
-          });
+          // customerDispatch({
+          //   type: "CLEAR_ALL_FIELDS",
+          //   payload: {},
+          // });
           setPopupContent("Customer details not found");
           console.log(error.message);
         }

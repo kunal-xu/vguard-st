@@ -11,11 +11,13 @@ import { Table, Row, Rows } from "react-native-table-component";
 import { useFocusEffect } from "@react-navigation/native";
 import { getProductWiseOffersDetail } from "../../../../../utils/apiservice";
 
-const ProductWiseOfferTable = ({ route, navigation }) => {
-  const { categoryId } = route.params;
+const ProductWiseOfferTable = () => {
   const { t } = useTranslation();
   const [loader, showLoader] = useState(false);
-  const [productDetails, setProductDetails] = useState([]);
+  const [productDetails, setProductDetails] = useState([
+    { slNo: 1, points: 250, materialDesc: "VNS 400 Digital" },
+    { slNo: 2, points: 200, materialDesc: "VS 500" },
+  ]);
 
   // useFocusEffect(
   //   React.useCallback(() => {
@@ -23,30 +25,41 @@ const ProductWiseOfferTable = ({ route, navigation }) => {
   //   }, [])
   // );
 
-  useEffect(() => {
-    getProductWiseOffersDetail(categoryId).then((productDataRaw) => {
-      productDataRaw.data.then((productDataJson) => {
-        console.log(productDataJson.length, productDataJson.length > 0);
-        if (productDataJson?.length > 0) {
-          console.log(productDataJson);
-          setProductDetails(productDataJson);
-        }
-      });
-    });
-  }, []);
+  // const getProductWiseOffersDetail = async () => {
+  //   return {
+  //     data: Promise.resolve([
+  //       { slNo: 1, points: 250, materialDesc: "VNS 400 Digital" },
+  //       { slNo: 2, points: 300, materialDesc: "VNS 500 Ultra" },
+  //       // Add more mock products if needed
+  //     ])
+  //   };
+  // };
 
-  const data = productDetails.map((product, index) => [
-    (index + 1).toString(),
+  // useEffect(() => {
+  //   // Simulate fetching data
+  //   getProductWiseOffersDetail().then((productDataRaw) => {
+  //     productDataRaw.data.then((productDataJson) => {
+  //       console.log(productDataJson);
+  //       if (productDataJson?.length > 0) {
+  //         setProductDetails(productDataJson);
+  //       }
+  //     });
+  //   });
+  // }, []);
+
+  const data = productDetails.map((product) => [
+    product.slNo.toString(),
     product.points.toString(),
     product.materialDesc,
   ]);
+  console.log(data);
 
   const widthArr = [140, 140, 140];
-  const tableHead = ["Mat Code", "Points", "Description"];
+  const tableHead = ["Sl No", "Points", "Description"];
 
   return (
-    <ScrollView horizontal style={styles.container}>
-      <Table borderStyle={{ borderWidth: 0, borderColor: "#C1C0B9" }}>
+    <ScrollView style={styles.container}>
+      <Table borderStyle={{ borderWidth: 0, borderColor: colors.black }}>
         <Row
           widthArr={widthArr}
           data={tableHead}
@@ -74,7 +87,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   head: {
-    backgroundColor: colors.lightGrey,
     backgroundColor: "#000000",
   },
   text: {
@@ -85,6 +97,8 @@ const styles = StyleSheet.create({
   },
   text2: {
     paddingLeft: 10,
+    color: colors.black,
+    paddingBottom: 20,
   },
   title: {
     fontSize: responsiveFontSize(2.5),
