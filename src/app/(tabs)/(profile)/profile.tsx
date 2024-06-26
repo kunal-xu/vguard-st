@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import Buttons from "@/src/components/Buttons";
 import useProfile from "@/src/hooks/useProfile";
 import { StatusMappings } from "@/src/utils/StatusMappings";
+import { useData } from "@/src/hooks/useData";
 
 function Card({
   label,
@@ -35,6 +36,7 @@ export default function Profile() {
   const router = useRouter();
   const { profile } = useProfile();
   const statusMappings = new StatusMappings();
+  
 
   const data = [{ id: "1", label: "Bank Details" }];
 
@@ -93,18 +95,18 @@ export default function Profile() {
     "Transaction Status":
       statusMappings.TechnicianBlockStatus[profile.BlockStatus as number],
   };
-  const blurhash =
-    "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
   return (
     <ScrollView style={styles.container}>
       <View style={styles.profileContainer}>
         <View style={styles.profileImageContainer}>
           <Image
             source={{
+              uri: profile.Selfie as string,
+            }}
+            placeholder={{
               uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
             }}
-            placeholder={{ blurhash }}
-            transition={1000}
+            transition={1}
             style={{ width: 80, height: 80, borderRadius: 50 }}
             contentFit="cover"
           />

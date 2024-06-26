@@ -53,14 +53,14 @@ async function createGetRequest(relativeUrl: string): Promise<AxiosResponse> {
 
 async function createPutRequest(
   signedUrl: string,
-  fileBuffer: Buffer,
+  binary: string,
   mime: string
 ): Promise<AxiosResponse> {
   try {
     const headers = {
       "Content-Type": `${mime}`,
     };
-    const response = await api.put(signedUrl, fileBuffer, {
+    const response = await api.put(signedUrl, binary, {
       headers,
     });
     return response;
@@ -137,10 +137,10 @@ export const sendFile = async (data: any): Promise<any> => {
 
 export const sendFileToAWS = async (
   signedUrl: string,
-  fileBuffer: Buffer,
+  binary: string,
   mime: string | undefined
 ): Promise<any> => {
-  return createPutRequest(signedUrl, fileBuffer, mime as string);
+  return createPutRequest(signedUrl, binary, mime as string);
 };
 
 export function getDistributorList() {
@@ -723,9 +723,9 @@ export function getPushNotifications() {
   return createGetRequest(path);
 }
 
-export function getCustDetByMobile(mobileNo: string) {
-  const path = `product/getCustomerDetails/${mobileNo}`;
-  return createGetRequest(path);
+export function getCustDetByMobile(body: string) {
+  const path = `product/getCustomerDetails`;
+  return createPostRequest(path, body);
 }
 
 export function validateMobile(mobileNumber: string, dealerCategory: string) {

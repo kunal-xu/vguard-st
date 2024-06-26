@@ -7,6 +7,8 @@ import { getUser } from "../utils/apiservice";
 export default function useProfile() {
   const { state, dispatch, customerDispatch } = useData();
   const { logout } = useAuth();
+  const awsUatUrl =
+    "https://rishta-uat.s3.ap-south-1.amazonaws.com/stimg/appImages/Profile";
   useFocusEffect(
     useCallback(() => {
       (async () => {
@@ -17,6 +19,14 @@ export default function useProfile() {
             type: "GET_ALL_FIELDS",
             payload: {
               value: responseData,
+            },
+          });
+          dispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "Selfie",
+              subfield: undefined,
+              value: `${awsUatUrl}/${responseData.Selfie}`,
             },
           });
           customerDispatch({

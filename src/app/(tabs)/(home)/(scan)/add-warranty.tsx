@@ -15,6 +15,7 @@ import colors from "@/src/utils/colors";
 import Buttons from "@/src/components/Buttons";
 import Field from "@/src/components/Field";
 import { useData } from "@/src/hooks/useData";
+import RewardBox from "@/src/components/RewardBox";
 
 export const AddWarranty = () => {
   const { t } = useTranslation();

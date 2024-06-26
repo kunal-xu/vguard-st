@@ -43,8 +43,8 @@ export default function RootLayout() {
                 paddingTop: insets.top,
               }}
             >
-              {/* <Slot /> */}
-              <ScratchCard />
+              <Slot />
+              {/* <ScratchCard /> */}
             </View>
           </GestureHandlerRootView>
         </RootSiblingParent>

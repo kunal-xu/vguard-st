@@ -5,7 +5,7 @@ import {
   ToastAndroid,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   responsiveFontSize,
   responsiveHeight,
@@ -28,6 +28,7 @@ import { Image } from "expo-image";
 import NewPopUp from "@/src/components/NewPopup";
 import { Ionicons } from "@expo/vector-icons";
 import ImagePickerModal from "@/src/components/ImagePicker";
+import { useData } from "@/src/hooks/useData";
 
 const EditProfile = () => {
   const { t } = useTranslation();
@@ -83,12 +84,12 @@ const EditProfile = () => {
         <View style={{ position: "relative", marginBottom: 16, marginTop: 8 }}>
           <Image
             source={{
-              uri: profile.Selfie,
+              uri: profile.Selfie as string,
             }}
             placeholder={{
               uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
             }}
-            transition={1000}
+            transition={1}
             style={{ width: 100, height: 100, borderRadius: 50 }}
             contentFit="cover"
           />
@@ -101,7 +102,7 @@ const EditProfile = () => {
           <ImagePickerModal
             isVisible={isImagePickerVisible}
             toggleModal={toggleModal}
-            type={"Profile"}
+            type={"profile"}
           />
         </View>
       </View>

@@ -18,6 +18,7 @@ import Loader from "./Loader";
 import NewPopUp from "./NewPopup";
 import usePopup from "../hooks/usePopup";
 import { useTranslation } from "react-i18next";
+import * as FileSystem from "expo-file-system";
 
 const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
   const { t } = useTranslation();
@@ -39,7 +40,7 @@ const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
   const fileUpload = async (
     type: string,
     fileExt: string | undefined,
-    base64Data: string | null | undefined,
+    fileUri: string,
     mime: string | undefined
   ) => {
     showLoader(true);
@@ -52,30 +53,35 @@ const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
       const fileStatusData = fileStatus.data;
       const fileName = fileStatusData.entityUid;
       const signedUrl = fileStatusData.entity;
-      const fileBuffer = Buffer.from(base64Data as string, "base64");
-      // const awsupload = await sendFileToAWS(signedUrl, fileBuffer, mime);
-      showLoader(false);
-      // const awsuploadStatus = awsupload.status;
-      console.log("Hi");
-      // if (awsuploadStatus === 200) {
-      //   const data = {
-      //     UniqueId: profile.UniqueId,
-      //     Selfie: fileName,
-      //   };
-      //   const response = await updateProfile(data);
-      //   const responseData = response.data;
-      //   showLoader(false);
-      //   if (responseData.code == 200) {
-      //     setPopUp(true);
-      //     setPopUpIconType("Info");
-      //     setPopUpTitle(t("Profile"));
-      //     setPopupText(responseData.message);
-      //   } else {
-      //     showToast(responseData.message);
-      //   }
-      // } else {
-      //   throw new Error("Internal Server Error");
-      // }
+      const response = await FileSystem.uploadAsync(signedUrl, fileUri, {
+        fieldName: "file",
+        httpMethod: "PUT",
+        uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+        headers: {
+          "Content-Type": `${mime}`,
+        },
+      });
+      if (response.status === 200) {
+        if (type === "profile") {
+          const data = {
+            ...profile,
+            Selfie: fileName,
+          };
+          const response = await updateProfile(data);
+          const responseData = response.data;
+          showLoader(false);
+          if (responseData.code == 200) {
+            setPopUp(true);
+            setPopUpIconType("Info");
+            setPopUpTitle(t("Profile"));
+            setPopupText(responseData.message);
+          } else {
+            showToast(responseData.message);
+          }
+        }
+      } else {
+        throw new Error("Internal Server Error");
+      }
     } catch (error: any) {
       showLoader(false);
       showToast(`${error.message}` || "Something went wrong! Please try again");
@@ -91,9 +97,9 @@ const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
     });
     if (!result.canceled) {
       const fileExt = (result.assets[0].mimeType as string).split("/").pop();
-      const base64Image = result.assets[0].base64;
+      const fileUri = result.assets[0].uri;
       const mime = result.assets[0].mimeType;
-      await fileUpload(type, fileExt, base64Image, mime);
+      await fileUpload(type, fileExt, fileUri, mime);
       if (type === "profile") {
         dispatch({
           type: "UPDATE_FIELD",
@@ -116,9 +122,9 @@ const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
     });
     if (!result.canceled) {
       const fileExt = (result.assets[0].mimeType as string).split("/").pop();
-      const base64Image = result.assets[0].base64;
+      const fileUri = result.assets[0].uri;
       const mime = result.assets[0].mimeType;
-      await fileUpload(type, fileExt, base64Image, mime);
+      await fileUpload(type, fileExt, fileUri, mime);
       if (type === "profile") {
         dispatch({
           type: "UPDATE_FIELD",

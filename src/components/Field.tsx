@@ -537,12 +537,10 @@ const Field = (props: FieldProps) => {
           }
         } catch (error: any) {
           showLoader(false);
-          setIsPopupVisible(true);
-          customerDispatch({
-            type: "CLEAR_ALL_FIELDS",
-            payload: {},
-          });
-          setPopupContent("Customer details not found");
+          setPopUp(true);
+          setPopUpIconType("Alert");
+          setPopUpTitle(t("Not Found"));
+          setPopupText("Customer details not found");
           console.log(error.message);
         }
       }

@@ -1,193 +1,159 @@
-import React, { useState } from "react";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-} from "react-native-reanimated";
 import {
-  Gesture,
-  GestureDetector,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
+  Canvas,
+  Group,
+  Image,
+  Path,
+  SkPath,
+  Skia,
+  useImage,
+  notifyChange,
+  PaintStyle,
+  StrokeCap,
+  StrokeJoin,
+  SkiaDomView,
+} from "@shopify/react-native-skia";
+import { useState } from "react";
 import {
-  StyleSheet,
-  Dimensions,
-  View,
-  Text,
   Modal,
   TouchableWithoutFeedback,
+  View,
+  StyleSheet,
+  Text,
 } from "react-native";
-import MaskedView from "@react-native-masked-view/masked-view";
-import { responsiveFontSize } from "react-native-responsive-dimensions";
-import colors from "../utils/colors";
-import { Image } from "expo-image";
 
-function PointsCard({ points }: { points?: number }) {
-  const [showModal, setShowModal] = useState(true);
-  return (
-    <Modal transparent={true} animationType="slide" visible={showModal}>
-      <TouchableWithoutFeedback onPress={() => setShowModal(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalBody}>
-              <Image
-                source={require("@/src/assets/images/ic_rewards_gift.png")}
-                style={styles.image}
-                contentFit="contain"
-              />
-              <Text style={styles.title}>
-                {points
-                  ? `You have won ${points} bonus points.`
-                  : "Better luck next time."}
-              </Text>
-            </View>
-            <View style={styles.modalFooter}>
-              <TouchableWithoutFeedback onPress={() => setShowModal(false)}>
-                <View style={styles.button}>
-                  <Text style={styles.buttonText}>Close</Text>
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
-  );
-}
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { runOnJS, SharedValue, useSharedValue } from "react-native-reanimated";
 
-function ScratchView() {
-  return (
-    <Modal transparent={true} animationType="slide">
-      <View style={styles.modalOverlay}>
-        <Image
-          source={require("@/src/assets/images/scratch_foreground.png")}
-          style={styles.image}
-          contentFit="contain"
-        />
-      </View>
-    </Modal>
-  );
-}
+const IMG_WID = 300;
+const IMG_HEI = 300;
+const SCALE = 1 / 10;
+const THUMB_WID = 35;
 
-function clamp(val: number, min: number, max: number) {
-  return Math.min(Math.max(val, min), max);
-}
+const getScratchedAreaFraction = (scratchedPath: SkPath) => {
+  "worklet";
+  let w = IMG_WID * SCALE;
+  let h = IMG_HEI * SCALE;
 
-const { width, height } = Dimensions.get("screen");
+  const surface = Skia.Surface.MakeOffscreen(w, h)!;
+  const canvas = surface.getCanvas();
+  canvas.scale(SCALE, SCALE);
+  const paint = Skia.Paint();
+  paint.setStyle(PaintStyle.Stroke);
+  paint.setStrokeWidth(THUMB_WID);
+  paint.setColor(Skia.Color("white"));
+  paint.setStrokeCap(StrokeCap.Round);
+  paint.setStrokeJoin(StrokeJoin.Round);
 
-export default function ScratchCard({ points }: { points?: number }) {
-  const translationX = useSharedValue(0);
-  const translationY = useSharedValue(0);
-  const prevTranslationX = useSharedValue(0);
-  const prevTranslationY = useSharedValue(0);
+  canvas.drawPath(scratchedPath, paint);
+  surface.flush();
+  let pixelsInfo = surface.makeImageSnapshot().readPixels();
 
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translationX.value },
-      { translateY: translationY.value },
-    ],
-  }));
+  if (!pixelsInfo?.length) {
+    return 0;
+  }
 
-  const pan = Gesture.Pan()
-    .minDistance(1)
-    .onStart(() => {
-      prevTranslationX.value = translationX.value;
-      prevTranslationY.value = translationY.value;
+  let rChannelSum = 0;
+
+  for (let i = 0; i < pixelsInfo.length; i += 4) {
+    rChannelSum += pixelsInfo[i];
+  }
+
+  let rChannleAvg = rChannelSum / (pixelsInfo.length / 4);
+
+  let scratchedAreaFraction = rChannleAvg / 255;
+  return scratchedAreaFraction;
+};
+
+export default function ScratchCard() {
+  const scratchPath = useSharedValue(Skia.Path.Make());
+  const strokeWidth = useSharedValue(THUMB_WID);
+  const [revealed, setRevealed] = useState(false);
+  const onReveal = () => {
+    console.log("Revealed");
+    setRevealed(true);
+  };
+
+  const onCloseReward = () => {
+    console.log("Reward closed");
+    setRevealed(false);
+  };
+
+  const scratchHandler = Gesture.Pan()
+    .onBegin((e) => {
+      scratchPath.value.moveTo(e.x, e.y);
+      scratchPath.value.lineTo(e.x, e.y);
+      notifyChange(scratchPath);
     })
-    .onUpdate((event) => {
-      const maxTranslateX = width / 2 - 50;
-      const maxTranslateY = height / 2 - 50;
-
-      translationX.value = clamp(
-        prevTranslationX.value + event.translationX,
-        -maxTranslateX,
-        maxTranslateX
-      );
-      translationY.value = clamp(
-        prevTranslationY.value + event.translationY,
-        -maxTranslateY,
-        maxTranslateY
-      );
+    .onUpdate((e) => {
+      scratchPath.value.lineTo(e.x, e.y);
+      notifyChange(scratchPath);
     })
-    .runOnJS(true);
+    .onFinalize(() => {
+      const scratchedArea = getScratchedAreaFraction(scratchPath.value);
+      if (scratchedArea > 0.4) {
+        console.log("Scratched area exceeded 40%, revealing...");
+        runOnJS(onReveal)();
+      }
+    });
 
   return (
-    <GestureHandlerRootView style={styles.container}>
-      <GestureDetector gesture={pan}>
-        <Animated.View style={[animatedStyles, styles.box]}></Animated.View>
-
+    <View style={styles.container}>
+      <GestureDetector gesture={scratchHandler}>
+        <Canvas style={{ width: IMG_WID, height: IMG_HEI }}>
+          <RewardImage />
+          {!revealed && (
+            <CoverImage strokeWidth={strokeWidth} scratchPath={scratchPath} />
+          )}
+        </Canvas>
       </GestureDetector>
-    </GestureHandlerRootView>
-    // <MaskedView
-    //   style={{ flex: 1, flexDirection: "row", height: "100%" }}
-    //   maskElement={<PointsCard />}
-    // >
-    //   <ScratchView />
-    // </MaskedView>
+    </View>
   );
 }
 
+const CoverImage = ({ scratchPath }: { scratchPath: SharedValue<SkPath> }) => {
+  const image = useImage(require("@/src/assets/images/scratch_foreground.png"));
+
+  return (
+    <Group layer>
+      <Image
+        image={image}
+        x={0}
+        y={0}
+        width={IMG_WID}
+        height={IMG_HEI}
+        fit={"cover"}
+      />
+      <Path
+        path={scratchPath}
+        style={"stroke"}
+        strokeJoin={"round"}
+        strokeCap={"round"}
+        strokeWidth={THUMB_WID}
+        color={"white"}
+        blendMode={"clear"}
+      />
+    </Group>
+  );
+};
+
+const RewardImage = () => {
+  const image = useImage(require("@/src/assets/images/ac_icon.png"));
+
+  return (
+    <Image
+      image={image}
+      x={0}
+      y={0}
+      width={IMG_WID}
+      height={IMG_HEI}
+      fit={"cover"}
+    />
+  );
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "black",
-  },
-
-  box: {
-    width: 60,
-    height: 60,
-    borderRadius: 100,
-    backgroundColor: "#fff",
-  },
-
-  modalOverlay: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContainer: {
-    width: "80%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    overflow: "hidden",
-    alignItems: "center",
-    elevation: 10,
-  },
-  modalBody: {
-    padding: 20,
-    alignItems: "center",
-  },
-  image: {
-    height: "35%",
-    width: "100%",
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 16,
-    textAlign: "center",
-    color: "#333",
-  },
-  modalFooter: {
-    width: "100%",
-    padding: 10,
-    borderTopWidth: 1,
-    borderColor: "#ccc",
-    alignItems: "center",
-  },
-  button: {
-    backgroundColor: colors.yellow,
-    borderRadius: 5,
-    borderColor: colors.yellow,
-    borderWidth: 1,
-    padding: 10,
-    width: "90%",
-    alignItems: "center",
-  },
-  buttonText: {
-    color: colors.black,
-    fontSize: 16,
-    fontWeight: "bold",
   },
 });

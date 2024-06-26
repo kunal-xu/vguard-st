@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import CustomTouchableOption from "../../../components/CustomTouchableOption";
 import {
@@ -17,12 +17,11 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import useProfile from "@/src/hooks/useProfile";
+import { useData } from "@/src/hooks/useData";
 
 const HomeScreen = () => {
   const { t } = useTranslation();
   const { profile } = useProfile();
-  const blurhash =
-    "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
   interface Item {
     type: "header" | "dashboard" | "needHelp";
@@ -43,9 +42,11 @@ const HomeScreen = () => {
               <View style={styles.ImageProfile}>
                 <Image
                   source={{
+                    uri: profile.Selfie as string,
+                  }}
+                  placeholder={{
                     uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
                   }}
-                  placeholder={{ blurhash }}
                   transition={1000}
                   style={{ width: "100%", height: "100%", borderRadius: 100 }}
                   contentFit="cover"

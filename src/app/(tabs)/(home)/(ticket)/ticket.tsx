@@ -17,28 +17,40 @@ import {
   responsiveHeight,
   responsiveWidth,
 } from "react-native-responsive-dimensions";
-import {
-  sendTicket,
-  getTicketTypes,
-  getUser,
-  getFile,
-  sendFile,
-} from "@/src/utils/apiservice";
-import { Picker } from "@react-native-picker/picker";
 import colors from "@/src/utils/colors";
 import NeedHelp from "@/src/components/NeedHelp";
 import Buttons from "@/src/components/Buttons";
+import { sendTicket, getTicketTypes, getUser } from "@/src/utils/apiservice";
+import { Picker } from "@react-native-picker/picker";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import { getFile, sendFile } from "@/src/utils/apiservice";
+import Snackbar from "react-native-snackbar";
+import { height, width } from "../../../../../utils/dimensions";
+import { Button } from "react-native-paper";
 import Popup from "@/src/components/Popup";
 import ImagePickerField from "@/src/components/ImagePickerField";
 import Loader from "@/src/components/Loader";
 import { getImages } from "@/src/utils/FileUtils";
+import { useFocusEffect } from "@react-navigation/native";
 import { useData } from "@/src/hooks/useData";
-import useProfile from "@/src/hooks/useProfile";
 import ImagePickerModal from "@/src/components/ImagePicker";
+import { useRouter } from "expo-router";
 
-const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
+const Ticket = () => {
+  const baseURL = "https://www.vguardrishta.com/img/appImages/Profile/";
+  const router = useRouter();
   const { t } = useTranslation();
+
+  const [userData, setUserData] = useState({
+    userName: "",
+    userId: "",
+    userCode: "",
+    userImage: "",
+    userRole: "",
+  });
+
   const [profileImage, setProfileImage] = useState(null);
+
   const [options, setOptions] = useState([]);
   const [selectedOption, setSelectedOption] = useState("");
   const [isOptionsLoading, setIsOptionsLoading] = useState(true);
@@ -51,26 +63,37 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [descriptionInput, setDescriptionInput] = useState("");
   const [isPopupVisible, setPopupVisible] = useState(false);
   const [popupContent, setPopupContent] = useState("");
-  const [loader, showLoader] = useState(false);
-  const { profile } = useProfile();
+  const [loader, showLoader] = useState(true);
   const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
   const toggleModal = () => {
     setIsImagePickerVisible(!isImagePickerVisible);
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await getTicketTypes();
-        const responseData = response.data;
-        setOptions(responseData);
+    // AsyncStorage.getItem('USER').then((r) => {
+    //   const user = JSON.parse(r);
+    //   const data = {
+    //     userName: user.name,
+    //     userCode: user.userCode,
+    //     pointsBalance: user.pointsSummary.pointsBalance,
+    //     redeemedPoints: user.pointsSummary.redeemedPoints,
+    //     userImage: user.kycDetails.selfie,
+    //     userRole: user.professionId,
+    //     userId: user.contactNo
+    //   };
+    //   setUserData(data);
+    // });
+    getTicketTypes()
+      .then((response) => response.data)
+      .then((data) => {
+        setOptions(data);
         showLoader(false);
         setIsOptionsLoading(false);
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Error fetching options:", error);
         setIsOptionsLoading(false);
-      }
-    })();
+      });
   }, []);
 
   const handleOptionChange = (value) => {
@@ -86,6 +109,70 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
       "https://vguardrishta.com/frequently-questions-retailer.html"
     );
   };
+
+  // const handleSubmission = async () => {
+  //   const postData = {
+  //     userId: userData.userId,
+  //     issueTypeId: selectedOption,
+  //     imagePath: entityUid,
+  //     description: descriptionInput,
+  //   };
+
+  //   if (postData.userId != '' && postData.issueTypeId != '' && postData.description != '') {
+  //     sendTicket(postData)
+  //       .then((response) => {
+  //         if (response.status === 200) {
+  //           setSelectedOption('');
+  //           setEntityUid('');
+  //           setDescriptionInput('');
+  //           setPopupContent('Ticket Created Successfully');
+  //           setPopupVisible(true);
+  //         } else {
+  //           setPopupContent('Failed to create ticket');
+  //           setPopupVisible(true);
+  //           throw new Error('Failed to create ticket');
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         setPopupContent('Failed to create ticket');
+  //         setPopupVisible(true);
+  //         console.error('API Error:', error);
+  //       });
+  //   }
+  //   else {
+  //     setPopupContent('Enter All Details');
+  //     setPopupVisible(true);
+  //   }
+  // };
+
+  const { state, dispatch } = useData();
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const response = await getUser();
+          const responseData = response.data;
+          dispatch({
+            type: "GET_ALL_FIELDS",
+            payload: {
+              value: responseData,
+            },
+          });
+          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
+            dispatch({
+              type: "CLEAR_ALL_FIELDS",
+              payload: {},
+            });
+            logout();
+          }
+        } catch (error: any) {
+          console.log(error.message);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
 
   const handleSubmission = async () => {
     showLoader(true);
@@ -107,6 +194,29 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
       setPopupVisible(true);
       setPopupContent("Failed to create ticket");
     }
+    // sendTicket(postData)
+    //   .then((response) => {
+    //     if (response.status === 200) {
+    //       setSelectedOption("");
+    //       setEntityUid("");
+    //       setDescriptionInput("");
+    //       setPopupVisible(true);
+    //       console.log(response.data);
+    //       setPopupContent("Ticket Created Successfully");
+    //       showLoader(false);
+    //     } else {
+    //       setPopupContent("Failed to create ticket");
+    //       setPopupVisible(true);
+    //       showLoader(false);
+    //       throw new Error("Failed to create ticket");
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     setPopupContent("Failed to create ticket");
+    //     setPopupVisible(true);
+    //     showLoader(false);
+    //     console.error("API Error:", error);
+    //   });
   };
   const handleImageChange = async (
     image: string,
@@ -126,6 +236,7 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
   };
 
 
+
   return (
     <ScrollView style={styles.mainWrapper}>
       {loader && <Loader isLoading={loader} />}
@@ -133,7 +244,7 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
         <View style={styles.profileDetails}>
           <View style={styles.ImageProfile}>
             <ImageBackground
-              source={require("../../../../assets/images/ic_v_guards_user.png")}
+              source={require("@/src/assets/images/ic_v_guards_user.png")}
               style={{ width: "100%", height: "100%", borderRadius: 100 }}
               resizeMode="contain"
             >
@@ -145,13 +256,13 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
             </ImageBackground>
           </View>
           <View style={styles.profileText}>
-            <Text style={styles.textDetail}>{profile.Contact}</Text>
-            <Text style={styles.textDetail}>{profile.RishtaID}</Text>
+            <Text style={styles.textDetail}>{state.Contact}</Text>
+            <Text style={styles.textDetail}>{state.RishtaID}</Text>
           </View>
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("Ticket History")}
+          onPress={() => router.push("ticket-history")}
         >
           <Text style={styles.buttonText}>{t("strings:ticket_history")}</Text>
         </TouchableOpacity>
@@ -159,19 +270,35 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
       <Text style={[styles.blackText, { marginTop: responsiveFontSize(2) }]}>
         {t("strings:issue_type")}
       </Text>
-      <ImagePickerField
-        label="Upload Picture (optional)"
+      {isOptionsLoading ? (
+        <Text style={styles.blackText}>Loading options...</Text>
+      ) : options.length === 0 ? (
+        <Text style={styles.blackText}>No options available.</Text>
+      ) : (
+        <View style={styles.inputContainer}>
+          <Picker
+            dropdownIconColor={colors.black}
+            selectedValue={selectedOption}
+            onValueChange={handleOptionChange}
+            style={styles.picker}
+            label={t("strings:select_ticket_type")}
+          >
+            <Picker.Item key={""} label={"Select Issue Type"} value={""} />
+            {options.map((option) => (
+              <Picker.Item
+                key={option.issueTypeId}
+                label={option.name}
+                value={option.issueTypeId}
+              />
+            ))}
+          </Picker>
+        </View>
+      )}
+      {/* <ImagePickerModal
         isVisible={isImagePickerVisible}
         toggleModal={toggleModal}
-        onImageChange={handleImageChange}
-        imageRelated="Ticket"
-        disabled={false}
-      />
-      <ImagePickerModal
-        isVisible={isImagePickerVisible}
-        toggleModal={toggleModal}
-        type={"Profile"}
-      />
+        type={"profile"}
+      /> */}
       <Text style={styles.blackText}>{t("strings:description_remarks")}</Text>
       <TextInput
         style={styles.descriptionInput}
@@ -198,7 +325,7 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
                 width: 30,
               }}
               resizeMode="contain"
-              source={require("../../../../assets/images/ic_tand_c.png")}
+              source={require("@/src/assets/images/ic_tand_c.png")}
             />
             <Text style={styles.linkText}>
               {t("strings:terms_and_conditions")}
@@ -211,15 +338,12 @@ const Ticket: React.FC<{ navigation: any }> = ({ navigation }) => {
                 width: 30,
               }}
               resizeMode="contain"
-              source={require("../../../../assets/images/ic_faq.png")}
+              source={require("@/src/assets/images/ic_faq.png")}
             />
             <Text style={styles.linkText}>
               {t("strings:frequently_asked_quetions_faq")}
             </Text>
           </TouchableOpacity>
-        </View>
-        <View style={styles.footer}>
-          {/* <NeedHelp /> */}
         </View>
       </View>
       {isPopupVisible && (
@@ -329,11 +453,11 @@ const styles = StyleSheet.create({
   },
   hyperlinks: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "row",
     justifyContent: "space-between",
-    width: "40%",
+    width: "100%",
     marginRight: 25,
-    marginTop: responsiveHeight(1),
+    marginTop: responsiveHeight(5),
   },
   footerRow: {
     flexDirection: "row",
@@ -364,3 +488,7 @@ const styles = StyleSheet.create({
 });
 
 export default Ticket;
+
+function logout() {
+  throw new Error("Function not implemented.");
+}
