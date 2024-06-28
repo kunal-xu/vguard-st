@@ -17,7 +17,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import useProfile from "@/src/hooks/useProfile";
-import { useData } from "@/src/hooks/useData";
 
 const HomeScreen = () => {
   const { t } = useTranslation();
@@ -53,9 +52,9 @@ const HomeScreen = () => {
                 />
               </View>
               <View style={styles.profileText}>
-                <Text style={styles.textDetail}>{profile.Name || "Kunal"}</Text>
+                <Text style={styles.textDetail}>{profile.Name || "ST Account"}</Text>
                 <Text style={{ fontSize: responsiveFontSize(1.7) }}>
-                  Rishta ID: {profile.RishtaID || "VGIL30001"}
+                  Rishta ID: {profile.RishtaID || "VGIL30000"}
                 </Text>
               </View>
             </View>

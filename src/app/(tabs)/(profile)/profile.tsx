@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 import Buttons from "@/src/components/Buttons";
 import useProfile from "@/src/hooks/useProfile";
 import { StatusMappings } from "@/src/utils/StatusMappings";
-import { useData } from "@/src/hooks/useData";
+import { FlashList, ListRenderItem } from "@shopify/flash-list";
 
 function Card({
   label,
@@ -36,9 +36,8 @@ export default function Profile() {
   const router = useRouter();
   const { profile } = useProfile();
   const statusMappings = new StatusMappings();
-  
 
-  const data = [{ id: "1", label: "Bank Details" }];
+  // const bankData = [{ id: "1", label: "Bank Details" }];
 
   const ListItem = ({ item, label, value, onPress, expanded }) => {
     const bankMap = {
@@ -95,10 +94,70 @@ export default function Profile() {
     "Transaction Status":
       statusMappings.TechnicianBlockStatus[profile.BlockStatus as number],
   };
+  interface Item {
+    type: "header" | "profile";
+  }
+  const data: Item[] = [{ type: "header" }, { type: "profile" }];
+
+  const renderItem: ListRenderItem<Item> = ({ item }) => {
+    switch (item.type) {
+      case "header":
+        return (
+          <View style={styles.profileImageContainer}>
+            <Image
+              source={{
+                uri: profile.Selfie as string,
+              }}
+              placeholder={{
+                uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
+              }}
+              transition={1000}
+              style={{ width: 80, height: 80, borderRadius: 50 }}
+              contentFit="cover"
+            />
+            <Buttons
+              variant="filled"
+              label="Edit Profile"
+              onPress={() => router.push("edit-profile")}
+            />
+          </View>
+        );
+      case "profile":
+        return (
+          <View style={styles.card}>
+            {Object.keys(labelMap).map((key) =>
+              !labelMap[key] ? (
+                <Card label={key} value={"NA"} />
+              ) : key === "Bank Details" ? (
+                <FlashList
+                  data={data}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item }) => (
+                    <ListItem
+                      item={item}
+                      onPress={() => handlePress(item.id)}
+                      expanded={expandedItemId === item.id}
+                    />
+                  )}
+                />
+              ) : (
+                <Card label={key} value={labelMap[key]} />
+              )
+            )}
+          </View>
+        );
+    }
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+      }}
+    >
       <View style={styles.profileContainer}>
-        <View style={styles.profileImageContainer}>
+        {/* <View style={styles.profileImageContainer}>
           <Image
             source={{
               uri: profile.Selfie as string,
@@ -106,7 +165,7 @@ export default function Profile() {
             placeholder={{
               uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
             }}
-            transition={1}
+            transition={1000}
             style={{ width: 80, height: 80, borderRadius: 50 }}
             contentFit="cover"
           />
@@ -136,9 +195,14 @@ export default function Profile() {
               <Card label={key} value={labelMap[key]} />
             )
           )}
-        </View>
+        </View> */}
+        <FlashList
+          data={data}
+          renderItem={renderItem}
+          estimatedItemSize={300}
+        />
       </View>
-    </ScrollView>
+    </View>
   );
 }
 
