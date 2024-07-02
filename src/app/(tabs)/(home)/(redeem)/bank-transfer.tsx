@@ -6,27 +6,27 @@ import {
 } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
 import arrowIcon from "../../../../assets/images/arrow.png";
-import { bankTransfer, getUser } from "@/src/utils/apiservice";
-import Popup from "@/src/components/Popup";
+import { bankTransfer } from "@/src/utils/apiservice";
 import Loader from "@/src/components/Loader";
 import colors from "@/src/utils/colors";
 import Buttons from "@/src/components/Buttons";
-import { FloatingLabelInput } from "react-native-floating-label-input";
+import {
+  CustomLabelProps,
+  FloatingLabelInput,
+} from "react-native-floating-label-input";
 import { height } from "@/src/utils/dimensions";
 import { showToast } from "@/src/utils/showToast";
-import useProfile from "@/src/hooks/useProfile";
 import { useRouter } from "expo-router";
 import usePopup from "@/src/hooks/usePopup";
 import NewPopUp from "@/src/components/NewPopup";
+import { useData } from "@/src/hooks/useData";
 
 const InstantBankTransfer = () => {
   const { t } = useTranslation();
-  const [isPopupVisible, setPopupVisible] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
-  const [points, setPoints] = useState<number>();
+  const [points, setPoints] = useState<string>("");
   const [loader, showLoader] = useState(false);
-  const { profile } = useProfile();
   const router = useRouter();
+  const { state } = useData();
   const {
     popUp,
     setPopUp,
@@ -48,11 +48,11 @@ const InstantBankTransfer = () => {
       showToast("Enter Amount");
       return;
     }
-    if (points < 150) {
+    if (Number(points) < 150) {
       showToast(t("Minimum 150 points required to do the bank transfer"));
       return;
     }
-    if (!profile.BankDetail.bankDataPresent) {
+    if (!state.BankDetail.bankDataPresent) {
       setPopUp(true);
       setPopUpIconType("Alert");
       setPopUpTitle(t("Bank Details"));
@@ -61,7 +61,7 @@ const InstantBankTransfer = () => {
       setPopupButton2Text(t("Verify"));
       return;
     }
-    if (points > Number(profile.RedeemablePoints)) {
+    if (Number(points) > Number(state.RedeemablePoints)) {
       showToast(t("You do not have sufficient balance in your account."));
       return;
     }
@@ -69,7 +69,7 @@ const InstantBankTransfer = () => {
       showLoader(true);
       let payload = {
         amount: points,
-        bankDetail: profile.BankDetail,
+        bankDetail: state.BankDetail,
       };
       const response = await bankTransfer(payload);
       const reponseData = response.data;
@@ -89,9 +89,13 @@ const InstantBankTransfer = () => {
         setPopUpTitle(t("Bank Transfer"));
         setPopupText(reponseData.message || "Something went wrong");
       }
-    } catch (btError) {
+    } catch (error) {
       showLoader(false);
-      console.log("Error: ", btError);
+      setPopUp(true);
+      setPopUpIconType("Alert");
+      setPopUpTitle(t("Bank Transfer"));
+      setPopupText(t("Something went wrong"));
+      console.log("Error: ", error);
     }
   };
 
@@ -125,10 +129,10 @@ const InstantBankTransfer = () => {
             keyboardType="number-pad"
             containerStyles={styles.floatingContainer}
             labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
+            customLabelStyles={styles.customLabelStyles as CustomLabelProps}
             inputStyles={styles.inputStyles}
             onChangeText={(text) => setPoints(text)}
-            value={points}
+            value={String(points)}
             label={t("strings:enter_points_to_be_redeemed")}
           />
 
@@ -137,9 +141,9 @@ const InstantBankTransfer = () => {
             editable={false}
             containerStyles={styles.floatingContainer}
             labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
+            customLabelStyles={styles.customLabelStyles as CustomLabelProps}
             inputStyles={styles.inputStyles}
-            value={profile.BankDetail.bankAccNo as string}
+            value={state.BankDetail.bankAccNo as string}
             label={t("strings:lbl_account_number")}
           />
 
@@ -148,9 +152,9 @@ const InstantBankTransfer = () => {
             editable={false}
             containerStyles={styles.floatingContainer}
             labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
+            customLabelStyles={styles.customLabelStyles as CustomLabelProps}
             inputStyles={styles.inputStyles}
-            value={profile.BankDetail.bankAccHolderName as string}
+            value={state.BankDetail.bankAccHolderName as string}
             label={t("strings:lbl_account_holder_name")}
           />
 
@@ -159,9 +163,9 @@ const InstantBankTransfer = () => {
             editable={false}
             containerStyles={styles.floatingContainer}
             labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
+            customLabelStyles={styles.customLabelStyles as CustomLabelProps}
             inputStyles={styles.inputStyles}
-            value={profile.BankDetail.bankNameAndBranch as string}
+            value={state.BankDetail.bankNameAndBranch as string}
             label={t("strings:bank_name")}
           />
 
@@ -170,9 +174,9 @@ const InstantBankTransfer = () => {
             editable={false}
             containerStyles={styles.floatingContainer}
             labelStyles={styles.labelStyles}
-            customLabelStyles={styles.customLabelStyles}
+            customLabelStyles={styles.customLabelStyles as CustomLabelProps}
             inputStyles={styles.inputStyles}
-            value={profile.BankDetail.bankIfsc as string}
+            value={state.BankDetail.bankIfsc as string}
             label={t("strings:ifsc")}
           />
         </View>
@@ -190,19 +194,6 @@ const InstantBankTransfer = () => {
           />
         </View>
       </View>
-      {isPopupVisible && (
-        <Popup
-          isVisible={isPopupVisible}
-          onClose={() => {
-            setPopupVisible(false);
-            if (redirect) {
-              // navigation.navigate("Update Bank and UPI");
-            }
-          }}
-        >
-          {popupContent}
-        </Popup>
-      )}
     </ScrollView>
   );
 };

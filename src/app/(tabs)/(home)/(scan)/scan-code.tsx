@@ -76,7 +76,6 @@ const ScanCode = () => {
     try {
       showLoader(true);
       const response = await validateCoupon(requestBody);
-      console.log(response.data);
       showLoader(false);
       const status: CouponRedeemResponse = new CouponRedeemResponse(
         response.data

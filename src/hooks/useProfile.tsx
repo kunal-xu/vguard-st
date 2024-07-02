@@ -2,19 +2,23 @@ import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import { useData } from "./useData";
 import { useAuth } from "./useAuth";
-import { getUser } from "../utils/apiservice";
+import { getFile, getUser } from "../utils/apiservice";
+import { STUser } from "../utils/types";
 
 export default function useProfile() {
-  const { state, dispatch, customerDispatch } = useData();
+  const { dispatch, customerDispatch } = useData();
   const { logout } = useAuth();
-  const awsUatUrl =
-    "https://rishta-uat.s3.ap-south-1.amazonaws.com/stimg/appImages/Profile";
+
   useFocusEffect(
     useCallback(() => {
       (async () => {
         try {
           const response = await getUser();
-          const responseData = response.data;
+          const responseData: STUser = response.data;
+          const profilePicture = await getFile(
+            responseData.Selfie as string,
+            "PROFILE"
+          );
           dispatch({
             type: "GET_ALL_FIELDS",
             payload: {
@@ -25,8 +29,7 @@ export default function useProfile() {
             type: "UPDATE_FIELD",
             payload: {
               field: "Selfie",
-              subfield: undefined,
-              value: `${awsUatUrl}/${responseData.Selfie}`,
+              value: profilePicture.data,
             },
           });
           customerDispatch({
@@ -46,7 +49,4 @@ export default function useProfile() {
       })();
     }, [])
   );
-  return {
-    profile: state,
-  };
 }

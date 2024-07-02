@@ -49,12 +49,7 @@ const UpdateBankDetails = () => {
     cleanupPopUp,
   } = usePopup();
 
-  const items: string[] = [
-    "Savings",
-    "Current",
-    "Salary",
-    "Fixed deposit",
-  ];
+  const items: string[] = ["Savings", "Current", "Salary", "Fixed deposit"];
 
   useFocusEffect(
     useCallback(() => {

@@ -6,6 +6,7 @@ import {
   ScrollView,
   FlatList,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { height, width } from "@/src/utils/dimensions";
@@ -28,6 +29,7 @@ import NewPopUp from "@/src/components/NewPopup";
 import usePopup from "@/src/hooks/usePopup";
 import { useNavigation } from "expo-router";
 import { CommonActions } from "@react-navigation/native";
+import Constants from "expo-constants";
 
 const LeadForm = () => {
   const { contact } = useLocalSearchParams();
@@ -119,11 +121,6 @@ const LeadForm = () => {
     }
   }
 
-  const handleClose = () => {
-    navigation.navigate("loginWithNumber" as never);
-    setIsPopupVisible(false);
-  };
-
   const handleSelectItem = (item) => {
     if (
       selected.find((selectedItem: { id: any }) => selectedItem.id === item.id)
@@ -135,8 +132,14 @@ const LeadForm = () => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: "white" }}>
+    <ScrollView
+      style={{
+        backgroundColor: "white",
+        paddingTop: Constants.statusBarHeight,
+      }}
+    >
       {loader && <Loader isLoading={loader} />}
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <NewPopUp
         visible={popUp}
         button1Action={() => {

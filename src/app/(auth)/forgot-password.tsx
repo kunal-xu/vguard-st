@@ -25,6 +25,7 @@ import { useNavigation } from "expo-router";
 import { CommonActions } from "@react-navigation/native";
 import { showToast } from "@/src/utils/showToast";
 import NewPopUp from "@/src/components/NewPopup";
+import Constants from "expo-constants";
 
 const LoginWithOtp = () => {
   const { contact } = useLocalSearchParams();
@@ -275,6 +276,7 @@ const LoginWithOtp = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingTop: Constants.statusBarHeight,
   },
   registerUser: {
     height: "100%",

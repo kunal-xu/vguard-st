@@ -9,12 +9,6 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Linking } from "react-native";
-
-import {
-  responsiveHeight,
-  responsiveWidth,
-  responsiveFontSize,
-} from "react-native-responsive-dimensions";
 import colors from "@/src/utils/colors";
 
 const ContactPage = () => {
@@ -31,13 +25,18 @@ const ContactPage = () => {
     Linking.openURL("https://wa.me/919818900011");
   };
   return (
-    <ScrollView>
+    <ScrollView
+      style={{
+        flex: 1,
+        backgroundColor: "white",
+      }}
+    >
       <View style={styles.mainWrapper}>
         <Text style={styles.mainHeader}>{t("strings:need_help")}</Text>
         <Text style={styles.text}>
           {t("strings:rishta_program_centre_contact_details")}
         </Text>
-        <View style={styles.contact}>
+        <View>
           <TouchableOpacity
             style={styles.helpContainer}
             onPress={handlePhoneCall}
@@ -66,7 +65,7 @@ const ContactPage = () => {
             <Text style={styles.textHelp}>9818900011</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.container}>
+        <View>
           <Text style={styles.text}>
             {t("strings:v_guard_customer_care_numbers")}
           </Text>
@@ -87,7 +86,7 @@ const ContactPage = () => {
             </View>
           </View>
         </View>
-        <View style={styles.container}>
+        <View>
           <Text style={styles.text}>{t("strings:v_guard_e_mail_id")}</Text>
           <View style={styles.smallContainer}>
             <View style={styles.textContainer}>
@@ -97,7 +96,7 @@ const ContactPage = () => {
             </View>
           </View>
         </View>
-        <View style={styles.container}>
+        <View>
           <Text style={styles.text}>
             {t("strings:v_guard_corporate_office")}
           </Text>

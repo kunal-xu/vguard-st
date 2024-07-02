@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable } from "react-native";
-import React, { useEffect } from "react";
+import { StyleSheet, Text, View, Pressable, StatusBar } from "react-native";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomTouchableOption from "../../../components/CustomTouchableOption";
 import {
@@ -8,7 +8,6 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import NeedHelp from "../../../components/NeedHelp";
-import { getImages } from "../../../utils/FileUtils";
 import { router } from "expo-router";
 import colors from "@/src/utils/colors";
 import CustomTabHeader from "@/src/components/CustomTabHeader";
@@ -17,10 +16,18 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import useProfile from "@/src/hooks/useProfile";
+import { useData } from "@/src/hooks/useData";
+import Constants from "expo-constants";
+import { TabBarIcon } from "@/src/components/TabBarIcon";
+import { useAuth } from "@/src/hooks/useAuth";
+import NewPopUp from "@/src/components/NewPopup";
 
 const HomeScreen = () => {
   const { t } = useTranslation();
-  const { profile } = useProfile();
+  const { state } = useData();
+  const { logout } = useAuth();
+  const [logoutPopup, setLogoutPopup] = useState(false);
+  useProfile();
 
   interface Item {
     type: "header" | "dashboard" | "needHelp";
@@ -37,11 +44,22 @@ const HomeScreen = () => {
         return (
           <View style={styles.headerContainer}>
             <CustomTabHeader />
+            <NewPopUp
+              visible={logoutPopup}
+              numberOfButtons={2}
+              button1Action={() => setLogoutPopup(false)}
+              button2Action={() => logout()}
+              button1Text={"Dismiss"}
+              button2Text={"Yes"}
+              text={"Are you sure you want to Log out?"}
+              iconType={"Alert"}
+              title={"Logout"}
+            />
             <View style={styles.profileDetails}>
               <View style={styles.ImageProfile}>
                 <Image
                   source={{
-                    uri: profile.Selfie as string,
+                    uri: state.Selfie as string,
                   }}
                   placeholder={{
                     uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
@@ -52,12 +70,18 @@ const HomeScreen = () => {
                 />
               </View>
               <View style={styles.profileText}>
-                <Text style={styles.textDetail}>{profile.Name || "ST Account"}</Text>
+                <Text style={styles.textDetail}>
+                  {state.Name || "ST Account"}
+                </Text>
                 <Text style={{ fontSize: responsiveFontSize(1.7) }}>
-                  Rishta ID: {profile.RishtaID || "VGIL30000"}
+                  Rishta ID: {state.RishtaID || "VGIL30000"}
                 </Text>
               </View>
+              <Pressable onPress={() => setLogoutPopup(true)}>
+                <TabBarIcon name={"log-out-outline"} />
+              </Pressable>
             </View>
+
             <View style={styles.points}>
               <Pressable
                 onPress={() => router.push("/(scan)/unique-code-history")}
@@ -68,14 +92,14 @@ const HomeScreen = () => {
               >
                 <Feather name="check-circle" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(profile.EarnedPoints)?.toFixed(2) || 0}
+                  {Number(state.EarnedPoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Total Earnings</Text>
               </Pressable>
               <Pressable style={styles.middlePoint}>
                 <MaterialIcons name="currency-rupee" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(profile.RedeemablePoints)?.toFixed(2) || 0}
+                  {Number(state.RedeemablePoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Redeemable Points</Text>
               </Pressable>
@@ -88,7 +112,7 @@ const HomeScreen = () => {
               >
                 <MaterialIcons name="redeem" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(profile.RedeemedPoints)?.toFixed(2) || 0}
+                  {Number(state.RedeemedPoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Redeemed Points</Text>
               </Pressable>
@@ -169,12 +193,8 @@ const HomeScreen = () => {
     }
   };
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-      }}
-    >
+    <View style={styles.container}>
+      <StatusBar backgroundColor={colors.yellow} barStyle="dark-content" />
       <FlashList
         data={data}
         renderItem={renderItem}
@@ -186,6 +206,11 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "white",
+    paddingTop: Constants.statusBarHeight,
+  },
   headerContainer: {
     backgroundColor: colors.yellow,
     paddingBottom: responsiveHeight(3),

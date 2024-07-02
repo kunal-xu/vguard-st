@@ -1,14 +1,24 @@
-import NewPopUp from "@/src/components/NewPopup";
 import { TabBarIcon } from "@/src/components/TabBarIcon";
-import { useAuth } from "@/src/hooks/useAuth";
+import { getNotificationCount } from "@/src/utils/apiservice";
 import colors from "@/src/utils/colors";
 import { Tabs } from "expo-router";
-import React, { useState } from "react";
-import { Pressable, Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 export default function TabLayout() {
-  const { logout } = useAuth();
-  const [logoutPopup, setLogoutPopup] = useState(false);
+  const [count, setCount] = useState("0");
+  useEffect(() => {
+    getNotificationCount().then(async (r) => {
+      const result = await r.data;
+      if (result.count < 999) {
+        setCount(result.count.toString());
+      } else {
+        setCount("999+");
+      }
+    });
+  }, []);
+
   return (
     <>
       <Tabs
@@ -17,6 +27,8 @@ export default function TabLayout() {
           headerStyle: {
             backgroundColor: colors.yellow,
           },
+          tabBarShowLabel: false,
+          lazy: true,
         }}
       >
         <Tabs.Screen
@@ -34,10 +46,19 @@ export default function TabLayout() {
           options={{
             title: "Notifications",
             tabBarIcon: ({ focused }) => (
-              <TabBarIcon
-                name={focused ? "notifications" : "notifications-outline"}
-              />
+              <View style={{ position: "relative" }}>
+                <TabBarIcon
+                  name={focused ? "notifications" : "notifications-outline"}
+                />
+
+                {count > "0" && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>{count}</Text>
+                  </View>
+                )}
+              </View>
             ),
+            headerTitleAlign: "center",
           }}
         />
         <Tabs.Screen
@@ -59,39 +80,29 @@ export default function TabLayout() {
             ),
           }}
         />
-        <Tabs.Screen
-          name="logout"
-          options={{
-            title: "Logout",
-            tabBarButton: (props) => (
-              <Pressable
-                onPress={() => setLogoutPopup(true)}
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1,
-                }}
-              >
-                <TabBarIcon name={"log-out-outline"} focused={props.focused} />
-                <Text style={{ color: props.focused ? "blue" : "gray" }}>
-                  Logout
-                </Text>
-              </Pressable>
-            ),
-          }}
-        />
       </Tabs>
-      <NewPopUp
-        visible={logoutPopup}
-        numberOfButtons={2}
-        button1Action={() => setLogoutPopup(false)}
-        button2Action={() => logout()}
-        button1Text={"Dismiss"}
-        button2Text={"Yes"}
-        text={"Are you sure you want to Log out?"}
-        iconType={"Alert"}
-        title={"Logout"}
-      />
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  badge: {
+    position: "absolute",
+    top: -8,
+    right: -8,
+    backgroundColor: colors.yellow,
+    borderRadius: 50,
+    width: 20,
+    height: 20,
+    padding: 2,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  badgeText: {
+    color: colors.black,
+    fontSize: responsiveFontSize(1),
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+});

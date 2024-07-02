@@ -7,27 +7,24 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
-  Linking,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import language from "@/src/assets/images/language.png";
 import arrowIcon from "@/src/assets/images/arrow.png";
-import selectedTickImage from "@/src/assets/images/tick_1.png";
-import notSelectedTickImage from "@/src/assets/images/tick_1_notSelected.png";
 import Buttons from "@/src/components/Buttons";
 import Loader from "@/src/components/Loader";
 import { height } from "@/src/utils/dimensions";
 import { generateOtpForLogin } from "@/src//utils/apiservice";
 import LanguagePicker from "@/src/components/LanguagePicker";
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import colors from "@/src/utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
 import NewPopUp from "@/src/components/NewPopup";
 import { showToast } from "@/src/utils/showToast";
 import { useAuth } from "@/src/hooks/useAuth";
+import Constants from "expo-constants";
 
 const ForgotPasswordNumberVerification = () => {
   const [number, setNumber] = useState("");
@@ -230,6 +227,7 @@ const ForgotPasswordNumberVerification = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingTop: Constants.statusBarHeight,
   },
   forgotPasswordContainer: {
     alignItems: "center",

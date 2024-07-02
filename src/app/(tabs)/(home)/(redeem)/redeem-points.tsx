@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   responsiveFontSize,
@@ -14,12 +14,11 @@ import PagerView from "react-native-pager-view";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import useProfile from "@/src/hooks/useProfile";
 
 const RedeemPoints = () => {
-  const { profile } = useProfile();
-
+  useProfile();
+  const { state } = useData();
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View
@@ -35,7 +34,6 @@ const RedeemPoints = () => {
             flex: 1,
           }}
           initialPage={0}
-          useNext={false}
         >
           <View
             style={{
@@ -58,27 +56,25 @@ const RedeemPoints = () => {
           <Pressable style={styles.leftPoint}>
             <MaterialIcons name="currency-rupee" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(profile.RedeemablePoints)?.toFixed(2) || 0}
+              {Number(state.RedeemablePoints)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Redeemable Points</Text>
           </Pressable>
           <Pressable style={styles.middlePoint}>
             <MaterialIcons name="redeem" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(profile.RedeemedPoints)?.toFixed(2) || 0}
+              {Number(state.RedeemedPoints)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Redeemed Points</Text>
           </Pressable>
-          <Pressable
-            style={styles.rightPoint}
-          >
+          <Pressable style={styles.rightPoint}>
             <MaterialCommunityIcons
               name="file-document-edit-outline"
               size={40}
               color="black"
             />
             <Text style={styles.point}>
-              {Number(profile.DeductedTDS)?.toFixed(2) || 0}
+              {Number(state.DeductedTDS)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Deducted TDS</Text>
           </Pressable>

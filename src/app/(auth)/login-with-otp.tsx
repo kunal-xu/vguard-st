@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import arrowIcon from "../../assets/images/arrow.png";
@@ -23,6 +24,7 @@ import { useNavigation } from "expo-router";
 import { CommonActions } from "@react-navigation/native";
 import { showToast } from "@/src/utils/showToast";
 import NewPopUp from "@/src/components/NewPopup";
+import Constants from "expo-constants";
 
 const LoginWithOtp = () => {
   const { contact } = useLocalSearchParams();
@@ -42,7 +44,6 @@ const LoginWithOtp = () => {
     popUpIconType,
     setPopUpIconType,
     popUpButton2Text,
-    setPopupButton2Text,
     cleanupPopUp,
   } = useAuth();
   const { dispatch } = useData();
@@ -180,6 +181,7 @@ const LoginWithOtp = () => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {loader && <Loader isLoading={loader} />}
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <NewPopUp
         visible={popUp}
         numberOfButtons={popUpButtonCount}
@@ -307,6 +309,7 @@ const LoginWithOtp = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingTop: Constants.statusBarHeight,
   },
   registerUser: {
     height: "100%",

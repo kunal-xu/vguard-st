@@ -17,7 +17,7 @@ export default function SchemesLayout() {
           title: "Schemes",
         }}
       />
-      <Stack.Screen name="product-based-schemes" />
+      <Stack.Screen name="product-based-scheme" />
       <Stack.Screen name="product-wise-direct-order-base-points" />
       <Stack.Screen name="product-wise-scan-base-points" />
       <Stack.Screen name="special-non-product-offers" />

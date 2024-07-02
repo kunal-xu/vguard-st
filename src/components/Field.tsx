@@ -45,6 +45,7 @@ import ImagePickerField from "./ImagePickerField";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NewPopUp from "./NewPopup";
 import usePopup from "../hooks/usePopup";
+import { showToast } from "../utils/showToast";
 
 interface RuleItem {
   id: number;
@@ -69,23 +70,23 @@ interface BaseFieldProps {
 }
 
 interface FloatingLabelInputField extends BaseFieldProps {
-  properties: FloatingLabelProps;
+  properties?: FloatingLabelProps;
 }
 
 interface DropDownPickerField extends BaseFieldProps {
-  properties: DropDownPickerProps<number>;
+  properties?: DropDownPickerProps<number>;
 }
 
 interface PickerField extends BaseFieldProps {
-  properties: PickerProps;
+  properties?: PickerProps;
 }
 
 interface DatePickerField extends BaseFieldProps {
-  properties: DatePickerProps;
+  properties?: DatePickerProps;
 }
 
 interface TextField extends BaseFieldProps {
-  properties: StyleProp<TextStyle>;
+  properties?: StyleProp<TextStyle>;
 }
 
 type FieldProps =
@@ -520,16 +521,46 @@ const Field = (props: FieldProps) => {
       async function getCustomerData() {
         try {
           showLoader(true);
-          const response = await getCustDetByMobile(
-            customerState.contactNo as string
-          );
+          const payload = {
+            mobileNo: customerState.contactNo,
+          };
+          const response = await getCustDetByMobile(payload);
           showLoader(false);
           const responseData = response.data;
           if (responseData.name !== null) {
             customerDispatch({
-              type: "GET_ALL_FIELDS",
+              type: "UPDATE_FIELD",
               payload: {
-                value: responseData,
+                field: "name",
+                value: responseData.name,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "pinCode",
+                value: responseData.pinCode,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "state",
+                value: responseData.state,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "district",
+                value: responseData.district,
+              },
+            });
+            customerDispatch({
+              type: "UPDATE_FIELD",
+              payload: {
+                field: "city",
+                value: responseData.city,
               },
             });
           } else {
@@ -541,6 +572,55 @@ const Field = (props: FieldProps) => {
           setPopUpIconType("Alert");
           setPopUpTitle(t("Not Found"));
           setPopupText("Customer details not found");
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "name",
+              value: "",
+            },
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "pinCode",
+              value: "",
+            },
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "state",
+              value: "",
+            },
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "district",
+              value: "",
+            },
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "city",
+              value: "",
+            },
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "alternateNo",
+              value: "",
+            },
+          });
+          customerDispatch({
+            type: "UPDATE_FIELD",
+            payload: {
+              field: "email",
+              value: "",
+            },
+          });
           console.log(error.message);
         }
       }

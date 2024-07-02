@@ -1,15 +1,14 @@
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { NavigationProp, ParamListBase } from "@react-navigation/native";
-import React, { Dispatch, ReactNode, SetStateAction } from "react";
+import { Dispatch, ReactNode, SetStateAction } from "react";
 import {
   DimensionValue,
   ImageSourcePropType,
   ImageStyle,
-  NativeSyntheticEvent,
   StyleProp,
-  TextInputFocusEventData,
 } from "react-native";
 import { STUser } from "../types/STUser";
+import { ExpoRouter } from "expo-router/types/expo-router";
+import { TicketType } from "../types";
 
 interface BankDetail {
   errorMessage: string | "";
@@ -237,15 +236,6 @@ export interface LoaderProps {
   isLoading: boolean;
 }
 
-export interface DatePickerProps {
-  label?: string;
-  date?: Date;
-  onDateChange?: (event: DateTimePickerEvent, date?: Date) => void;
-  showDatePicker?: boolean;
-  onShowDatePicker?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
-  maximum_date?: Date;
-}
-
 export interface CustomerData {
   contactNo: string;
   name: string;
@@ -316,4 +306,84 @@ export interface CustomerData {
   longitude: string;
   geolocation: string;
   dealerCategory: string;
+}
+
+export interface ProfileCard {
+  label: string;
+  value: string | boolean;
+}
+
+export interface ProfileHeader {
+  profile: STUser;
+  router: ExpoRouter.Router;
+}
+
+export interface ProfileBank {
+  profile: STUser;
+  handlePress?: (label: string) => void;
+  expandedItemId?: string | null;
+}
+
+export interface ImagePickerSectionInterface {
+  profile: STUser;
+  isImagePickerVisible: boolean;
+  toggleModal: () => void;
+}
+
+export interface PopupSectionInterface {
+  loader: boolean;
+  popUp: boolean;
+  cleanupPopUp: () => void;
+  popupText: string;
+  popUpIconType: string;
+  popUpTitle: string;
+}
+
+export interface ProfileFields {
+  fields: [object];
+}
+
+export interface SubmitButtonSectionInterface {
+  onPress: () => void;
+}
+
+export interface ProductPickerSectionProps {
+  items: string[];
+  selectedValue: string;
+  setSelectedValue: (value: string) => void;
+}
+
+export interface DatePickerSectionProps {
+  startDate: Date;
+  showStart: boolean;
+  showStartDatePicker: () => void;
+  onChangeStartDate: (event: any, selectedDate: any) => void;
+  endDate: Date;
+  showEnd: boolean;
+  showEndDatePicker: () => void;
+  onChangeEndDate: (event: any, selectedDate: any) => void;
+}
+
+export interface PointsSectionProps {
+  earnedPoints: string;
+  redeemablePoints: string;
+  tdsKitty: string;
+}
+
+export interface FieldSectionProps {
+  t: any;
+  isOptionsLoading: boolean;
+  options: TicketType[];
+  selectedOption: string;
+  handleOptionChange: (value: string) => void;
+  descriptionInput: string;
+  setDescriptionInput: Dispatch<SetStateAction<string>>;
+  isImagePickerVisible: boolean;
+  toggleModal: () => void;
+}
+
+export interface FooterSectionProps {
+  t: any;
+  openTnC: () => void;
+  openFaqS: () => void;
 }

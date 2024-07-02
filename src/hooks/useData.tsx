@@ -38,7 +38,6 @@ type CustomerAction = {
   };
 };
 
-
 export interface ContextProps {
   state: STUser;
   dispatch: React.Dispatch<Action>;
@@ -136,14 +135,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({
   const [customerState, customerDispatch] = useReducer(customerReducer, rcd);
 
   return (
-    <DataContext.Provider value={{ state, dispatch, customerState, customerDispatch }}>
+    <DataContext.Provider
+      value={{ state, dispatch, customerState, customerDispatch }}
+    >
       {children}
     </DataContext.Provider>
   );
 };
 
 export const useData = () => {
-  const { state, dispatch, customerState, customerDispatch } = useContext(DataContext) as ContextProps;
+  const { state, dispatch, customerState, customerDispatch } = useContext(
+    DataContext
+  ) as ContextProps;
   if (!state || !dispatch || !customerState || !customerDispatch) {
     throw new Error("useData must be used within a DataProvider");
   }

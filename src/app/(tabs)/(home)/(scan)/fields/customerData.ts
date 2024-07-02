@@ -20,7 +20,8 @@ export const customerData = [
   },
   {
     id: "8accac5b-9678-4f66-b23c-3f8072671f7f",
-    type: "CustomerButton"
+    type: "CustomerButton",
+    properties: undefined,
   },
   {
     id: "8bd5aa6e-670f-445d-bd10-f0aeef6ee7fe",
@@ -167,7 +168,7 @@ export const customerData = [
   },
   {
     id: "31b3125d-7238-4678-af02-fd366915cdbd",
-    label: "strings:email",
+    label: "Email ",
     type: "floatingLabelInput",
     data: "email",
     source: "customer",

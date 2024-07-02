@@ -125,8 +125,8 @@ export async function loginWithOtp(
   return response;
 }
 
-export function getFile(uuid: String, imageRelated: String, userRole: String) {
-  const path = `file/${uuid}/${imageRelated}/${userRole}`;
+export function getFile(uuid: String, imageRelated: String,) {
+  const path = `file/${uuid}/${imageRelated}`;
   return createGetRequest(path);
 }
 
@@ -163,7 +163,7 @@ export function getProductCategoryList() {
   return createGetRequest(path);
 }
 
-export function getProductListing(productRequest: string) {
+export function getProductListing(productRequest: any) {
   const path = "product/catalog";
   return createPostRequest(path, productRequest);
 }
@@ -723,7 +723,7 @@ export function getPushNotifications() {
   return createGetRequest(path);
 }
 
-export function getCustDetByMobile(body: string) {
+export function getCustDetByMobile(body: any) {
   const path = `product/getCustomerDetails`;
   return createPostRequest(path, body);
 }

@@ -1,11 +1,11 @@
-import { View, Text, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View, StyleSheet, ScrollView } from "react-native";
+import React, { useState } from "react";
 import colors from "@/src/utils/colors";
 import CustomTouchableOption from "@/src/components/CustomTouchableOption";
 import NeedHelp from "@/src/components/NeedHelp";
-import { getSchemeImages } from "@/src/utils/apiservice";
 import PagerView from "react-native-pager-view";
 import { Image } from "expo-image";
+
 const Schemes = () => {
   const [selectedPage, setSelectedPage] = useState(0);
 
@@ -23,7 +23,6 @@ const Schemes = () => {
             flex: 1,
           }}
           initialPage={0}
-          useNext={false}
           onPageSelected={(e) => setSelectedPage(e.nativeEvent.position)}
         >
           <View
@@ -80,29 +79,29 @@ const Schemes = () => {
       <View style={styles.mainWrapper}>
         <View style={styles.options}>
           <CustomTouchableOption
-            text="Scan base points"
+            text="Scan Base Points"
             iconSource={require("../../../../assets/images/ic_product_wise_offers.webp")}
-            screenName="Product-wise scan base points"
-            disabled={true}
+            screenName="product-wise-scan-base-points"
+            disabled={false}
           />
           <CustomTouchableOption
-            text="Product based scheme offers"
+            text="Product based Scheme Offers"
             iconSource={require("../../../../assets/images/ic_active_offers.webp")}
-            screenName="Product based scheme offers"
+            screenName="product-based-scheme"
             disabled={true}
           />
           <CustomTouchableOption
-            text="Non-product offers"
+            text="Non-product Offers"
             iconSource={require("../../../../assets/images/ic_special_combo_offers.webp")}
-            screenName="Special non-product offers"
+            screenName="special-non-product-offers"
             disabled={true}
           />
         </View>
         <View style={styles.options}>
           <CustomTouchableOption
-            text="Direct order base points"
+            text="Direct Order Base Points"
             iconSource={require("../../../../assets/images/ic_product_wise_offers.webp")}
-            screenName="Product-wise scan base points"
+            screenName="product-wise-direct-order-base-points"
             disabled={true}
           />
         </View>

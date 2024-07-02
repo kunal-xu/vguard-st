@@ -10,8 +10,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import colors from "../utils/colors";
-import { sendFile, sendFileToAWS, updateProfile } from "../utils/apiservice";
-import useProfile from "../hooks/useProfile";
+import { sendFile, updateProfile } from "../utils/apiservice";
 import { useData } from "../hooks/useData";
 import { showToast } from "../utils/showToast";
 import Loader from "./Loader";
@@ -20,10 +19,20 @@ import usePopup from "../hooks/usePopup";
 import { useTranslation } from "react-i18next";
 import * as FileSystem from "expo-file-system";
 
-const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
+interface ImagePickerModalProps {
+  isVisible: boolean;
+  toggleModal: () => void;
+  type: string;
+}
+
+const ImagePickerModal = ({
+  isVisible,
+  toggleModal,
+  type,
+}: ImagePickerModalProps) => {
   const { t } = useTranslation();
   const [loader, showLoader] = useState(false);
-  const { profile } = useProfile();
+  const { state } = useData();
   const { dispatch } = useData();
   const {
     popUp,
@@ -64,12 +73,13 @@ const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
       if (response.status === 200) {
         if (type === "profile") {
           const data = {
-            ...profile,
+            ...state,
             Selfie: fileName,
           };
           const response = await updateProfile(data);
           const responseData = response.data;
           showLoader(false);
+          toggleModal();
           if (responseData.code == 200) {
             setPopUp(true);
             setPopUpIconType("Info");
@@ -84,6 +94,7 @@ const ImagePickerModal = ({ isVisible, toggleModal, type }) => {
       }
     } catch (error: any) {
       showLoader(false);
+      toggleModal();
       showToast(`${error.message}` || "Something went wrong! Please try again");
     }
   };

@@ -10,6 +10,7 @@ import {
   Linking,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import language from "@/src/assets/images/language.png";
@@ -28,6 +29,7 @@ import { Image } from "expo-image";
 import NewPopUp from "@/src/components/NewPopup";
 import { showToast } from "@/src/utils/showToast";
 import { useAuth } from "@/src/hooks/useAuth";
+import Constants from "expo-constants";
 
 const LoginWithNumber = () => {
   const [number, setNumber] = useState("");
@@ -134,6 +136,7 @@ const LoginWithNumber = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <NewPopUp
         visible={popUp}
         numberOfButtons={popUpButtonCount}
@@ -308,6 +311,7 @@ const LoginWithNumber = () => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingTop: Constants.statusBarHeight,
   },
   forgotPasswordContainer: {
     alignItems: "center",

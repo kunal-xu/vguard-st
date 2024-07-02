@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   responsiveFontSize,
@@ -7,10 +7,22 @@ import {
 } from "react-native-responsive-dimensions";
 import { getRedemptionHistory } from "@/src/utils/apiservice";
 import colors from "@/src/utils/colors";
+import { FlashList, ListRenderItem } from "@shopify/flash-list";
+
+type RedemptionHistoryItem = {
+  transactDate: string;
+  productName: string;
+  points: number;
+  mobileNumber: string;
+  orderStatus: string;
+};
 
 const RedemptionHistory = () => {
   const { t } = useTranslation();
-  const [redemptionHistoryData, setRedemptionHistoryData] = useState([]);
+  const [redemptionHistoryData, setRedemptionHistoryData] = useState<
+    RedemptionHistoryItem[]
+  >([]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -22,8 +34,8 @@ const RedemptionHistory = () => {
     })();
   }, []);
 
-  const renderItem = ({ item }) => (
-    <View style={[styles.item]}>
+  const renderItem: ListRenderItem<RedemptionHistoryItem> = ({ item }) => (
+    <View style={styles.item}>
       {item.transactDate && (
         <Text
           style={[
@@ -50,12 +62,12 @@ const RedemptionHistory = () => {
           </Text>
         )}
         {item.points && (
-          <Text style={[styles.smalltext]}>
+          <Text style={styles.smalltext}>
             {t("strings:points")}: {item.points}
           </Text>
         )}
         {item.mobileNumber && (
-          <Text style={[styles.smalltext]}>
+          <Text style={styles.smalltext}>
             {t("strings:mobile_no")}: {item.mobileNumber}
           </Text>
         )}
@@ -79,13 +91,14 @@ const RedemptionHistory = () => {
     <ScrollView style={styles.mainWrapper}>
       {redemptionHistoryData.length === 0 ? (
         <View style={styles.middleText}>
-          <Text style={styles.greyText}>No Data</Text>
+          <Text style={styles.greyText}>{t("No Data")}</Text>
         </View>
       ) : (
-        <FlatList
+        <FlashList
           data={redemptionHistoryData}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
+          estimatedItemSize={500}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       )}
@@ -121,7 +134,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    display: "flex",
   },
   text: {
     flexGrow: 1,

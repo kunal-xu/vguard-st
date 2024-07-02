@@ -11,14 +11,18 @@ export default function ProfileLayout() {
         },
       }}
     >
-      <Stack.Screen name="profile" options={{
+      <Stack.Screen
+        name="profile"
+        options={{
           title: "Profile",
-        }} />
+          headerTitleAlign: "center",
+        }}
+      />
       <Stack.Screen
         name="edit-profile"
         options={{
           title: "Edit Profile",
-          headerTitleAlign: "center",
+          headerTitleAlign: "left",
         }}
       />
     </Stack>

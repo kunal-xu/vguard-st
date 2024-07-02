@@ -1,28 +1,17 @@
-import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import colors from "@/src/utils/colors";
+import React from "react";
+import { StyleSheet, View, Text } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import Buttons from "@/src/components/Buttons";
-import useProfile from "@/src/hooks/useProfile";
 import { StatusMappings } from "@/src/utils/StatusMappings";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { ProfileCard, ProfileHeader } from "@/src/utils/interfaces";
+import { useData } from "@/src/hooks/useData";
+import CollapsibleSection from "@/src/components/CollapsibleSection";
+import colors from "@/src/utils/colors";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 
-function Card({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | undefined | null;
-}) {
+function Card({ label, value }: ProfileCard) {
   return (
     <View style={styles.infoRow}>
       <Text style={styles.label}>{label}</Text>
@@ -31,177 +20,97 @@ function Card({
   );
 }
 
-export default function Profile() {
-  const [expandedItemId, setExpandedItemId] = useState(null);
-  const router = useRouter();
-  const { profile } = useProfile();
-  const statusMappings = new StatusMappings();
-
-  // const bankData = [{ id: "1", label: "Bank Details" }];
-
-  const ListItem = ({ item, label, value, onPress, expanded }) => {
-    const bankMap = {
-      "Bank Account No.": profile.BankDetail.bankAccNo,
-      "Bank Account Holder Name": profile.BankDetail.bankAccHolderName,
-      "Bank Account Type": profile.BankDetail.bankAccType,
-      "Bank Name and Branch": profile.BankDetail.bankNameAndBranch,
-      "Bank Address": profile.BankDetail.branchAddress,
-      "IFSC code": profile.BankDetail.bankIfsc,
-    };
-    return (
+function Header({ profile, router }: ProfileHeader) {
+  return (
+    <View style={styles.profileImageContainer}>
+      <Image
+        source={{ uri: profile.Selfie as string }}
+        placeholder={{
+          uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
+        }}
+        transition={1000}
+        style={styles.profileImage}
+        contentFit="cover"
+      />
       <View>
-        <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
-          <Text style={styles.itemText}>{item.label}</Text>
-          {expanded ? (
-            <Ionicons name="arrow-up-circle" size={24} color={colors.yellow} />
-          ) : (
-            <Ionicons
-              name="arrow-down-circle"
-              size={24}
-              color={colors.yellow}
-            />
-          )}
-        </TouchableOpacity>
-        <View
-          style={{
-            paddingHorizontal: 15,
-          }}
-        >
-          {expanded &&
-            Object.keys(bankMap).map((key) => (
-              <Card label={key} value={bankMap[key]} />
-            ))}
-        </View>
+        <Text style={styles.textDetail}>{profile.Name || "ST Account"}</Text>
+        <Text style={{ fontSize: responsiveFontSize(1.7) }}>
+          Rishta ID: {profile.RishtaID || "VGIL30000"}
+        </Text>
       </View>
-    );
+      <Buttons
+        variant="filled"
+        label="Edit Profile"
+        onPress={() => router.push("edit-profile")}
+      />
+    </View>
+  );
+}
+
+export default function Profile() {
+  const router = useRouter();
+  const { state } = useData();
+  const statusMappings = new StatusMappings();
+  const data = [{ type: "header" }, { type: "profile" }];
+
+  const bankMap: { [key: string]: string } = {
+    "Bank Account No.": state?.BankDetail?.bankAccNo ?? "NA",
+    "Bank Account Holder Name": state?.BankDetail?.bankAccHolderName ?? "NA",
+    "Bank Name and Branch": state?.BankDetail?.bankNameAndBranch ?? "NA",
+    "Bank Address": state?.BankDetail?.branchAddress ?? "NA",
+    "IFSC code": state?.BankDetail?.bankIfsc ?? "NA",
   };
 
-  const handlePress = (id) => {
-    setExpandedItemId(expandedItemId === id ? null : id);
-  };
-
-  const labelMap = {
-    Name: profile.Name,
-    "Date of Birth": profile.DOB,
-    Gender: profile.Gender,
-    Email: profile.EmailId,
-    Aadhar: profile.Aadhar,
-    PAN: profile.PAN,
-    "Bank Details": profile.BankDetail.bankDataPresent,
-    "TDS Slab": `${profile.TDSSlab}%`,
+  const labelMap: { [key: string]: string | boolean } = {
+    Name: state?.Name ?? "NA",
+    "Date of Birth": state?.DOB?.toString() ?? "NA",
+    Gender: state?.Gender ?? "NA",
+    Email: state?.EmailId ?? "NA",
+    Aadhar: state?.Aadhar ?? "NA",
+    PAN: state?.PAN ?? "NA",
+    "TDS Slab": `${state?.TDSSlab ?? "NA"}%`,
+    "Bank Details": state.BankDetail.bankDataPresent ?? false,
     "Profile Status":
-      statusMappings.ActivationStatus[profile.ActivationStatus as number],
+      statusMappings.ActivationStatus[state?.ActivationStatus as number] ??
+      "NA",
     "Transaction Status":
-      statusMappings.TechnicianBlockStatus[profile.BlockStatus as number],
+      statusMappings.TechnicianBlockStatus[state?.BlockStatus as number] ??
+      "NA",
   };
-  interface Item {
-    type: "header" | "profile";
-  }
-  const data: Item[] = [{ type: "header" }, { type: "profile" }];
 
-  const renderItem: ListRenderItem<Item> = ({ item }) => {
+  const renderItem: ListRenderItem<(typeof data)[0]> = ({ item }) => {
     switch (item.type) {
       case "header":
-        return (
-          <View style={styles.profileImageContainer}>
-            <Image
-              source={{
-                uri: profile.Selfie as string,
-              }}
-              placeholder={{
-                uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
-              }}
-              transition={1000}
-              style={{ width: 80, height: 80, borderRadius: 50 }}
-              contentFit="cover"
-            />
-            <Buttons
-              variant="filled"
-              label="Edit Profile"
-              onPress={() => router.push("edit-profile")}
-            />
-          </View>
-        );
+        return <Header profile={state} router={router} />;
       case "profile":
         return (
           <View style={styles.card}>
-            {Object.keys(labelMap).map((key) =>
-              !labelMap[key] ? (
-                <Card label={key} value={"NA"} />
-              ) : key === "Bank Details" ? (
-                <FlashList
-                  data={data}
-                  keyExtractor={(item) => item.id}
-                  renderItem={({ item }) => (
-                    <ListItem
-                      item={item}
-                      onPress={() => handlePress(item.id)}
-                      expanded={expandedItemId === item.id}
-                    />
-                  )}
-                />
-              ) : (
-                <Card label={key} value={labelMap[key]} />
-              )
-            )}
+            <CollapsibleSection title="Profile Details" defaultExpanded={true}>
+              {Object.keys(labelMap).map((key, id) =>
+                !labelMap[key] ? (
+                  <Card key={id} label={key} value={"NA"} />
+                ) : key === "Bank Details" ? null : (
+                  <Card key={id} label={key} value={labelMap[key]} />
+                )
+              )}
+            </CollapsibleSection>
+            {state.BankDetail.bankDataPresent ? (
+              <CollapsibleSection title="Bank Details" defaultExpanded={false}>
+                {Object.keys(bankMap).map((key) => (
+                  <Card key={key} label={key} value={bankMap[key]} />
+                ))}
+              </CollapsibleSection>
+            ) : null}
           </View>
         );
+      default:
+        return null;
     }
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: "white",
-      }}
-    >
-      <View style={styles.profileContainer}>
-        {/* <View style={styles.profileImageContainer}>
-          <Image
-            source={{
-              uri: profile.Selfie as string,
-            }}
-            placeholder={{
-              uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
-            }}
-            transition={1000}
-            style={{ width: 80, height: 80, borderRadius: 50 }}
-            contentFit="cover"
-          />
-          <Buttons
-            variant="filled"
-            label="Edit Profile"
-            onPress={() => router.push("edit-profile")}
-          />
-        </View>
-        <View style={styles.card}>
-          {Object.keys(labelMap).map((key) =>
-            !labelMap[key] ? (
-              <Card label={key} value={"NA"} />
-            ) : key === "Bank Details" ? (
-              <FlatList
-                data={data}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <ListItem
-                    item={item}
-                    onPress={() => handlePress(item.id)}
-                    expanded={expandedItemId === item.id}
-                  />
-                )}
-              />
-            ) : (
-              <Card label={key} value={labelMap[key]} />
-            )
-          )}
-        </View> */}
-        <FlashList
-          data={data}
-          renderItem={renderItem}
-          estimatedItemSize={300}
-        />
-      </View>
+    <View style={styles.container}>
+      <FlashList data={data} renderItem={renderItem} estimatedItemSize={30} />
     </View>
   );
 }
@@ -211,97 +120,50 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
+  profileText: {
+    flex: 1,
+  },
+  textDetail: {
+    color: colors.black,
+    fontWeight: "bold",
+    fontSize: responsiveFontSize(2),
+  },
   card: {
     width: "100%",
     backgroundColor: "white",
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingLeft: 20,
+    paddingRight: 20,
+    marginTop: 8,
     elevation: 5,
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  itemText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  itemContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
   },
   infoRow: {
-    marginBottom: 15,
+    marginTop: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
   label: {
     fontSize: 16,
-    color: "#999",
-    marginBottom: 5,
+    color: colors.grey,
+    marginBottom: 4,
   },
   value: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#333",
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "blue",
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-  },
-  headerTitle: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  headerSave: {
-    color: "white",
-    fontSize: 16,
-  },
-  profileContainer: {
-    alignItems: "center",
-    backgroundColor: "white",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    paddingTop: 30,
-    paddingHorizontal: 15,
-    marginTop: -20,
-  },
   profileImageContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "90%",
+    padding: 20,
+    width: "100%",
+    backgroundColor: "white",
   },
   profileImage: {
     width: 80,
     height: 80,
     borderRadius: 50,
-  },
-  editIconContainer: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#e91e63",
-    borderRadius: 15,
-    padding: 5,
-  },
-  input: {
-    width: "100%",
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    fontSize: 16,
-    marginVertical: 10,
   },
 });

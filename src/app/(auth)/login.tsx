@@ -8,6 +8,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
+  StatusBar,
 } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,7 +18,6 @@ import selectedTickImage from "@/src/assets/images/tick_1.png";
 import notSelectedTickImage from "@/src/assets/images/tick_1_notSelected.png";
 import language from "@/src/assets/images/language.png";
 import { loginWithPassword } from "@/src/utils/apiservice";
-import { NavigationProps } from "@/src/utils/interfaces";
 import React from "react";
 import Buttons from "@/src/components/Buttons";
 import { useAuth } from "@/src/hooks/useAuth";
@@ -31,8 +31,9 @@ import { Image } from "expo-image";
 import { showToast } from "@/src/utils/showToast";
 import NewPopUp from "@/src/components/NewPopup";
 import { useRouter } from "expo-router";
+import Constants from "expo-constants";
 
-const LoginScreen = ({ navigation }: NavigationProps) => {
+const LoginScreen = () => {
   const { t } = useTranslation();
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [loader, showLoader] = useState(false);
@@ -114,6 +115,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <NewPopUp
         visible={popUp}
         numberOfButtons={popUpButtonCount}
@@ -190,12 +192,19 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
                 />
               </KeyboardAvoidingView>
             </View>
-            <View style={{ flexDirection: "row", gap: 5, marginTop: 12, marginBottom: 16 }}>
-              <Text style={styles.greyText}>
-                {t("Forgot Password?")}
-              </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                gap: 5,
+                marginTop: 12,
+                marginBottom: 16,
+              }}
+            >
+              <Text style={styles.greyText}>{t("Forgot Password?")}</Text>
               <TouchableOpacity
-                onPress={() => router.push("forgot-password-number-verification" as never)}
+                onPress={() =>
+                  router.push("forgot-password-number-verification" as never)
+                }
               >
                 <Text
                   style={{
@@ -276,6 +285,7 @@ const LoginScreen = ({ navigation }: NavigationProps) => {
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingTop: Constants.statusBarHeight,
   },
   loginScreen: {
     height: "100%",

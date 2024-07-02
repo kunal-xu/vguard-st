@@ -29,6 +29,13 @@ export default function ScanLayout() {
           title: "Unique Code History",
         }}
       />
+
+      <Stack.Screen
+        name="success-page"
+        options={{
+          title: "Scan Result",
+        }}
+      />
     </Stack>
   );
 }

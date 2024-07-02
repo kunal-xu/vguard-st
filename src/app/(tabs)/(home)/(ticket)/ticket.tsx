@@ -3,13 +3,9 @@ import {
   View,
   Text,
   StyleSheet,
-  Modal,
-  Image,
   TextInput,
-  ScrollView,
   TouchableOpacity,
   Linking,
-  ImageBackground,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,85 +14,213 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import colors from "@/src/utils/colors";
-import NeedHelp from "@/src/components/NeedHelp";
 import Buttons from "@/src/components/Buttons";
-import { sendTicket, getTicketTypes, getUser } from "@/src/utils/apiservice";
+import { sendTicket, getTicketTypes } from "@/src/utils/apiservice";
 import { Picker } from "@react-native-picker/picker";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-import { getFile, sendFile } from "@/src/utils/apiservice";
-import Snackbar from "react-native-snackbar";
-import { height, width } from "../../../../../utils/dimensions";
-import { Button } from "react-native-paper";
-import Popup from "@/src/components/Popup";
-import ImagePickerField from "@/src/components/ImagePickerField";
 import Loader from "@/src/components/Loader";
-import { getImages } from "@/src/utils/FileUtils";
-import { useFocusEffect } from "@react-navigation/native";
 import { useData } from "@/src/hooks/useData";
 import ImagePickerModal from "@/src/components/ImagePicker";
 import { useRouter } from "expo-router";
+import { Image } from "expo-image";
+import {
+  FieldSectionProps,
+  FooterSectionProps,
+  PopupSectionInterface,
+  ProfileHeader,
+} from "@/src/utils/interfaces";
+import NewPopUp from "@/src/components/NewPopup";
+import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import usePopup from "@/src/hooks/usePopup";
+import { showToast } from "@/src/utils/showToast";
+import { height } from "@/src/utils/dimensions";
+import { TicketType } from "@/src/utils/types";
+
+function Header({ profile, router }: ProfileHeader) {
+  return (
+    <View style={styles.profileImageContainer}>
+      <Image
+        source={{ uri: profile.Selfie as string }}
+        placeholder={{
+          uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
+        }}
+        transition={1000}
+        style={styles.profileImage}
+        contentFit="cover"
+      />
+      <View>
+        <Text style={styles.textDetail}>{profile.Name || "ST Account"}</Text>
+        <Text style={{ fontSize: responsiveFontSize(1.7) }}>
+          Rishta ID: {profile.RishtaID || "VGIL30000"}
+        </Text>
+      </View>
+      <Buttons
+        variant="filled"
+        label="Ticket History"
+        onPress={() => router.push("ticket-history")}
+      />
+    </View>
+  );
+}
+
+const PopupSection = ({
+  loader,
+  popUp,
+  cleanupPopUp,
+  popupText,
+  popUpIconType,
+  popUpTitle,
+}: PopupSectionInterface) => (
+  <View>
+    {loader && <Loader isLoading={loader} />}
+    <NewPopUp
+      visible={popUp}
+      button1Action={cleanupPopUp}
+      button1Text="Dismiss"
+      text={popupText}
+      iconType={popUpIconType}
+      title={popUpTitle}
+    />
+  </View>
+);
+
+const FieldSection = ({
+  t,
+  isOptionsLoading,
+  options,
+  selectedOption,
+  handleOptionChange,
+  descriptionInput,
+  setDescriptionInput,
+  isImagePickerVisible,
+  toggleModal,
+}: FieldSectionProps) => (
+  <View>
+    <Text style={[styles.blackText, { marginTop: responsiveFontSize(2) }]}>
+      {t("strings:issue_type")}
+    </Text>
+    {isOptionsLoading ? (
+      <Text style={styles.blackText}>Loading options...</Text>
+    ) : options.length === 0 ? (
+      <Text style={styles.blackText}>No options available.</Text>
+    ) : (
+      <View style={styles.inputContainer}>
+        <Picker
+          mode="dropdown"
+          style={{
+            color: "black",
+            borderWidth: 2,
+            borderColor: "black",
+          }}
+          selectedValue={selectedOption}
+          onValueChange={handleOptionChange}
+        >
+          <Picker.Item key={""} label={"Select Issue Type"} value={""} />
+          {options.map((option: TicketType) => (
+            <Picker.Item
+              key={option.issueTypeId}
+              value={option.name}
+              label={String(option.name)}
+            />
+          ))}
+        </Picker>
+      </View>
+    )}
+    <ImagePickerModal
+      isVisible={isImagePickerVisible}
+      toggleModal={toggleModal}
+      type={"profile"}
+    />
+    <Text style={styles.blackText}>{t("strings:description_remarks")}</Text>
+    <TextInput
+      style={styles.descriptionInput}
+      placeholder={t("strings:provide_description_in_the_box")}
+      placeholderTextColor={colors.grey}
+      multiline={true}
+      textAlignVertical="top"
+      value={descriptionInput}
+      onChangeText={(text) => setDescriptionInput(text)}
+    />
+  </View>
+);
+
+const FooterSection = ({ t, openTnC, openFaqS }: FooterSectionProps) => (
+  <View style={styles.footerRow}>
+    <View style={styles.hyperlinks}>
+      <TouchableOpacity style={styles.link} onPress={openTnC}>
+        <Image
+          style={{
+            height: 30,
+            width: 30,
+          }}
+          contentFit="contain"
+          source={require("@/src/assets/images/ic_tand_c.png")}
+        />
+        <Text style={styles.linkText}>{t("strings:terms_and_conditions")}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.link} onPress={openFaqS}>
+        <Image
+          style={{
+            height: 30,
+            width: 30,
+          }}
+          contentFit="contain"
+          source={require("@/src/assets/images/ic_faq.png")}
+        />
+        <Text style={styles.linkText}>
+          {t("strings:frequently_asked_quetions_faq")}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+);
 
 const Ticket = () => {
-  const baseURL = "https://www.vguardrishta.com/img/appImages/Profile/";
-  const router = useRouter();
   const { t } = useTranslation();
-
-  const [userData, setUserData] = useState({
-    userName: "",
-    userId: "",
-    userCode: "",
-    userImage: "",
-    userRole: "",
-  });
-
-  const [profileImage, setProfileImage] = useState(null);
-
-  const [options, setOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState("");
-  const [isOptionsLoading, setIsOptionsLoading] = useState(true);
-  const [entityUid, setEntityUid] = useState("");
-  const [fileData, setFileData] = useState({
-    uri: "",
-    name: "",
-    type: "",
-  });
+  const [options, setOptions] = useState<TicketType[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string>("");
+  const [isOptionsLoading, setIsOptionsLoading] = useState<boolean>(true);
   const [descriptionInput, setDescriptionInput] = useState("");
-  const [isPopupVisible, setPopupVisible] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
   const [loader, showLoader] = useState(true);
   const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
-  const toggleModal = () => {
-    setIsImagePickerVisible(!isImagePickerVisible);
-  };
+  const router = useRouter();
+  const { state } = useData();
+  const {
+    popUp,
+    setPopUp,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    cleanupPopUp,
+  } = usePopup();
+
+  const data = [
+    { type: "header" },
+    { type: "popup" },
+    { type: "field" },
+    { type: "submit" },
+    { type: "footer" },
+  ];
 
   useEffect(() => {
-    // AsyncStorage.getItem('USER').then((r) => {
-    //   const user = JSON.parse(r);
-    //   const data = {
-    //     userName: user.name,
-    //     userCode: user.userCode,
-    //     pointsBalance: user.pointsSummary.pointsBalance,
-    //     redeemedPoints: user.pointsSummary.redeemedPoints,
-    //     userImage: user.kycDetails.selfie,
-    //     userRole: user.professionId,
-    //     userId: user.contactNo
-    //   };
-    //   setUserData(data);
-    // });
-    getTicketTypes()
-      .then((response) => response.data)
-      .then((data) => {
-        setOptions(data);
+    (async () => {
+      try {
+        showLoader(true);
+        const response = await getTicketTypes();
         showLoader(false);
+        const responseData: TicketType[] = response.data;
+        console.log(responseData);
+        setOptions(responseData);
         setIsOptionsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching options:", error);
-        setIsOptionsLoading(false);
-      });
+      } catch (error) {
+        showLoader(false);
+      }
+    })();
   }, []);
 
-  const handleOptionChange = (value) => {
+  const handleOptionChange = (value: string) => {
     setSelectedOption(value);
   };
 
@@ -110,257 +234,109 @@ const Ticket = () => {
     );
   };
 
-  // const handleSubmission = async () => {
-  //   const postData = {
-  //     userId: userData.userId,
-  //     issueTypeId: selectedOption,
-  //     imagePath: entityUid,
-  //     description: descriptionInput,
-  //   };
-
-  //   if (postData.userId != '' && postData.issueTypeId != '' && postData.description != '') {
-  //     sendTicket(postData)
-  //       .then((response) => {
-  //         if (response.status === 200) {
-  //           setSelectedOption('');
-  //           setEntityUid('');
-  //           setDescriptionInput('');
-  //           setPopupContent('Ticket Created Successfully');
-  //           setPopupVisible(true);
-  //         } else {
-  //           setPopupContent('Failed to create ticket');
-  //           setPopupVisible(true);
-  //           throw new Error('Failed to create ticket');
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         setPopupContent('Failed to create ticket');
-  //         setPopupVisible(true);
-  //         console.error('API Error:', error);
-  //       });
-  //   }
-  //   else {
-  //     setPopupContent('Enter All Details');
-  //     setPopupVisible(true);
-  //   }
-  // };
-
-  const { state, dispatch } = useData();
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const response = await getUser();
-          const responseData = response.data;
-          dispatch({
-            type: "GET_ALL_FIELDS",
-            payload: {
-              value: responseData,
-            },
-          });
-          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
-            dispatch({
-              type: "CLEAR_ALL_FIELDS",
-              payload: {},
-            });
-            logout();
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-
-      fetchData();
-    }, [])
-  );
-
   const handleSubmission = async () => {
+    if (!selectedOption) {
+      showToast("Please select a issue type");
+      return;
+    }
     showLoader(true);
-    // let imageUrl = await triggerApiWithImage(fileData);
     const postData = {
       issueTypeId: selectedOption,
-      // imagePath: imageUrl,
+      imagePath: "imageUrl",
       description: descriptionInput,
     };
-    console.log("POSTDATA", postData);
     try {
       const response = await sendTicket(postData);
       const responseData = response.data;
-      setPopupVisible(true);
       showLoader(false);
-      setPopupContent(responseData.message);
+      setPopUp(true);
+      setPopUpIconType("Info");
+      setPopUpTitle(t("Ticket"));
+      setPopupText(responseData.message);
     } catch (error) {
       showLoader(false);
-      setPopupVisible(true);
-      setPopupContent("Failed to create ticket");
-    }
-    // sendTicket(postData)
-    //   .then((response) => {
-    //     if (response.status === 200) {
-    //       setSelectedOption("");
-    //       setEntityUid("");
-    //       setDescriptionInput("");
-    //       setPopupVisible(true);
-    //       console.log(response.data);
-    //       setPopupContent("Ticket Created Successfully");
-    //       showLoader(false);
-    //     } else {
-    //       setPopupContent("Failed to create ticket");
-    //       setPopupVisible(true);
-    //       showLoader(false);
-    //       throw new Error("Failed to create ticket");
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     setPopupContent("Failed to create ticket");
-    //     setPopupVisible(true);
-    //     showLoader(false);
-    //     console.error("API Error:", error);
-    //   });
-  };
-  const handleImageChange = async (
-    image: string,
-    type: string,
-    imageName: string,
-    label: string
-  ) => {
-    try {
-      setFileData({
-        uri: image,
-        name: imageName,
-        type: type,
-      });
-    } catch (error) {
-      console.error("Error handling image change in Raise Ticket:", error);
+      showToast("Failed to create ticket. Please try again");
     }
   };
 
-
+  const renderItem: ListRenderItem<(typeof data)[0]> = ({ item }) => {
+    switch (item.type) {
+      case "header":
+        return <Header profile={state} router={router} />;
+      case "popup":
+        return (
+          <PopupSection
+            loader={loader}
+            popUp={popUp}
+            cleanupPopUp={cleanupPopUp}
+            popupText={popupText}
+            popUpIconType={popUpIconType}
+            popUpTitle={popUpTitle}
+          />
+        );
+      case "field":
+        return (
+          <FieldSection
+            t={t}
+            isOptionsLoading={isOptionsLoading}
+            options={options}
+            selectedOption={selectedOption}
+            handleOptionChange={handleOptionChange}
+            descriptionInput={descriptionInput}
+            setDescriptionInput={setDescriptionInput}
+            isImagePickerVisible={isImagePickerVisible}
+            toggleModal={() => setIsImagePickerVisible(!isImagePickerVisible)}
+          />
+        );
+      case "submit":
+        return (
+          <View
+            style={{
+              padding: 15,
+            }}
+          >
+            <Buttons
+              label={t("strings:submit")}
+              variant="filled"
+              onPress={handleSubmission}
+              width="100%"
+            />
+          </View>
+        );
+      case "footer":
+        return <FooterSection t={t} openTnC={openTnC} openFaqS={openFaqS} />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <ScrollView style={styles.mainWrapper}>
-      {loader && <Loader isLoading={loader} />}
-      <View style={styles.flexBox}>
-        <View style={styles.profileDetails}>
-          <View style={styles.ImageProfile}>
-            <ImageBackground
-              source={require("@/src/assets/images/ic_v_guards_user.png")}
-              style={{ width: "100%", height: "100%", borderRadius: 100 }}
-              resizeMode="contain"
-            >
-              <Image
-                source={{ uri: profileImage }}
-                style={{ width: "100%", height: "100%", borderRadius: 100 }}
-                resizeMode="contain"
-              />
-            </ImageBackground>
-          </View>
-          <View style={styles.profileText}>
-            <Text style={styles.textDetail}>{state.Contact}</Text>
-            <Text style={styles.textDetail}>{state.RishtaID}</Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push("ticket-history")}
-        >
-          <Text style={styles.buttonText}>{t("strings:ticket_history")}</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={[styles.blackText, { marginTop: responsiveFontSize(2) }]}>
-        {t("strings:issue_type")}
-      </Text>
-      {isOptionsLoading ? (
-        <Text style={styles.blackText}>Loading options...</Text>
-      ) : options.length === 0 ? (
-        <Text style={styles.blackText}>No options available.</Text>
-      ) : (
-        <View style={styles.inputContainer}>
-          <Picker
-            dropdownIconColor={colors.black}
-            selectedValue={selectedOption}
-            onValueChange={handleOptionChange}
-            style={styles.picker}
-            label={t("strings:select_ticket_type")}
-          >
-            <Picker.Item key={""} label={"Select Issue Type"} value={""} />
-            {options.map((option) => (
-              <Picker.Item
-                key={option.issueTypeId}
-                label={option.name}
-                value={option.issueTypeId}
-              />
-            ))}
-          </Picker>
-        </View>
-      )}
-      {/* <ImagePickerModal
-        isVisible={isImagePickerVisible}
-        toggleModal={toggleModal}
-        type={"profile"}
-      /> */}
-      <Text style={styles.blackText}>{t("strings:description_remarks")}</Text>
-      <TextInput
-        style={styles.descriptionInput}
-        placeholder={t("strings:provide_description_in_the_box")}
-        placeholderTextColor={colors.grey}
-        multiline={true}
-        textAlignVertical="top"
-        value={descriptionInput}
-        onChangeText={(text) => setDescriptionInput(text)}
-      />
-
-      <Buttons
-        label={t("strings:submit")}
-        variant="filled"
-        onPress={handleSubmission}
-        width="100%"
-      />
-      <View style={styles.footerRow}>
-        <View style={styles.hyperlinks}>
-          <TouchableOpacity style={styles.link} onPress={openTnC}>
-            <Image
-              style={{
-                height: 30,
-                width: 30,
-              }}
-              resizeMode="contain"
-              source={require("@/src/assets/images/ic_tand_c.png")}
-            />
-            <Text style={styles.linkText}>
-              {t("strings:terms_and_conditions")}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.link} onPress={openFaqS}>
-            <Image
-              style={{
-                height: 30,
-                width: 30,
-              }}
-              resizeMode="contain"
-              source={require("@/src/assets/images/ic_faq.png")}
-            />
-            <Text style={styles.linkText}>
-              {t("strings:frequently_asked_quetions_faq")}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {isPopupVisible && (
-        <Popup
-          isVisible={isPopupVisible}
-          onClose={() => setPopupVisible(false)}
-        >
-          {popupContent}
-        </Popup>
-      )}
-    </ScrollView>
+    <View style={styles.container}>
+      <FlashList data={data} renderItem={renderItem} estimatedItemSize={30} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   footer: {
     marginBottom: 40,
+  },
+  container: {
+    flex: 1,
+    padding: 15,
+    backgroundColor: colors.white,
+  },
+  profileImageContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    backgroundColor: "white",
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 50,
   },
   picker: {
     color: colors.black,
@@ -411,16 +387,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   inputContainer: {
-    borderColor: colors.lightGrey,
-    borderWidth: 2,
+    backgroundColor: "#fff",
+    height: height / 17,
+    marginTop: 10,
+    marginBottom: 20,
     borderRadius: 5,
-    height: responsiveHeight(5),
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginVertical: responsiveHeight(1),
+    flexDirection: "column",
+
+    borderWidth: 1.5,
+    borderColor: "black",
   },
   input: {
     width: "90%",
@@ -488,7 +463,3 @@ const styles = StyleSheet.create({
 });
 
 export default Ticket;
-
-function logout() {
-  throw new Error("Function not implemented.");
-}

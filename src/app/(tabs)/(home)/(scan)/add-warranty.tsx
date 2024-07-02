@@ -1,9 +1,8 @@
-import { View, Text, StyleSheet, ScrollView, ToastAndroid } from "react-native";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
 import arrowIcon from "../../../../assets/images/arrow.png";
-import gift from "@/src/assets/images/ic_rewards_gift.png"
 import { sendCustomerData } from "@/src/utils/apiservice";
 import { customerData } from "./fields/customerData";
 import { RegistrationCustomerDetailsSchema } from "@/src/utils/schemas/Registration";
@@ -15,49 +14,34 @@ import colors from "@/src/utils/colors";
 import Buttons from "@/src/components/Buttons";
 import Field from "@/src/components/Field";
 import { useData } from "@/src/hooks/useData";
-import RewardBox from "@/src/components/RewardBox";
+import { showToast } from "@/src/utils/showToast";
+import usePopup from "@/src/hooks/usePopup";
+import { useRouter } from "expo-router";
+import { CouponRedeemResponse } from "@/src/utils/types";
 
 export const AddWarranty = () => {
   const { t } = useTranslation();
   const { customerState, customerDispatch } = useData();
-  const [isPopupVisible, setPopupVisible] = useState(false);
   const [loader, showLoader] = useState(false);
-  const [scratchCardProps, setScratchCardProps] = useState({
-    rewardImage: {
-      width: 100,
-      height: 100,
-      resourceLocation: gift
-    },
-    rewardResultText: {
-      color: "black",
-      fontSize: 16,
-      textContent: "YOU WON",
-      fontWeight: "700",
-    },
-    text1: { color: "black", fontSize: 16, textContent: "", fontWeight: "700" },
-    text2: {
-      color: "black",
-      fontSize: 16,
-      textContent: "POINTS",
-      fontWeight: "700",
-    },
-    button: {
-      buttonColor: "#F0C300",
-      buttonTextColor: "black",
-      buttonText: "",
-      buttonAction: () => {},
-      fontWeight: "400",
-    },
-    textInput: false,
-  });
-  const [popupContent, setPopupContent] = useState("");
-  const [scratchCard, setScratchCard] = useState(false);
-  const [scratchable, setScratchable] = useState(false);
+  const {
+    popUp,
+    setPopUp,
+    popUpTitle,
+    setPopUpTitle,
+    popupText,
+    setPopupText,
+    popUpIconType,
+    setPopUpIconType,
+    cleanupPopUp,
+  } = usePopup();
+
+  const router = useRouter();
+
   useEffect(() => {
     (async () => {
       try {
         const today = new Date();
-        const formattedDate = today.toLocaleDateString("en-US");
+        const formattedDate = today.toLocaleDateString("en-GB");
         customerDispatch({
           type: "UPDATE_SUB_FIELD",
           payload: {
@@ -74,59 +58,32 @@ export const AddWarranty = () => {
 
   async function saveData() {
     try {
+      router.push({
+        pathname: "success-page",
+        params: { message: "string" },
+      });
       RegistrationCustomerDetailsSchema.parse(customerState);
       showLoader(true);
       const response = await sendCustomerData(customerState);
-      const responseData = response.data;
+      const responseData: CouponRedeemResponse = response.data;
       showLoader(false);
       if (responseData.errorCode == 1) {
-        var couponPoints = responseData.couponPoints;
-        setScratchCardProps({
-          rewardImage: {
-            width: 100,
-            height: 100,
-            resourceLocation: gift,
-          },
-          rewardResultText: {
-            color: colors.black,
-            fontSize: 16,
-            textContent: "YOU WON",
-            fontWeight: "700",
-          },
-          text1: {
-            color: colors.black,
-            fontSize: 16,
-            textContent: couponPoints,
-            fontWeight: "700",
-          },
-          text2: {
-            color: colors.black,
-            fontSize: 16,
-            textContent: "POINTS",
-            fontWeight: "700",
-          },
-          button: {
-            buttonColor: colors.yellow,
-            buttonTextColor: colors.black,
-            buttonText: "Scan Again",
-            buttonAction: () =>
-              navigation.reset({ index: 0, routes: [{ name: "Scan Code" }] }),
-            fontWeight: "400",
-          },
-          textInput: false,
+        router.push({
+          pathname: "success-page",
+          params: { message: responseData.errorMsg },
         });
-        setScratchCard(true);
       } else {
-        setPopupVisible(true);
-        setPopupContent(responseData.errorMsg);
+        setPopUp(true);
+        setPopUpIconType("Alert");
+        setPopUpTitle(t("Warranty Registration Error"));
+        setPopupText(responseData.errorMsg as string);
       }
     } catch (error: any) {
+      showLoader(false);
       if (error instanceof z.ZodError) {
-        ToastAndroid.show(`${error.errors[0].message}`, ToastAndroid.LONG);
+        showToast(`${error.errors[0].message}`);
       } else {
-        showLoader(false);
-        setPopupVisible(true);
-        setPopupContent(t("strings:something_wrong"));
+        showToast(t("strings:something_wrong"));
       }
     }
   }
@@ -138,29 +95,20 @@ export const AddWarranty = () => {
           padding: 15,
         }}
       >
+        <NewPopUp
+          visible={popUp}
+          button1Action={() => cleanupPopUp()}
+          button1Text={"Dismiss"}
+          text={popupText}
+          iconType={popUpIconType}
+          title={popUpTitle}
+        />
         <Text style={styles.heading}>Warranty Registration</Text>
         <Text style={styles.label}>
           Provide customer details to earn points
         </Text>
       </View>
-      {scratchCard && (
-        <RewardBox
-          scratchCardProps={scratchCardProps}
-          visible={scratchCard}
-          scratchable={scratchable}
-          onClose={() =>
-            navigation.reset({ index: 0, routes: [{ name: "Home" }] })
-          }
-        />
-      )}
-      {isPopupVisible && (
-        <Popup
-          isVisible={isPopupVisible}
-          onClose={() => setPopupVisible(false)}
-        >
-          {popupContent}
-        </Popup>
-      )}
+
       <View>
         {customerData.map((field) => (
           <Field
@@ -173,17 +121,22 @@ export const AddWarranty = () => {
             source={field.source}
           />
         ))}
-
-        <Buttons
-          label={t("strings:submit")}
-          variant="filled"
-          onPress={() => saveData()}
-          width="100%"
-          iconHeight={10}
-          iconWidth={30}
-          iconGap={30}
-          icon={arrowIcon}
-        />
+        <View
+          style={{
+            padding: 15,
+          }}
+        >
+          <Buttons
+            label={t("strings:submit")}
+            variant="filled"
+            onPress={() => saveData()}
+            width="100%"
+            iconHeight={10}
+            iconWidth={30}
+            iconGap={30}
+            icon={arrowIcon}
+          />
+        </View>
       </View>
     </ScrollView>
   );
