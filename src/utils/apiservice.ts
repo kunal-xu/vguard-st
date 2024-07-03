@@ -3,6 +3,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 // const BASE_URL = "http://192.168.220.248:5005/vguard/api";
 const BASE_URL = "https://infra.4test.info/vguard/api";
+// const BASE_URL = "https://st.vguardrishta.com/vguard/api";
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -125,7 +126,7 @@ export async function loginWithOtp(
   return response;
 }
 
-export function getFile(uuid: String, imageRelated: String,) {
+export function getFile(uuid: String, imageRelated: String) {
   const path = `file/${uuid}/${imageRelated}`;
   return createGetRequest(path);
 }

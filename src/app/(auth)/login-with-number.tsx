@@ -112,8 +112,7 @@ const LoginWithNumber = () => {
         }
       } catch (error: any) {
         showLoader(false);
-        setPopUp(true);
-        setPopupText(error.response.data.message || "An error occurred.");
+        showToast(error.response.data.message || "An error occurred.");
         console.error("Error during validation:", error);
       }
     } else {

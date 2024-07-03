@@ -108,7 +108,7 @@ const LoginScreen = () => {
       showLoader(false);
       setPopUp(true);
       setPopUpTitle(t("Verification Failed"));
-      setPopupText(error.response.data.message);
+      setPopupText(error.response.data.message || "Internal Server Error. Please try again.");
       setPopUpIconType("Alert");
     }
   };
