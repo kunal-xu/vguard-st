@@ -36,7 +36,6 @@ const UpdateBankDetails = () => {
   const [selectedValue, setSelectedValue] = useState<string>();
   const [editable, setEditable] = useState<boolean>(true);
   const { state, dispatch } = useData();
-  const { logout } = useAuth();
   const {
     popUp,
     setPopUp,
@@ -50,34 +49,6 @@ const UpdateBankDetails = () => {
   } = usePopup();
 
   const items: string[] = ["Savings", "Current", "Salary", "Fixed deposit"];
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const response = await getUser();
-          const responseData = response.data;
-          dispatch({
-            type: "GET_ALL_FIELDS",
-            payload: {
-              value: responseData,
-            },
-          });
-          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
-            dispatch({
-              type: "CLEAR_ALL_FIELDS",
-              payload: {},
-            });
-            logout();
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-      fetchData();
-    }, [])
-  );
-
   const handleFormInputChange = (
     field: keyof STUser,
     subfield:

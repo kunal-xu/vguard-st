@@ -46,6 +46,7 @@ export class STUser {
   pwd: string | null = "";
   confirmPwd: string | null = "";
   hasPwdChanged: boolean | null = null;
+  firstLogin: number = 0;
 
   constructor(data?: Partial<STUser>) {
     Object.assign(this, data);

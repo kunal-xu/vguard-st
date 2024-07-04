@@ -21,14 +21,12 @@ import {
   CustomLabelProps,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { showToast } from "@/src/utils/showToast";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import NewPopUp from "@/src/components/NewPopup";
 import usePopup from "@/src/hooks/usePopup";
-import { useNavigation } from "expo-router";
-import { CommonActions } from "@react-navigation/native";
 import Constants from "expo-constants";
 
 const LeadForm = () => {
@@ -50,11 +48,11 @@ const LeadForm = () => {
     setPopUpIconType,
     cleanupPopUp,
   } = usePopup();
+  const router = useRouter();
 
   const handlePress = () => {
     setIsExpanded(!isExpanded);
   };
-  const navigation = useNavigation();
 
   const data = [
     { label: "AC", value: "AC", id: "1" },
@@ -144,19 +142,7 @@ const LeadForm = () => {
         visible={popUp}
         button1Action={() => {
           cleanupPopUp();
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [
-                {
-                  name: "(auth)",
-                  state: {
-                    routes: [{ name: "login-with-number" }],
-                  },
-                },
-              ],
-            })
-          );
+          router.replace("(auth)/login-with-number");
         }}
         button1Text={"Dismiss"}
         text={popupText}

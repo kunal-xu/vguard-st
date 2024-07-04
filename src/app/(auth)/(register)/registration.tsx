@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, StatusBar } from "react-native";
 import { RegistrationSchema } from "@/src/utils/schemas/Registration";
 import { useData } from "@/src/hooks/useData";
 import Field from "@/src/components/Field";
@@ -9,6 +9,7 @@ import { height, width } from "@/src/utils/dimensions";
 import { Avatar } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { showToast } from "@/src/utils/showToast";
+import colors from "@/src/utils/colors";
 
 const Registration = () => {
   const { state } = useData();
@@ -24,6 +25,7 @@ const Registration = () => {
 
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
+      <StatusBar backgroundColor={colors.yellow} barStyle="dark-content" />
       <View style={{ backgroundColor: "white" }}>
         <View
           style={{
@@ -81,7 +83,7 @@ const Registration = () => {
             }}
             variant="filled"
             width={350}
-            icon={require("../../../assets/images/arrow.png")}
+            icon={require("@/src/assets/images/arrow.png")}
             iconWidth={50}
             iconHeight={20}
             iconGap={10}

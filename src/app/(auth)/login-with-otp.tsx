@@ -19,9 +19,7 @@ import { STUser } from "@/src/utils/types";
 import colors from "@/src/utils/colors";
 import Buttons from "@/src/components/Buttons";
 import { height } from "@/src/utils/dimensions";
-import { useLocalSearchParams } from "expo-router";
-import { useNavigation } from "expo-router";
-import { CommonActions } from "@react-navigation/native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { showToast } from "@/src/utils/showToast";
 import NewPopUp from "@/src/components/NewPopup";
 import Constants from "expo-constants";
@@ -29,7 +27,6 @@ import Constants from "expo-constants";
 const LoginWithOtp = () => {
   const { contact } = useLocalSearchParams();
   const [otp, setOtp] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [loader, showLoader] = useState(false);
   const {
@@ -47,8 +44,9 @@ const LoginWithOtp = () => {
     cleanupPopUp,
   } = useAuth();
   const { dispatch } = useData();
-  const navigation = useNavigation();
+  const router = useRouter();
   const { t } = useTranslation();
+
   const placeholderColor = colors.grey;
 
   useEffect(() => {
@@ -94,9 +92,9 @@ const LoginWithOtp = () => {
       }
     } else {
       showLoader(false);
-      setPopUpIconType("Info")
+      setPopUpIconType("Info");
       setPopUp(true);
-      setPopUpTitle(t("Error"))
+      setPopUpTitle(t("Error"));
       setPopupText(`Wait for ${countdown} seconds to send OTP again!`);
     }
   }
@@ -115,11 +113,10 @@ const LoginWithOtp = () => {
       };
       const verificationResponse = await validateLoginOtp(body);
       const verificationResponseData = verificationResponse.data;
+      showLoader(false);
       if (verificationResponse.status === 200) {
-        showLoader(false);
         login(verificationResponseData);
       } else if (verificationResponse.status === 201) {
-        showLoader(false);
         const keys: string[] = Object.keys(verificationResponseData);
         for (const key of keys) {
           dispatch({
@@ -131,21 +128,8 @@ const LoginWithOtp = () => {
             },
           });
         }
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [
-              {
-                name: "(register)",
-                state: {
-                  routes: [{ name: "registration" }],
-                },
-              },
-            ],
-          })
-        );
+        router.replace("(auth)/registration");
       } else if (verificationResponse.status === 202) {
-        showLoader(false);
         dispatch({
           type: "UPDATE_FIELD",
           payload: {
@@ -154,19 +138,7 @@ const LoginWithOtp = () => {
             value: contact,
           },
         });
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [
-              {
-                name: "(register)",
-                state: {
-                  routes: [{ name: "credentials" }],
-                },
-              },
-            ],
-          })
-        );
+        router.replace("(auth)/credentials");
       } else {
         showLoader(false);
         showToast(t("Wrong OTP. Please try again!"));
@@ -174,13 +146,15 @@ const LoginWithOtp = () => {
       }
     } catch (error: any) {
       showLoader(false);
-      showToast(error.response.data.message);
+      showToast(
+        error.response.data.message || error.message || "Something went wrong"
+      );
     }
   }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {loader && <Loader isLoading={loader} />}
+      {<Loader isLoading={loader} />}
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <NewPopUp
         visible={popUp}
@@ -193,11 +167,6 @@ const LoginWithOtp = () => {
         title={popUpTitle}
       />
       <View style={styles.registerUser}>
-        {isLoading == true ? (
-          <View style={{ flex: 1 }}>
-            <Loader isLoading={isLoading} />
-          </View>
-        ) : null}
         <View style={styles.mainWrapper}>
           <Image
             source={require("../../assets/images/ic_rishta_logo.jpg")}
@@ -279,13 +248,7 @@ const LoginWithOtp = () => {
                   </Text>
                 </TouchableOpacity>
               </View>
-              {/* <Text style={styles.greyText}>{t("strings:or")}</Text> */}
               <View style={{ flexDirection: "row", gap: 10 }}>
-                {/* <TouchableOpacity onPress={() => getOTP("Voice")}>
-                  <Text style={{ color: colors.yellow }}>
-                    {t("strings:call_to_get_otp")}
-                  </Text>
-                </TouchableOpacity> */}
               </View>
             </View>
           </View>

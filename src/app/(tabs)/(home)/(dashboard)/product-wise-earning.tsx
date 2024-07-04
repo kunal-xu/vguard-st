@@ -4,7 +4,6 @@ import { Table, Row, Rows } from "react-native-table-component";
 import colors from "@/src/utils/colors";
 import {
   responsiveFontSize,
-  responsiveHeight,
 } from "react-native-responsive-dimensions";
 import { getProdWiseEarning } from "@/src/utils/apiservice";
 
@@ -20,15 +19,6 @@ const ProductWiseEarning = () => {
         console.log(error);
       }
     })();
-    // getProdWiseEarning()
-    //     .then(response => response.data)
-    //     .then(responseData => {
-    //         console.log(responseData);
-    //         setProductDetails(responseData);
-    //     })
-    //     .catch(error => {
-    //         console.error('Error fetching data:', error);
-    //     });
   }, []);
 
   let data: any = [];

@@ -15,9 +15,8 @@ import {
   FloatingLabelProps,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import DatePicker from "./DatePicker";
 import { useTranslation } from "react-i18next";
-import { ButtonsProps, DatePickerProps } from "../utils/interfaces";
+import { ButtonsProps } from "../utils/interfaces";
 import { height, width } from "../utils/dimensions";
 import { useState } from "react";
 import React from "react";
@@ -41,7 +40,7 @@ import {
   WelcomeBanner,
 } from "../utils/types";
 import Loader from "./Loader";
-import ImagePickerField from "./ImagePickerField";
+
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NewPopUp from "./NewPopup";
 import usePopup from "../hooks/usePopup";
@@ -162,7 +161,6 @@ const Field = (props: FieldProps) => {
   switch (type) {
     case "floatingLabelInput":
       properties = (props as FloatingLabelInputField).properties;
-
       const [field, subfield] = props.data?.split(".") as [
         keyof STUser,
         keyof (AddressDetail | BankDetail | PaytmDetail | WelcomeBanner)
@@ -322,13 +320,6 @@ const Field = (props: FieldProps) => {
           }}
         />
       );
-    case "datePicker":
-      properties = (props as DatePickerField).properties;
-      return (
-        <View style={styles.viewNew}>
-          <DatePicker {...properties} />
-        </View>
-      );
 
     case "floatingLabelInputWithButton":
       function tdsPopUp() {
@@ -369,7 +360,7 @@ const Field = (props: FieldProps) => {
           setPopUp(true);
           setPopUpIconType("Info");
           setPopUpTitle(t("TDS Percentage"));
-          setPopupText(error.response.data.message);
+          setPopupText(error.response.data.message || "Something went wrong. Please try again");
         }
       }
 
@@ -412,6 +403,7 @@ const Field = (props: FieldProps) => {
           }
         } catch (error: any) {
           showLoader(false);
+          showToast("Something went wrong. Please try again");
           console.log(error);
         }
       }
@@ -485,38 +477,6 @@ const Field = (props: FieldProps) => {
           </View>
         </View>
       );
-
-    case "ImagePicker":
-      properties = props.properties;
-      const [fileData, setFileData] = useState({
-        uri: "",
-        name: "",
-        type: "",
-      });
-      const handleImageChange = async (
-        image: string,
-        type: string,
-        imageName: string,
-        label: string
-      ) => {
-        try {
-          setFileData({
-            uri: image,
-            name: imageName,
-            type: type,
-          });
-        } catch (error) {
-          console.error("Error handling image change in Raise Ticket:", error);
-        }
-      };
-      return (
-        <ImagePickerField
-          label={props.label as string}
-          onImageChange={handleImageChange}
-          {...properties}
-        />
-      );
-
     case "CustomerButton":
       async function getCustomerData() {
         try {

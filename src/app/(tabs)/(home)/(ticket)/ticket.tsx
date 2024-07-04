@@ -48,7 +48,6 @@ function Header({ profile, router }: ProfileHeader) {
         contentFit="cover"
       />
       <View>
-        <Text style={styles.textDetail}>{profile.Name || "ST Account"}</Text>
         <Text style={{ fontSize: responsiveFontSize(1.7) }}>
           Rishta ID: {profile.RishtaID || "VGIL30000"}
         </Text>
@@ -211,7 +210,6 @@ const Ticket = () => {
         const response = await getTicketTypes();
         showLoader(false);
         const responseData: TicketType[] = response.data;
-        console.log(responseData);
         setOptions(responseData);
         setIsOptionsLoading(false);
       } catch (error) {

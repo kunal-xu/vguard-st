@@ -28,8 +28,8 @@ import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
 import NewPopUp from "@/src/components/NewPopup";
 import { showToast } from "@/src/utils/showToast";
-import { useAuth } from "@/src/hooks/useAuth";
 import Constants from "expo-constants";
+import usePopup from "@/src/hooks/usePopup";
 
 const LoginWithNumber = () => {
   const [number, setNumber] = useState("");
@@ -52,11 +52,10 @@ const LoginWithNumber = () => {
     popUpButton2Text,
     setPopupButton2Text,
     cleanupPopUp,
-  } = useAuth();
+  } = usePopup();
 
   const pkg = require("../../../package.json");
   const version = pkg.version;
-  const navigation = useNavigation();
   const router = useRouter();
 
   const handleTermsPress = () => {
@@ -226,9 +225,7 @@ const LoginWithNumber = () => {
               <Text style={styles.greyText}>
                 {t("Already have an account?")}
               </Text>
-              <TouchableOpacity
-                onPress={() => navigation.navigate("login" as never)}
-              >
+              <TouchableOpacity onPress={() => router.push("login")}>
                 <Text
                   style={{
                     color: colors.yellow,
@@ -240,19 +237,6 @@ const LoginWithNumber = () => {
                 </Text>
               </TouchableOpacity>
             </View>
-
-            {/* <TouchableOpacity
-              style={styles.otpPhone}
-              onPress={() => getOTP("Voice")}
-            >
-              <Image
-                source={require("../../../assets/images/group_501.png")}
-                style={styles.phone}
-              />
-              <Text style={styles.greyText}>
-                {t("strings:lbl_otp_through_phone_call")}
-              </Text>
-            </TouchableOpacity> */}
           </View>
         </View>
         <View>

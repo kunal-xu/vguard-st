@@ -108,7 +108,10 @@ const LoginScreen = () => {
       showLoader(false);
       setPopUp(true);
       setPopUpTitle(t("Verification Failed"));
-      setPopupText(error.response.data.message || "Internal Server Error. Please try again.");
+      setPopupText(
+        error.response.data.message ||
+          "Internal Server Error. Please try again."
+      );
       setPopUpIconType("Alert");
     }
   };
@@ -175,7 +178,7 @@ const LoginScreen = () => {
               <Image
                 style={styles.icon}
                 source={require("../../assets/images/lock_icon.png")}
-                resizeMode="contain"
+                contentFit="contain"
               />
               <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}

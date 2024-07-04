@@ -23,16 +23,13 @@ import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";
 import NewPopUp from "@/src/components/NewPopup";
 import { showToast } from "@/src/utils/showToast";
-import { useAuth } from "@/src/hooks/useAuth";
 import Constants from "expo-constants";
+import usePopup from "@/src/hooks/usePopup";
 
 const ForgotPasswordNumberVerification = () => {
   const [number, setNumber] = useState("");
-  const [showLanguagePicker, setShowLanguagePicker] = useState(false);
   const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(true);
-
   const {
     popUp,
     setPopUp,
@@ -47,17 +44,12 @@ const ForgotPasswordNumberVerification = () => {
     popUpButton2Text,
     setPopupButton2Text,
     cleanupPopUp,
-  } = useAuth();
-
-  const pkg = require("../../../package.json");
+  } = usePopup();
   const router = useRouter();
+  const { t } = useTranslation();
 
   async function getOTP(OtpType: string) {
     const numberRegex = /^[6789]\d{9}$/;
-    if (selectedOption === false) {
-      showToast(t("strings:please_accept_terms"));
-      return;
-    }
     showLoader(true);
     if (number.trim().length && numberRegex.test(number.trim())) {
       try {
@@ -95,6 +87,8 @@ const ForgotPasswordNumberVerification = () => {
       } catch (error: any) {
         showLoader(false);
         setPopUp(true);
+        setPopUpIconType("Alert");
+        setPopUpTitle(t("Verification Failed"));
         setPopupText(error.response.data.message || "An error occurred.");
         console.error("Error during validation:", error);
       }
@@ -105,16 +99,6 @@ const ForgotPasswordNumberVerification = () => {
   }
 
   const placeholderColor = colors.grey;
-
-  const { t } = useTranslation();
-
-  const handleLanguageButtonPress = () => {
-    setShowLanguagePicker(true);
-  };
-
-  const handleCloseLanguagePicker = () => {
-    setShowLanguagePicker(false);
-  };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -206,19 +190,6 @@ const ForgotPasswordNumberVerification = () => {
             </View>
           </View>
         </View>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={showLanguagePicker}
-          onRequestClose={handleCloseLanguagePicker}
-        >
-          <View style={styles.languagePickerContainer}>
-            <LanguagePicker onCloseModal={handleCloseLanguagePicker} />
-            <TouchableOpacity onPress={handleCloseLanguagePicker}>
-              <Text style={styles.closeText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
       </View>
     </ScrollView>
   );

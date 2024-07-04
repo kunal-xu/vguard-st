@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, StatusBar } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomTouchableOption from "../../../components/CustomTouchableOption";
 import {
@@ -21,6 +21,7 @@ import Constants from "expo-constants";
 import { TabBarIcon } from "@/src/components/TabBarIcon";
 import { useAuth } from "@/src/hooks/useAuth";
 import NewPopUp from "@/src/components/NewPopup";
+import OpenPopupOnOpeningApp from "@/src/components/OpenPopupOnOpeningApp";
 
 const HomeScreen = () => {
   const { t } = useTranslation();
@@ -44,6 +45,7 @@ const HomeScreen = () => {
         return (
           <View style={styles.headerContainer}>
             <CustomTabHeader />
+            <OpenPopupOnOpeningApp />
             <NewPopUp
               visible={logoutPopup}
               numberOfButtons={2}

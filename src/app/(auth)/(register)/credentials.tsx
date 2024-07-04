@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, ScrollView, Text } from "react-native";
+import { View, ScrollView, Text, StatusBar } from "react-native";
 import { loginWithPassword, registerNewUser } from "@/src/utils/apiservice";
 import { z } from "zod";
 import Buttons from "@/src/components/Buttons";
@@ -39,6 +39,7 @@ const Credentials = () => {
       PasswordMatchSchema.parse(state);
       showLoader(true);
       const response = await registerNewUser(state);
+      console.log(state);
       const loginResponse = await loginWithPassword(
         state.Contact as string,
         state.pwd as string
@@ -50,11 +51,19 @@ const Credentials = () => {
           value: loginResponseData.stUser,
         },
       });
+      dispatch({
+        type: "UPDATE_FIELD",
+        payload: {
+          field: "firstLogin",
+          value: 1,
+        },
+      });
       login(loginResponseData);
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         showToast(`${error.errors[0].message}`);
       } else {
+        console.log(error);
         showLoader(false);
         setPopUp(true);
         setPopUpIconType("Alert");
@@ -66,6 +75,7 @@ const Credentials = () => {
 
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
+      <StatusBar backgroundColor={colors.yellow} barStyle="dark-content" />
       <View>
         <View
           style={{
@@ -123,9 +133,7 @@ const Credentials = () => {
               marginTop: 24,
             }}
           >
-            {t(
-              "Note: Password length should be 8 characters long."
-            )}
+            {t("Note: Password length should be 8 characters long.")}
           </Text>
         </View>
         <View style={{ margin: 20 }}>

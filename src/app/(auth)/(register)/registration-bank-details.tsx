@@ -1,13 +1,11 @@
-import React, { useCallback, useState } from "react";
-import { View, ScrollView, StyleSheet, Text } from "react-native";
-import { NavigationProps } from "@/src/utils/interfaces";
+import React, { useState } from "react";
+import { View, ScrollView, StyleSheet, Text, StatusBar } from "react-native";
 import Field from "@/src/components/Field";
 import { registrationBankDetails } from "./fields/registrationBankDetailsFields";
 import Buttons from "@/src/components/Buttons";
-import { useAuth } from "@/src/hooks/useAuth";
 import { useData } from "@/src/hooks/useData";
 import usePopup from "@/src/hooks/usePopup";
-import { getUser, getBankDetail } from "@/src/utils/apiservice";
+import { getBankDetail } from "@/src/utils/apiservice";
 import { BankDetailsSchema } from "@/src/utils/schemas/BankDetails";
 import { showToast } from "@/src/utils/showToast";
 import {
@@ -17,7 +15,7 @@ import {
   PaytmDetail,
   WelcomeBanner,
 } from "@/src/utils/types";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { height, width } from "@/src/utils/dimensions";
@@ -31,14 +29,13 @@ import {
 import Loader from "@/src/components/Loader";
 import NewPopUp from "@/src/components/NewPopup";
 
-const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
+const RegistrationBankDetails = () => {
   const { t } = useTranslation();
   const [selectedValue, setSelectedValue] = useState<string>();
   const [editable, setEditable] = useState<boolean>(true);
   const [loader, showLoader] = useState<boolean>(false);
   const router = useRouter();
   const { state, dispatch } = useData();
-  const { logout } = useAuth();
   const {
     popUp,
     setPopUp,
@@ -51,39 +48,7 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
     cleanupPopUp,
   } = usePopup();
 
-  const items: string[] = [
-    "Savings",
-    "Current",
-    "Salary",
-    "Fixed deposit",
-  ];
-
-  useFocusEffect(
-    useCallback(() => {
-      const fetchData = async () => {
-        try {
-          const response = await getUser();
-          const responseData = response.data;
-          dispatch({
-            type: "GET_ALL_FIELDS",
-            payload: {
-              value: responseData,
-            },
-          });
-          if (responseData.hasPwdChanged || responseData.BlockStatus === 3) {
-            dispatch({
-              type: "CLEAR_ALL_FIELDS",
-              payload: {},
-            });
-            logout();
-          }
-        } catch (error: any) {
-          console.log(error.message);
-        }
-      };
-      fetchData();
-    }, [])
-  );
+  const items: string[] = ["Savings", "Current", "Salary", "Fixed deposit"];
 
   const handleFormInputChange = (
     field: keyof STUser,
@@ -165,6 +130,7 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
   }
   return (
     <ScrollView style={{ backgroundColor: "white" }}>
+      <StatusBar backgroundColor={colors.yellow} barStyle="dark-content" />
       <View style={{ backgroundColor: "white" }}>
         <View
           style={{
@@ -319,7 +285,7 @@ const RegistrationBankDetails = ({ navigation }: NavigationProps) => {
           <Buttons
             label="Next"
             onPress={() => {
-              navigation.navigate("Credentials");
+              router.push("/(register)/credentials");
             }}
             variant="filled"
             width={350}

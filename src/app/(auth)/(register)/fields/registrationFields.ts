@@ -2,15 +2,6 @@ import { height, width } from "@/src/utils/dimensions";
 import { styles } from "./styles";
 
 export const registrationFields = [
-  // {
-  //   id: "e57905fd-95a3-4642-9129-09012b98e6a1",
-  //   type: "ImagePicker",
-  //   data: "Selfie",
-  //   label: "Profile Picture",
-  //   properties: {
-  //     imageRelated: "Profile"
-  //   }
-  // },
   {
     id: "2af107a0-af3f-4c05-bf43-add3e85f73d1",
     type: "floatingLabelInput",
@@ -23,8 +14,8 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
-    }
+      inputStyles: styles.inputStyles,
+    },
   },
   
   {
@@ -39,7 +30,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -55,7 +46,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -70,7 +61,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -85,7 +76,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -120,7 +111,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -135,7 +126,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -150,7 +141,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -165,7 +156,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -180,7 +171,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -195,7 +186,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -222,16 +213,16 @@ export const registrationFields = [
       },
       badgeStyle: (item: any) => ({
         padding: 5,
-        backgroundColor: item.value? 'red': 'grey',
+        backgroundColor: item.value ? "red" : "grey",
       }),
       badgeProps: {
-        activeOpacity: 1.5
+        activeOpacity: 1.5,
       },
       badgeSeparatorStyle: {
-        width: 30
+        width: 30,
       },
-      badgeColors: ['red'],
-      badgeDotColors: ['red'],
+      badgeColors: ["red"],
+      badgeDotColors: ["red"],
       dropDownContainerStyle: {
         width: width / 1.1,
         height: height / 5,
@@ -256,7 +247,7 @@ export const registrationFields = [
         alignSelf: "center",
         bottom: 10,
         margintop: 50,
-        borderColor: "#D3D3D3", 
+        borderColor: "#D3D3D3",
       },
     },
   },
@@ -272,7 +263,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -287,7 +278,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
   {
@@ -302,7 +293,7 @@ export const registrationFields = [
       containerStyles: styles.container,
       labelStyles: styles.labelStyles,
       customLabelStyles: styles.customLabelStyles,
-      inputStyles: styles.inputStyles
+      inputStyles: styles.inputStyles,
     },
   },
 ];

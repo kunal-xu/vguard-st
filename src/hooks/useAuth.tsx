@@ -11,6 +11,7 @@ import { User } from "../utils/interfaces";
 import { api, logoutUser, newTokens } from "../utils/apiservice";
 import { getItemAsync, setItemAsync, deleteItemAsync } from "expo-secure-store";
 import { useRouter } from "expo-router";
+import { useData } from "./useData";
 
 interface AuthContextProps {
   setIsUserAuthenticated: Dispatch<SetStateAction<boolean>>;
@@ -57,6 +58,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setPopupButton2Text("");
   }
 
+  const { dispatch } = useData();
+
   async function login(user: User) {
     await setItemAsync(
       "refreshToken",
@@ -70,6 +73,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await logoutUser();
       await deleteItemAsync("refreshToken");
+      dispatch({
+        type: "CLEAR_ALL_FIELDS",
+        payload: {},
+      });
       setIsUserAuthenticated(false);
       router.replace("/(auth)/login-with-number");
     } catch (error) {
@@ -101,7 +108,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log(error.message);
         router.replace("/(auth)/login-with-number");
       }
-    })();   
+    })();
   }, []);
 
   // useEffect(() => {
