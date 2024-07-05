@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, ScrollView } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import colors from "@/src/utils/colors";
-import {
-  responsiveFontSize,
-} from "react-native-responsive-dimensions";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { getProdWiseEarning } from "@/src/utils/apiservice";
+import { ProductWiseEarning } from "@/src/utils/types";
 
-const ProductWiseEarning = () => {
-  const [productDetails, setProductDetails] = useState([]);
+const ProductWiseEarningComponent = () => {
+  const [productDetails, setProductDetails] = useState<ProductWiseEarning[]>(
+    []
+  );
   useEffect(() => {
     (async () => {
       try {
@@ -25,9 +26,9 @@ const ProductWiseEarning = () => {
 
   if (productDetails?.length > 0) {
     data = productDetails.map((product) => [
-      product.slNo.toString(),
+      product.slNo?.toString(),
       product.partDesc,
-      product.points.toString(),
+      product.points?.toString(),
       product.bonusPoints,
       product.couponCode,
       product.createdDate,
@@ -100,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProductWiseEarning;
+export default ProductWiseEarningComponent;

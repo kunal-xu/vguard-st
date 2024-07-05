@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Pressable,
   View,
@@ -14,8 +14,9 @@ import {
 } from "react-native-responsive-dimensions";
 import {
   BarcodeScanningResult,
+  Camera,
+  CameraType,
   CameraView,
-  useCameraPermissions,
 } from "expo-camera";
 import { validateCoupon } from "@/src/utils/apiservice";
 import colors from "@/src/utils/colors";
@@ -54,6 +55,15 @@ const ScanCode = () => {
     cleanupPopUp,
   } = usePopup();
   const router = useRouter();
+
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
+    })();
+  }, []);
 
   async function sendBarcode() {
     const locationPermission: LocationObject | boolean = await getLocation();
@@ -168,6 +178,13 @@ const ScanCode = () => {
     }
   }
 
+  if (hasPermission === null) {
+    return <Text>Requesting for camera permission</Text>;
+  }
+  if (hasPermission === false) {
+    return <Text>No access to camera</Text>;
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       {<Loader isLoading={loader} />}
@@ -180,29 +197,9 @@ const ScanCode = () => {
           iconType={popUpIconType}
           title={popUpTitle}
         />
-        <View
-          style={{
-            marginTop: 16,
-          }}
-        >
-          <Text
-            style={{
-              color: colors.black,
-              fontWeight: "bold",
-              fontSize: responsiveFontSize(3),
-              textAlign: "center",
-            }}
-          >
-            Scan QR Code
-          </Text>
-          <Text
-            style={{
-              color: colors.black,
-              fontWeight: "500",
-              fontSize: responsiveFontSize(1.7),
-              textAlign: "center",
-            }}
-          >
+        <View style={{ marginTop: 16 }}>
+          <Text style={styles.title}>Scan QR Code</Text>
+          <Text style={styles.subtitle}>
             {t(
               "Scan QR Code by clicking on QR code icon \n or \n enter the code manually"
             )}
@@ -221,22 +218,9 @@ const ScanCode = () => {
             }}
             onCameraReady={() => setCameraReady(true)}
           >
-            <View
-              style={{
-                flex: 1,
-                width: "90%",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "flex-end",
-                marginBottom: 10,
-              }}
-            >
+            <View style={styles.cameraControls}>
               <Pressable
-                style={({ pressed }) => [
-                  {
-                    opacity: pressed ? 0.3 : 1,
-                  },
-                ]}
+                style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
                 onPress={() => {
                   setTorch(false);
                   setCamera(!camera);
@@ -245,11 +229,7 @@ const ScanCode = () => {
                 <MaterialIcons name="cancel" size={28} color={colors.white} />
               </Pressable>
               <Pressable
-                style={({ pressed }) => [
-                  {
-                    opacity: pressed ? 0.3 : 1,
-                  },
-                ]}
+                style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
                 onPress={() => setTorch(!torch)}
               >
                 {torch ? (
@@ -337,10 +317,17 @@ const styles = StyleSheet.create({
     height: "100%",
     gap: 10,
   },
-  header: {
+  title: {
     color: colors.black,
     fontWeight: "bold",
-    fontSize: responsiveFontSize(2),
+    fontSize: responsiveFontSize(3),
+    textAlign: "center",
+  },
+  subtitle: {
+    color: colors.black,
+    fontWeight: "500",
+    fontSize: responsiveFontSize(1.7),
+    textAlign: "center",
   },
   camera: {
     height: responsiveHeight(40),
@@ -348,23 +335,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  cameraControls: {
+    flex: 1,
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    marginBottom: 10,
+  },
   imageContainer: {
     height: responsiveHeight(40),
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-  },
-  text: {
-    color: colors.black,
-    fontSize: responsiveFontSize(2),
-    fontWeight: "bold",
-  },
-  smallText: {
-    textAlign: "center",
-    color: colors.black,
-    fontSize: responsiveFontSize(1.7),
-    height: responsiveHeight(5),
-    fontWeight: "bold",
   },
   enterCode: {
     width: "90%",
@@ -372,13 +355,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 6,
     padding: 10,
-  },
-  topContainer: {
-    borderBottomWidth: 2,
-    borderColor: colors.lightGrey,
-    padding: 10,
-    height: responsiveHeight(5),
-    flexGrow: 1,
   },
   input: {
     fontSize: responsiveHeight(2),

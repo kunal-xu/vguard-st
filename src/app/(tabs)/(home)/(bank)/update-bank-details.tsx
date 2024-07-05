@@ -73,7 +73,11 @@ const UpdateBankDetails = () => {
   const handleProceed = async () => {
     try {
       showLoader(true);
-      const response = await updateProfile(state);
+      const payload = {
+        ...state,
+        Selfie: null
+      }
+      const response = await updateProfile(payload);
       const responseData = response.data;
       showLoader(false);
       setPopUpIconType("Info");
@@ -215,6 +219,7 @@ const UpdateBankDetails = () => {
                 <Picker.Item
                   label={item}
                   value={index === 0 ? "undefined" : item}
+                  key={index}
                 />
               );
             })}

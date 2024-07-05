@@ -19,7 +19,12 @@ export default function SchemesLayout() {
       />
       <Stack.Screen name="product-based-scheme" />
       <Stack.Screen name="product-wise-direct-order-base-points" />
-      <Stack.Screen name="product-wise-scan-base-points" />
+      <Stack.Screen
+        name="product-wise-scan-base-points"
+        options={{
+          title: "Scan Base Points",
+        }}
+      />
       <Stack.Screen name="special-non-product-offers" />
     </Stack>
   );

@@ -1,159 +1,81 @@
-import {
-  Canvas,
-  Group,
-  Image,
-  Path,
-  SkPath,
-  Skia,
-  useImage,
-  notifyChange,
-  PaintStyle,
-  StrokeCap,
-  StrokeJoin,
-  SkiaDomView,
-} from "@shopify/react-native-skia";
-import { useState } from "react";
-import {
-  Modal,
-  TouchableWithoutFeedback,
-  View,
-  StyleSheet,
-  Text,
-} from "react-native";
+import * as React from 'react'
+import { Image, StyleSheet, View, Text } from 'react-native'
+import { ScratchCard } from 'rn-scratch-card'
 
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { runOnJS, SharedValue, useSharedValue } from "react-native-reanimated";
-
-const IMG_WID = 300;
-const IMG_HEI = 300;
-const SCALE = 1 / 10;
-const THUMB_WID = 35;
-
-const getScratchedAreaFraction = (scratchedPath: SkPath) => {
-  "worklet";
-  let w = IMG_WID * SCALE;
-  let h = IMG_HEI * SCALE;
-
-  const surface = Skia.Surface.MakeOffscreen(w, h)!;
-  const canvas = surface.getCanvas();
-  canvas.scale(SCALE, SCALE);
-  const paint = Skia.Paint();
-  paint.setStyle(PaintStyle.Stroke);
-  paint.setStrokeWidth(THUMB_WID);
-  paint.setColor(Skia.Color("white"));
-  paint.setStrokeCap(StrokeCap.Round);
-  paint.setStrokeJoin(StrokeJoin.Round);
-
-  canvas.drawPath(scratchedPath, paint);
-  surface.flush();
-  let pixelsInfo = surface.makeImageSnapshot().readPixels();
-
-  if (!pixelsInfo?.length) {
-    return 0;
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
   }
 
-  let rChannelSum = 0;
-
-  for (let i = 0; i < pixelsInfo.length; i += 4) {
-    rChannelSum += pixelsInfo[i];
+  static getDerivedStateFromError(error) {
+    return { hasError: true }
   }
 
-  let rChannleAvg = rChannelSum / (pixelsInfo.length / 4);
+  componentDidCatch(error, errorInfo) {
+    console.log("Error caught by ErrorBoundary:", error, errorInfo)
+  }
 
-  let scratchedAreaFraction = rChannleAvg / 255;
-  return scratchedAreaFraction;
-};
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Something went wrong.</Text>
+        </View>
+      )
+    }
 
-export default function ScratchCard() {
-  const scratchPath = useSharedValue(Skia.Path.Make());
-  const strokeWidth = useSharedValue(THUMB_WID);
-  const [revealed, setRevealed] = useState(false);
-  const onReveal = () => {
-    console.log("Revealed");
-    setRevealed(true);
-  };
-
-  const onCloseReward = () => {
-    console.log("Reward closed");
-    setRevealed(false);
-  };
-
-  const scratchHandler = Gesture.Pan()
-    .onBegin((e) => {
-      scratchPath.value.moveTo(e.x, e.y);
-      scratchPath.value.lineTo(e.x, e.y);
-      notifyChange(scratchPath);
-    })
-    .onUpdate((e) => {
-      scratchPath.value.lineTo(e.x, e.y);
-      notifyChange(scratchPath);
-    })
-    .onFinalize(() => {
-      const scratchedArea = getScratchedAreaFraction(scratchPath.value);
-      if (scratchedArea > 0.4) {
-        console.log("Scratched area exceeded 40%, revealing...");
-        runOnJS(onReveal)();
-      }
-    });
-
-  return (
-    <View style={styles.container}>
-      <GestureDetector gesture={scratchHandler}>
-        <Canvas style={{ width: IMG_WID, height: IMG_HEI }}>
-          <RewardImage />
-          {!revealed && (
-            <CoverImage strokeWidth={strokeWidth} scratchPath={scratchPath} />
-          )}
-        </Canvas>
-      </GestureDetector>
-    </View>
-  );
+    return this.props.children
+  }
 }
 
-const CoverImage = ({ scratchPath }: { scratchPath: SharedValue<SkPath> }) => {
-  const image = useImage(require("@/src/assets/images/scratch_foreground.png"));
-
+export default function App() {
   return (
-    <Group layer>
-      <Image
-        image={image}
-        x={0}
-        y={0}
-        width={IMG_WID}
-        height={IMG_HEI}
-        fit={"cover"}
-      />
-      <Path
-        path={scratchPath}
-        style={"stroke"}
-        strokeJoin={"round"}
-        strokeCap={"round"}
-        strokeWidth={THUMB_WID}
-        color={"white"}
-        blendMode={"clear"}
-      />
-    </Group>
-  );
-};
+    <ErrorBoundary>
+      <View style={styles.container}>
+        <Image source={require('@/src/assets/images/scratch_foreground.png')} style={styles.background_view} />
+        <ScratchCard
+          source={require('@/src/assets/images/ic_rewards_gift.png')}
+          brushWidth={50}
+          onScratch={handleScratch}
+          style={styles.scratch_card}
+        />
+      </View>
+    </ErrorBoundary>
+  )
 
-const RewardImage = () => {
-  const image = useImage(require("@/src/assets/images/ac_icon.png"));
+  function handleScratch(scratchPercentage) {
+    console.log(scratchPercentage)
+  }
+}
 
-  return (
-    <Image
-      image={image}
-      x={0}
-      y={0}
-      width={IMG_WID}
-      height={IMG_HEI}
-      fit={"cover"}
-    />
-  );
-};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 16,
   },
-});
+  background_view: {
+    position: 'absolute',
+    width: 400,
+    height: 400,
+    backgroundColor: 'transparent',
+    alignSelf: 'center',
+    borderRadius: 16,
+  },
+  scratch_card: {
+    width: 400,
+    height: 400,
+    backgroundColor: 'transparent',
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 18,
+  },
+})

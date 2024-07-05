@@ -21,7 +21,6 @@ import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import {
   ImagePickerSectionInterface,
   PopupSectionInterface,
-  ProfileFields,
   SubmitButtonSectionInterface,
 } from "@/src/utils/interfaces";
 
@@ -74,9 +73,9 @@ const PopupSection = ({
   </View>
 );
 
-const FieldsSection = ({ fields }: ProfileFields) => (
+const FieldsSection = ({ fields }: any) => (
   <View>
-    {fields.map((field) => (
+    {fields.map((field: any) => (
       <Field
         id={field.id}
         key={field.id}

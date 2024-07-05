@@ -6,6 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
   Linking,
+  Pressable,
+  ImageBackground,
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
@@ -34,6 +36,8 @@ import usePopup from "@/src/hooks/usePopup";
 import { showToast } from "@/src/utils/showToast";
 import { height } from "@/src/utils/dimensions";
 import { TicketType } from "@/src/utils/types";
+import { Ionicons } from "@expo/vector-icons";
+import ImagePickerField from "@/src/components/ImagePickerField";
 
 function Header({ profile, router }: ProfileHeader) {
   return (
@@ -48,7 +52,7 @@ function Header({ profile, router }: ProfileHeader) {
         contentFit="cover"
       />
       <View>
-        <Text style={{ fontSize: responsiveFontSize(1.7) }}>
+        <Text style={{ fontSize: responsiveFontSize(1.7), fontWeight: "bold" }}>
           Rishta ID: {profile.RishtaID || "VGIL30000"}
         </Text>
       </View>
@@ -127,7 +131,7 @@ const FieldSection = ({
     <ImagePickerModal
       isVisible={isImagePickerVisible}
       toggleModal={toggleModal}
-      type={"profile"}
+      type={"ticket"}
     />
     <Text style={styles.blackText}>{t("strings:description_remarks")}</Text>
     <TextInput

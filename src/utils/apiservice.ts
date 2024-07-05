@@ -2,8 +2,8 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 // import messaging from "@react-native-firebase/messaging";
 
 // const BASE_URL = "http://192.168.220.248:5005/vguard/api";
-const BASE_URL = "https://st.vguardrishta.com/vguard/api";
-// const BASE_URL = "http://stg-st.vguardrishta.com/vguard/api";
+// const BASE_URL = "https://st.vguardrishta.com/vguard/api";
+const BASE_URL = "http://stg-st.vguardrishta.com/vguard/api";
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -164,9 +164,9 @@ export function getProductCategoryList() {
   return createGetRequest(path);
 }
 
-export function getProductListing(productRequest: any) {
-  const path = "product/catalog";
-  return createPostRequest(path, productRequest);
+export function getProductListing() {
+  const path = "product/productList";
+  return createGetRequest(path);
 }
 
 export function getStates() {
@@ -592,9 +592,9 @@ export function getReferralName(referralCode: string) {
   return createGetRequest(path);
 }
 
-export function getMonthWiseEarning(from: string, to: string) {
-  const path = `user/monthWiseEarning/${from}/${to}`;
-  return createGetRequest(path);
+export function getRangeWiseEarning(body: any) {
+  const path = `user/rangeWiseEarning`;
+  return createPostRequest(path, body);
 }
 
 export function getBonusPoints(transactionId: string) {

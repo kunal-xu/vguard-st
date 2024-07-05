@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Pressable,
   TextInput,
-  Platform,
 } from "react-native";
 import {
   responsiveFontSize,
@@ -15,7 +14,7 @@ import {
 } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { getCategoryList, getMonthWiseEarning } from "@/src/utils/apiservice";
+import { getCategoryList, getRangeWiseEarning } from "@/src/utils/apiservice";
 import { Picker } from "@react-native-picker/picker";
 import NeedHelp from "@/src/components/NeedHelp";
 import CustomTouchableOption from "@/src/components/CustomTouchableOption";
@@ -25,7 +24,7 @@ import colors from "@/src/utils/colors";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
-import { Category } from "@/src/utils/types";
+import { Category, RangeWiseEarning } from "@/src/utils/types";
 import { showToast } from "@/src/utils/showToast";
 import { height } from "@/src/utils/dimensions";
 import {
@@ -52,13 +51,8 @@ const ProductPickerSection = ({
         setSelectedValue(value);
       }}
     >
-      <Picker.Item key={""} label={"All Products"} value={""} />
       {items?.map((item, index) => (
-        <Picker.Item
-          label={item}
-          value={index === 0 ? "undefined" : item}
-          key={index}
-        />
+        <Picker.Item label={item} value={index === 0 ? "" : item} key={index} />
       ))}
     </Picker>
   </View>
@@ -117,6 +111,8 @@ const DatePickerSection = ({
       {showStart && (
         <DateTimePicker
           value={startDate}
+          minimumDate={startDate}
+          maximumDate={new Date()}
           mode="date"
           display="default"
           onChange={onChangeStartDate}
@@ -142,6 +138,8 @@ const DatePickerSection = ({
           mode="date"
           display="default"
           onChange={onChangeEndDate}
+          maximumDate={new Date()}
+          minimumDate={startDate}
         />
       )}
     </View>
@@ -174,19 +172,19 @@ const OptionsSection = () => (
     <View style={styles.options}>
       <CustomTouchableOption
         text="strings:product_wise_earning"
-        iconSource={require("../../../../assets/images/ic_bank_transfer.webp")}
+        iconSource={require("@/src/assets/images/ic_bank_transfer.webp")}
         screenName="product-wise-earning"
         disabled={false}
       />
       <CustomTouchableOption
         text="strings:scheme_wise_earning"
-        iconSource={require("../../../../assets/images/ic_paytm_transfer.webp")}
+        iconSource={require("@/src/assets/images/ic_paytm_transfer.webp")}
         screenName="scheme-wise-earning"
         disabled={true}
       />
       <CustomTouchableOption
         text="strings:your_rewards"
-        iconSource={require("../../../../assets/images/ic_egift_cards.webp")}
+        iconSource={require("@/src/assets/images/ic_egift_cards.webp")}
         screenName="rewards"
         disabled={false}
       />
@@ -197,9 +195,7 @@ const OptionsSection = () => (
 
 const Dashboard = () => {
   const { t } = useTranslation();
-  const [fromDate] = useState("");
-  const [toDate] = useState("");
-  const items: string[] = ["All Products"];
+  const [items, setItems] = useState<(string | null)[]>(["All Products"]);
   const [selectedValue, setSelectedValue] = useState<string>("All Products");
   const [earnedPoints, setEarnedPoints] = useState("0");
   const [redeemablePoints, setRedeemablePoints] = useState("0");
@@ -217,9 +213,10 @@ const Dashboard = () => {
       try {
         const response = await getCategoryList();
         const responseData: Category[] = response.data;
-        responseData.map((category: Category) => {
-          items.push(category.prodCatName as string);
-        });
+        setItems((prevItems) => [
+          ...prevItems,
+          ...responseData.map((category: Category) => category.prodCatName),
+        ]);
       } catch (error) {
         console.log(error);
         showToast(t("Error fetching data. Please try again"));
@@ -246,7 +243,7 @@ const Dashboard = () => {
       case "productPicker":
         return (
           <ProductPickerSection
-            items={items}
+            items={items as string[]}
             selectedValue={selectedValue}
             setSelectedValue={setSelectedValue}
           />
@@ -282,26 +279,23 @@ const Dashboard = () => {
   };
 
   const handleSearch = async () => {
-    if (fromDate === "") {
-      showToast("Please select the starting date");
-      return;
-    }
-    if (toDate === "") {
-      showToast("Please select the end date");
-      return;
-    }
-    if (toDate < fromDate) {
+    if (endDate < startDate) {
       showToast("Please select the correct date range");
       return;
     }
     try {
-      const response = await getMonthWiseEarning(fromDate, toDate);
+      const payload = new RangeWiseEarning();
+      payload.startDate = startDate;
+      payload.endDate = endDate;
+      payload.product = selectedValue;
+      const response = await getRangeWiseEarning(payload);
       const reponseData = response.data;
       setEarnedPoints(reponseData.EarnedPoints as string);
       setRedeemablePoints(reponseData.RedeemablePoints as string);
       setTdsKitty(reponseData.RedeemedPoints as string);
     } catch (error) {
       console.log(error);
+      showToast(t("Error fetching data. Please try again"));
     }
   };
 
@@ -315,13 +309,11 @@ const Dashboard = () => {
 
   const onChangeStartDate = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || startDate;
-    setShowStart(Platform.OS === "ios");
     setStartDate(currentDate);
   };
 
   const onChangeEndDate = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || endDate;
-    setShowEnd(Platform.OS === "ios");
     setEndDate(currentDate);
   };
 

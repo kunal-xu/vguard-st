@@ -157,7 +157,7 @@ const LoginScreen = () => {
               <Image
                 style={styles.icon}
                 source={require("@/src/assets/images/mobile_icon.png")}
-                resizeMode="contain"
+                contentFit="contain"
               />
               <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}

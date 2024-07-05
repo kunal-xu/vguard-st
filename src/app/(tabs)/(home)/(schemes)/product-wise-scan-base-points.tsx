@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, ScrollView } from "react-native";
 import colors from "@/src/utils/colors";
-import {
-  responsiveFontSize,
-} from "react-native-responsive-dimensions";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
 import { Table, Row, Rows } from "react-native-table-component";
-import {
-  getProductListing,
-} from "@/src/utils/apiservice";
+import { getProductListing } from "@/src/utils/apiservice";
 import { ProductDetail, ProductRequest } from "@/src/utils/types";
 import { showToast } from "@/src/utils/showToast";
 
@@ -18,18 +14,17 @@ const ProductWiseOfferTable = () => {
   useEffect(() => {
     (async () => {
       try {
-        const payload = new ProductRequest();
-        const response = await getProductListing(payload);
+        const response = await getProductListing();
         const responseData: ProductDetail[] = response.data;
         setProductDetails(responseData);
       } catch (error) {
-        showToast("Something went wrong. Please try again");
+        showToast(t("Something went wrong. Please try again"));
       }
     })();
   }, []);
 
-  const data = productDetails.map((product, index) => [
-    index + 1,
+  const data = productDetails.map((product) => [
+    product.SNo,
     product.points.toString(),
     product.productName,
   ]);
@@ -50,10 +45,7 @@ const ProductWiseOfferTable = () => {
           <Rows widthArr={widthArr} data={data} textStyle={styles.text2} />
         ) : (
           <>
-            <Rows
-              data={[["No Data"]]}
-              textStyle={[styles.text, styles.emptyDataStyle]}
-            />
+            <Rows data={[["No Data"]]} textStyle={styles.text} />
           </>
         )}
       </Table>

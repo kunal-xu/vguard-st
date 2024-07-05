@@ -6,50 +6,56 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
-import { getBonusRewards } from "@/srcr/utils/apiservice";
+import { CouponRedeemResponse } from "@/src/utils/types";
+import { showToast } from "@/src/utils/showToast";
+import { getBonusRewards } from "@/src/utils/apiservice";
 
 const YourRewards = () => {
   const { t } = useTranslation();
 
-  const [rewards, setRewards] = useState([]);
+  const [rewards, setRewards] = useState<CouponRedeemResponse[]>([]);
 
-  // useEffect(() => {
-  // 	getBonusRewards()
-  // 		.then((response) => response.data)
-  // 		.then((responseData) => {
-  // 			setRewards(responseData);
-  // 		})
-  // 		.catch((error) => {
-  // 			console.error('Error fetching data:', error);
-  // 		});
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await getBonusRewards();
+        const responseData: CouponRedeemResponse[] = response.data;
+        setRewards(responseData);
+      } catch (error) {
+        console.log(error);
+        showToast(t("Something went wrong."));
+      }
+    })();
+  }, []);
 
-  // const pairedRewards = [];
-  // for (let i = 0; i < rewards.length; i += 2) {
-  // 	pairedRewards.push(rewards.slice(i, i + 2));
-  // }
+  const pairedRewards = [];
+  for (let i = 0; i < rewards.length; i += 2) {
+    pairedRewards.push(rewards.slice(i, i + 2));
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.mainWrapper}>
       <View style={styles.subWrapper}>
-        {/* {rewards.length === 0 ? ( */}
-        {/* <Text style={styles.noDataText}>{t('strings:no_data')}</Text> */}
-        {/* ) : ( */}
-        {/* pairedRewards.map((pair, rowIndex) => ( */}
-        <View style={styles.rowContainer}>
-          {/* {pair.map((reward, index) => ( */}
-          <View style={styles.card}>
-            <Image
-              style={{ flex: 1, width: "100%", height: "100%" }}
-              resizeMode="contain"
-              source={require("@/src/assets/images/ic_rewards_gift.png")}
-            />
-            <Text style={styles.cardText}>You have won 50 Welcome points</Text>
-          </View>
-          {/* ))} */}
-        </View>
-        {/* )) */}
-        {/* )} */}
+        {rewards.length === 0 ? (
+          <Text style={styles.noDataText}>{t("strings:no_data")}</Text>
+        ) : (
+          pairedRewards.map((pair, rowIndex) => (
+            <View style={styles.rowContainer} key={rowIndex}>
+              {pair.map((reward, index) => (
+                <View style={styles.card} key={index}>
+                  <Image
+                    style={{ flex: 1, width: "100%", height: "100%" }}
+                    resizeMode="contain"
+                    source={require("@/src/assets/images/ic_rewards_gift.png")}
+                  />
+                  <Text style={styles.cardText}>
+                    {`You have won ${reward} Welcome points`}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ))
+        )}
       </View>
     </ScrollView>
   );

@@ -1,53 +1,68 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { StyleSheet, ScrollView } from "react-native";
 import { Table, Row, Rows } from "react-native-table-component";
 import colors from "@/src/utils/colors";
-import {
-  responsiveFontSize,
-  responsiveHeight,
-} from "react-native-responsive-dimensions";
-import { getSchemeWiseEarning } from "@/src/utils/apiservice";
+import { responsiveFontSize } from "react-native-responsive-dimensions";
+import { getProdWiseEarning } from "@/src/utils/apiservice";
+import { ProductWiseEarning } from "@/src/utils/types";
 
-const SchemeWiseEarning = () => {
-  const [schemeDetails, setSchemeDetails] = useState([]);
+const ProductWiseEarningComponent = () => {
+  const [productDetails, setProductDetails] = useState<ProductWiseEarning[]>(
+    []
+  );
   useEffect(() => {
-    getSchemeWiseEarning()
-      .then((response) => response.data)
-      .then((responseData) => {
-        setSchemeDetails(responseData);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    (async () => {
+      try {
+        const response = await getProdWiseEarning();
+        const responseData = response.data;
+        setProductDetails(responseData);
+      } catch (error) {
+        console.log(error);
+      }
+    })();
   }, []);
 
-  const data = schemeDetails.map((product) => [
-    product.slNo.toString(),
-    product.createdDate,
-    product.partDesc,
-  ]);
+  let data: any = [];
+
+  if (productDetails?.length > 0) {
+    data = productDetails.map((product) => [
+      product.slNo?.toString(),
+      product.partDesc,
+      product.points?.toString(),
+      product.bonusPoints,
+      product.couponCode,
+      product.createdDate,
+    ]);
+  }
 
   const tableHead = [
     "Sl No.",
-    "Created Date",
-    "Material Description",
+    "Product Description",
+    "Points",
+    "Bonus Points",
     "Coupon Code",
-    "Extra Bonus Points",
-    "Scheme Name",
-    "Scheme Period",
+    "Created Date",
   ];
+  const widthArr = [80, 160, 100, 130, 160, 120];
 
   return (
-    <ScrollView style={styles.container} horizontal={true}>
-      <Table borderStyle={{ borderWidth: 0 }}>
-        <Row data={tableHead} style={styles.head} textStyle={styles.text} />
+    <ScrollView horizontal style={styles.container}>
+      <Table borderStyle={{ borderWidth: 0, borderColor: "black" }}>
+        <Row
+          widthArr={widthArr}
+          data={tableHead}
+          style={styles.head}
+          textStyle={styles.text}
+        />
         {data.length === 0 ? (
           <Rows
             data={[["No Data"]]}
             textStyle={[styles.text, styles.emptyDataStyle]}
           />
         ) : (
-          <Rows data={data} textStyle={styles.text2} />
+          <>
+            <Rows widthArr={widthArr} data={data} textStyle={styles.text2} />
+          </>
         )}
       </Table>
     </ScrollView>
@@ -60,12 +75,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   head: {
-    backgroundColor: colors.lightGrey,
-    backgroundColor: "#000000",
+    backgroundColor: colors.black,
   },
   text: {
     color: colors.white,
-    paddingRight: 30,
+    paddingLeft: 10,
     paddingBottom: 20,
     fontWeight: 700,
   },
@@ -87,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SchemeWiseEarning;
+export default ProductWiseEarningComponent;

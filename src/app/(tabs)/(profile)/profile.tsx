@@ -33,7 +33,7 @@ function Header({ profile, router }: ProfileHeader) {
         contentFit="cover"
       />
       <View>
-        <Text style={{ fontSize: responsiveFontSize(1.7) }}>
+        <Text style={{ fontSize: responsiveFontSize(1.7), fontWeight: "bold" }}>
           Rishta ID: {profile.RishtaID || "VGIL30000"}
         </Text>
       </View>

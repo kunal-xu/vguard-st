@@ -62,8 +62,9 @@ import { STDetailsByTimeAndDate } from "./STDetailsByTimeAndDate";
 import { STUser } from "./STUser";
 import { STLeadInvite } from "./STLeadInvite";
 import { STBlockingStatus } from "./STBlockingStatus";
-import { CategoryWiseBlock } from "./STBlockingStatus"; 
+import { CategoryWiseBlock } from "./STBlockingStatus";
 import { TaggedCategoryDetail } from "./STInviteDetail";
+import { RangeWiseEarning } from "./RangeWiseEarning";
 
 export {
   AddLeadHistory,
@@ -131,5 +132,6 @@ export {
   STLeadInvite,
   STBlockingStatus,
   CategoryWiseBlock,
-  TaggedCategoryDetail
+  TaggedCategoryDetail,
+  RangeWiseEarning,
 };

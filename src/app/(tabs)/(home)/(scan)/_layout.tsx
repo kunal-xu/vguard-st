@@ -1,8 +1,11 @@
 import colors from "@/src/utils/colors";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import React from "react";
+import { TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function ScanLayout() {
+  const router = useRouter();
   return (
     <Stack
       screenOptions={{
@@ -29,11 +32,16 @@ export default function ScanLayout() {
           title: "Unique Code History",
         }}
       />
-
       <Stack.Screen
         name="success-page"
         options={{
           title: "Scan Result",
+          headerTitleAlign: "center",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => router.dismiss(2)}>
+              <Ionicons name="arrow-back" size={22} color="black" />
+            </TouchableOpacity>
+          ),
         }}
       />
     </Stack>

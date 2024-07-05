@@ -1,4 +1,5 @@
 export class ProductDetail {
+  SNo: string | null = null;
   specs: string | null = null;
   pointsFormat: string | null = null;
   product: string | null = null;

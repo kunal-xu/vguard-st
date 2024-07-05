@@ -22,7 +22,7 @@ import Loader from "@/src/components/Loader";
 import { height } from "@/src/utils/dimensions";
 import { generateOtpForLogin } from "@/src//utils/apiservice";
 import LanguagePicker from "@/src/components/LanguagePicker";
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import colors from "@/src/utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { Image } from "expo-image";

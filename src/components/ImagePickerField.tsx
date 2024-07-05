@@ -223,61 +223,7 @@ const ImagePickerField: React.FC<ImagePickerFieldProps> = ({
       <Popup isVisible={isPopupVisible} onClose={() => setPopupVisible(false)}>
         {popupContent}
       </Popup>
-      <Pressable
-        style={({ pressed }) => [
-          {
-            opacity: pressed ? 0.3 : 1.0,
-          },
-          styles.input,
-          isImageSelected && styles.selectedContainer,
-        ]}
-        onPress={editable ? handleImagePickerPress : undefined}
-      >
-        <View
-          style={[
-            styles.labelContainer,
-            !selectedImage && styles.notSelectedLabelContainer,
-          ]}
-        >
-          <Text
-            style={[
-              styles.notfocusedLabel,
-              isImageSelected && styles.focusedLabel,
-            ]}
-          >
-            {label}
-          </Text>
-        </View>
-        {selectedImage ? (
-          <View style={styles.imageContainer}>
-            <Text style={styles.imageName}>{label}</Text>
-            <Pressable onPress={handleImageModalToggle}>
-              <ImageBackground
-                source={require("../assets/images/no_image.webp")}
-                style={styles.image}
-                resizeMode="cover"
-              >
-                <Image
-                  source={{ uri: selectedImage }}
-                  style={styles.image}
-                  resizeMode="cover"
-                />
-              </ImageBackground>
-              {/* <Image source={{ uri: selectedImage }} style={styles.image} resizeMode="cover" /> */}
-            </Pressable>
-          </View>
-        ) : (
-          <View style={styles.cameraContainer}>
-            <Text style={styles.label}>{label}</Text>
-            <Image
-              source={require("../assets/images/photo_camera.png")}
-              style={styles.cameraImage}
-              resizeMode="contain"
-            />
-          </View>
-        )}
-      </Pressable>
-
+      
       <Modal
         animationType="fade"
         transparent={true}

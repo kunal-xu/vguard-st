@@ -28,6 +28,7 @@ import Checkbox from "expo-checkbox";
 import NewPopUp from "@/src/components/NewPopup";
 import usePopup from "@/src/hooks/usePopup";
 import Constants from "expo-constants";
+import { FlashList } from "@shopify/flash-list";
 
 const LeadForm = () => {
   const { contact } = useLocalSearchParams();
@@ -249,9 +250,10 @@ const LeadForm = () => {
               paddingHorizontal: 15,
             }}
           >
-            <FlatList
+            <FlashList
               data={data}
               keyExtractor={(item) => item.id.toString()}
+              estimatedItemSize={100}
               renderItem={({ item }) => (
                 <View
                   style={{
