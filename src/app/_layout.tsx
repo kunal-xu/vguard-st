@@ -4,8 +4,6 @@ import { AuthProvider } from "../hooks/useAuth";
 import { DataProvider } from "../hooks/useData";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -32,15 +30,13 @@ export default function RootLayout() {
     <AuthProvider>
       <DataProvider>
         <RootSiblingParent>
-          <GestureHandlerRootView>
-            <View
-              style={{
-                flex: 1,
-              }}
-            >
-              <Slot />
-            </View>
-          </GestureHandlerRootView>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
+            <Slot />
+          </View>
         </RootSiblingParent>
       </DataProvider>
     </AuthProvider>

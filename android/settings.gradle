@@ -1,4 +1,4 @@
-rootProject.name = 'Vguard Rishta Service Expert'
+rootProject.name = 'VGuard Rishta Service Expert'
 
 dependencyResolutionManagement {
   versionCatalogs {

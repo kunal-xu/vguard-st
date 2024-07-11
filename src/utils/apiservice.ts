@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse } from "axios";
 // import messaging from "@react-native-firebase/messaging";
 
 // const BASE_URL = "http://192.168.220.248:5005/vguard/api";
-// const BASE_URL = "https://st.vguardrishta.com/vguard/api";
+// const BASE_URL = "http://st.vguardrishta.com/vguard/api";
 const BASE_URL = "http://stg-st.vguardrishta.com/vguard/api";
 
 export const api: AxiosInstance = axios.create({

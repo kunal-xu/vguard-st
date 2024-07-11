@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Vguard Rishta Service Expert",
+    "name": "VGuard Rishta Service Expert",
     "slug": "vguard-st",
     "scheme": "vguard-st",
     "version": "1.0.0",
@@ -64,7 +64,14 @@
         }
       ],
       "expo-asset",
-      "expo-build-properties"
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesClearTextTraffix": true
+          }
+        }
+      ]
     ],
     "extra": {
       "router": {

@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Pressable, StatusBar } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import CustomTouchableOption from "../../../components/CustomTouchableOption";
 import {
@@ -127,19 +127,19 @@ const HomeScreen = () => {
             <View style={styles.row}>
               <CustomTouchableOption
                 text="strings:scan_out"
-                iconSource={require("../../../assets/images/ic_scan_code.png")}
+                iconSource={require("@/src/assets/images/ic_scan_code.png")}
                 screenName="(scan)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:redeem_points"
-                iconSource={require("../../../assets/images/ic_redeem_points.webp")}
+                iconSource={require("@/src/assets/images/ic_redeem_points.webp")}
                 screenName="(redeem)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:dashboard"
-                iconSource={require("../../../assets/images/ic_dashboard.webp")}
+                iconSource={require("@/src/assets/images/ic_dashboard.webp")}
                 screenName="(dashboard)"
                 disabled={false}
               />
@@ -147,19 +147,19 @@ const HomeScreen = () => {
             <View style={styles.row}>
               <CustomTouchableOption
                 text="strings:direct_order"
-                iconSource={require("../../../assets/images/Group_575.png")}
+                iconSource={require("@/src/assets/images/Group_575.png")}
                 screenName="(directorder)"
                 disabled={true}
               />
               <CustomTouchableOption
                 text="strings:scheme_offers"
-                iconSource={require("../../../assets/images/ic_scheme_offers.png")}
+                iconSource={require("@/src/assets/images/ic_scheme_offers.png")}
                 screenName="(schemes)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:update_bank"
-                iconSource={require("../../../assets/images/ic_update_kyc.webp")}
+                iconSource={require("@/src/assets/images/ic_update_kyc.webp")}
                 screenName="(bank)"
                 disabled={false}
               />
@@ -167,19 +167,19 @@ const HomeScreen = () => {
             <View style={styles.row}>
               <CustomTouchableOption
                 text="strings:welfare"
-                iconSource={require("../../../assets/images/training_info.png")}
+                iconSource={require("@/src/assets/images/training_info.png")}
                 screenName="(training)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:info_desk"
-                iconSource={require("../../../assets/images/ic_vguard_info.webp")}
+                iconSource={require("@/src/assets/images/ic_vguard_info.webp")}
                 screenName="(info)"
                 disabled={false}
               />
               <CustomTouchableOption
                 text="strings:raise_ticket"
-                iconSource={require("../../../assets/images/ic_raise_ticket.webp")}
+                iconSource={require("@/src/assets/images/ic_raise_ticket.webp")}
                 screenName="(ticket)"
                 disabled={false}
               />
