@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Pressable, Image, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
@@ -6,7 +6,6 @@ import {
   responsiveWidth,
   responsiveFontSize,
 } from "react-native-responsive-dimensions";
-import Popup from "./Popup";
 import { CustomTouchableOptionsProps } from "../utils/interfaces";
 import colors from "../utils/colors";
 import { useNavigation } from "expo-router";

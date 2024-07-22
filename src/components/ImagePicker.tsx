@@ -32,8 +32,7 @@ const ImagePickerModal = ({
 }: ImagePickerModalProps) => {
   const { t } = useTranslation();
   const [loader, showLoader] = useState(false);
-  const { state } = useData();
-  const { dispatch } = useData();
+  const { state, dispatch } = useData();
   const {
     popUp,
     setPopUp,

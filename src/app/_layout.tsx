@@ -4,6 +4,7 @@ import { AuthProvider } from "../hooks/useAuth";
 import { DataProvider } from "../hooks/useData";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { View } from "react-native";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -35,7 +36,7 @@ export default function RootLayout() {
               flex: 1,
             }}
           >
-            <Slot />
+            {/* <Slot /> */}
           </View>
         </RootSiblingParent>
       </DataProvider>

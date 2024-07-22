@@ -1,22 +1,32 @@
 import { TabBarIcon } from "@/src/components/TabBarIcon";
+import { useAuth } from "@/src/hooks/useAuth";
 import { getNotificationCount } from "@/src/utils/apiservice";
 import colors from "@/src/utils/colors";
+import { Notifications } from "@/src/utils/types";
 import { Tabs } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 
 export default function TabLayout() {
-  const [count, setCount] = useState("0");
+  const [count, setCount] = useState<string>("0");
+  const { isUserAuthenticated } = useAuth();
   useEffect(() => {
-    getNotificationCount().then(async (r) => {
-      const result = await r.data;
-      if (result.count < 999) {
-        setCount(result.count.toString());
-      } else {
-        setCount("999+");
+    (async () => {
+      if (isUserAuthenticated) {
+        try {
+          const response = await getNotificationCount();
+          const responseData: Notifications = response.data;
+          if (responseData && (responseData.count as number) < 999) {
+            setCount((responseData.count as number).toString());
+          } else {
+            setCount("999+");
+          }
+        } catch (error) {
+          console.error(error);
+        }
       }
-    });
+    })();
   }, []);
 
   return (
@@ -78,6 +88,7 @@ export default function TabLayout() {
             tabBarIcon: ({ focused }) => (
               <TabBarIcon name={focused ? "call" : "call-outline"} />
             ),
+            headerTitleAlign: "center",
           }}
         />
       </Tabs>

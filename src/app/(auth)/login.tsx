@@ -144,7 +144,7 @@ const LoginScreen = () => {
           </View>
           {loader && <Loader isLoading={loader} />}
           <Image
-            source={require("../../assets/images/ic_rishta_logo_bottom_bar.jpg")}
+            source={require("@/src/assets/images/ic_rishta_logo_bottom_bar.jpg")}
             style={{ height: "25%", width: "50%" }}
             contentFit="contain"
           />
@@ -177,7 +177,7 @@ const LoginScreen = () => {
             <View style={styles.inputContainer}>
               <Image
                 style={styles.icon}
-                source={require("../../assets/images/lock_icon.png")}
+                source={require("@/src/assets/images/lock_icon.png")}
                 contentFit="contain"
               />
               <KeyboardAvoidingView

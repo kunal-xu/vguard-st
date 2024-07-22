@@ -28,7 +28,7 @@ import { Image } from "expo-image";
 import { blurhash } from "@/src/utils/constants";
 import { MaterialIcons } from "@expo/vector-icons";
 import usePopup from "@/src/hooks/usePopup";
-import { CouponRedeem, CouponRedeemResponse } from "@/src/utils/types";
+import { CouponRedeemResponse } from "@/src/utils/types";
 import { getLocation } from "@/src/utils/geolocation";
 import { showToast } from "@/src/utils/showToast";
 import { useRouter } from "expo-router";

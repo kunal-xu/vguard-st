@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
-  Linking,
   StyleSheet,
   Image,
   FlatList,
@@ -20,7 +18,6 @@ const TicketHistory = () => {
         let response = await getTicketHistory();
         response = await response.data;
         setData(response);
-        console.log(response, ">>>>>>>>got it");
       } catch (e) {
         console.error(e);
       }

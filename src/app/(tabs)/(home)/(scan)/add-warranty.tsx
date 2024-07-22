@@ -58,10 +58,6 @@ export const AddWarranty = () => {
 
   async function saveData() {
     try {
-      router.push({
-        pathname: "success-page",
-        params: { message: "string" },
-      });
       RegistrationCustomerDetailsSchema.parse(customerState);
       showLoader(true);
       const response = await sendCustomerData(customerState);

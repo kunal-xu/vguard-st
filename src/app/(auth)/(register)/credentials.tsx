@@ -38,8 +38,8 @@ const Credentials = () => {
     try {
       PasswordMatchSchema.parse(state);
       showLoader(true);
-      const response = await registerNewUser(state);
       console.log(state);
+      const response = await registerNewUser(state);
       const loginResponse = await loginWithPassword(
         state.Contact as string,
         state.pwd as string

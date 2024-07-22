@@ -13,7 +13,9 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { getCategoryList, getRangeWiseEarning } from "@/src/utils/apiservice";
 import { Picker } from "@react-native-picker/picker";
 import NeedHelp from "@/src/components/NeedHelp";
@@ -24,7 +26,7 @@ import colors from "@/src/utils/colors";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
-import { Category, RangeWiseEarning } from "@/src/utils/types";
+import { Category, PointsSummary, RangeWiseEarning } from "@/src/utils/types";
 import { showToast } from "@/src/utils/showToast";
 import { height } from "@/src/utils/dimensions";
 import {
@@ -85,59 +87,72 @@ const PointsSection = ({
 );
 
 const DatePickerSection = ({
+  fromDate,
+  toDate,
   startDate,
   showStart,
-  showStartDatePicker,
+  setShowStart,
   onChangeStartDate,
-  endDate,
   showEnd,
-  showEndDatePicker,
+  setShowEnd,
   onChangeEndDate,
 }: DatePickerSectionProps) => (
   <View style={styles.calendarContainer}>
     <View style={styles.datePickerContainer}>
       <Text style={styles.label}>Date (From)</Text>
       <TouchableOpacity
-        onPress={showStartDatePicker}
+        onPress={() => setShowStart(true)}
         style={styles.inputContainer}
       >
         <TextInput
           style={styles.textInput}
           placeholder="DD/MM/YYYY"
-          value={startDate.toLocaleDateString("en-GB")}
+          value={(fromDate as Date).toLocaleDateString("en-GB")}
           editable={false}
         />
       </TouchableOpacity>
       {showStart && (
         <DateTimePicker
-          value={startDate}
+          value={fromDate as Date}
           minimumDate={startDate}
           maximumDate={new Date()}
           mode="date"
           display="default"
-          onChange={onChangeStartDate}
+          onChange={(event: DateTimePickerEvent, date?: Date) => {
+            if (event.type === "set") {
+              onChangeStartDate(date as Date);
+            } else {
+              setShowStart(false);
+            }
+          }}
         />
       )}
     </View>
     <View style={styles.datePickerContainer}>
       <Text style={styles.label}>Date (To)</Text>
       <TouchableOpacity
-        onPress={showEndDatePicker}
+        onPress={() => setShowEnd(true)}
         style={styles.inputContainer}
       >
         <TextInput
           style={styles.textInput}
           placeholder="DD/MM/YYYY"
-          value={endDate.toLocaleDateString("en-GB")}
+          value={(toDate as Date).toLocaleDateString("en-GB")}
           editable={false}
         />
       </TouchableOpacity>
       {showEnd && (
         <DateTimePicker
-          value={endDate}
+          value={toDate as Date}
           mode="date"
           display="default"
-          onChange={onChangeEndDate}
+          onChange={(event: DateTimePickerEvent, date?: Date) => {
+            if (event.type === "set") {
+              onChangeEndDate(date as Date);
+            } else {
+              setShowEnd(false);
+            }
+          }}
           maximumDate={new Date()}
           minimumDate={startDate}
         />
@@ -195,18 +210,21 @@ const OptionsSection = () => (
 
 const Dashboard = () => {
   const { t } = useTranslation();
+  const { state } = useData();
   const [items, setItems] = useState<(string | null)[]>(["All Products"]);
   const [selectedValue, setSelectedValue] = useState<string>("All Products");
   const [earnedPoints, setEarnedPoints] = useState("0");
   const [redeemablePoints, setRedeemablePoints] = useState("0");
   const [tdsKitty, setTdsKitty] = useState("0");
-  const { state } = useData();
   const [showStart, setShowStart] = useState(false);
-  const [startDate, setStartDate] = useState(
+  const [showEnd, setShowEnd] = useState(false);
+  const [fromDate, setFromDate] = useState<Date>(
     new Date(state.InvitationDate as string)
   );
-  const [showEnd, setShowEnd] = useState(false);
-  const [endDate, setEndDate] = useState(new Date());
+  const [toDate, setToDate] = useState<Date>(new Date());
+
+  const startDate = new Date(state.InvitationDate as string);
+  const endDate = new Date();
 
   useEffect(() => {
     (async () => {
@@ -238,6 +256,16 @@ const Dashboard = () => {
     { type: "options" },
   ];
 
+  const onChangeStartDate = (selectedDate: Date) => {
+    setFromDate(selectedDate);
+    setShowStart(false);
+  };
+
+  const onChangeEndDate = (selectedDate: Date) => {
+    setToDate(selectedDate);
+    setShowEnd(false);
+  };
+
   const renderItem: ListRenderItem<(typeof data)[0]> = ({ item }) => {
     switch (item.type) {
       case "productPicker":
@@ -259,13 +287,14 @@ const Dashboard = () => {
       case "datePicker":
         return (
           <DatePickerSection
+            fromDate={fromDate}
+            toDate={toDate}
             startDate={startDate}
             showStart={showStart}
-            showStartDatePicker={showStartDatePicker}
+            setShowStart={setShowStart}
             onChangeStartDate={onChangeStartDate}
-            endDate={endDate}
             showEnd={showEnd}
-            showEndDatePicker={showEndDatePicker}
+            setShowEnd={setShowEnd}
             onChangeEndDate={onChangeEndDate}
           />
         );
@@ -279,17 +308,17 @@ const Dashboard = () => {
   };
 
   const handleSearch = async () => {
-    if (endDate < startDate) {
+    if (toDate < fromDate) {
       showToast("Please select the correct date range");
       return;
     }
     try {
       const payload = new RangeWiseEarning();
-      payload.startDate = startDate;
-      payload.endDate = endDate;
+      payload.startDate = fromDate;
+      payload.endDate = toDate;
       payload.product = selectedValue;
       const response = await getRangeWiseEarning(payload);
-      const reponseData = response.data;
+      const reponseData: PointsSummary = response.data;
       setEarnedPoints(reponseData.EarnedPoints as string);
       setRedeemablePoints(reponseData.RedeemablePoints as string);
       setTdsKitty(reponseData.RedeemedPoints as string);
@@ -297,24 +326,6 @@ const Dashboard = () => {
       console.log(error);
       showToast(t("Error fetching data. Please try again"));
     }
-  };
-
-  const showStartDatePicker = () => {
-    setShowStart(true);
-  };
-
-  const showEndDatePicker = () => {
-    setShowEnd(true);
-  };
-
-  const onChangeStartDate = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate || startDate;
-    setStartDate(currentDate);
-  };
-
-  const onChangeEndDate = (event: any, selectedDate: any) => {
-    const currentDate = selectedDate || endDate;
-    setEndDate(currentDate);
   };
 
   return (

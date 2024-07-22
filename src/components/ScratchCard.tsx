@@ -1,21 +1,7 @@
-/*import {
-  Canvas,
-  Group,
-  Image,
-  Path,
-  SkPath,
-  Skia,
-  useImage,
-  notifyChange,
-  PaintStyle,
-  StrokeCap,
-  StrokeJoin,
-} from "@shopify/react-native-skia";
-import { useState } from "react";
+/*import { useState } from "react";
 import { View, StyleSheet } from "react-native";
-
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { runOnJS, SharedValue, useSharedValue } from "react-native-reanimated";
+import {Canvas, Image as CanvasImage, Path2D} from "react"
 
 const IMG_WID = 300;
 const IMG_HEI = 300;

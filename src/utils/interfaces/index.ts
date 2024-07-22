@@ -354,14 +354,15 @@ export interface ProductPickerSectionProps {
 }
 
 export interface DatePickerSectionProps {
-  startDate: Date;
-  showStart: boolean;
-  showStartDatePicker: () => void;
-  onChangeStartDate: (event: any, selectedDate: any) => void;
-  endDate: Date;
-  showEnd: boolean;
-  showEndDatePicker: () => void;
-  onChangeEndDate: (event: any, selectedDate: any) => void;
+  toDate?: Date;
+  fromDate?: Date;
+  startDate?: Date;
+  showStart?: boolean;
+  setShowStart: Dispatch<SetStateAction<boolean>>;
+  onChangeStartDate: (selectedDate: Date) => void;
+  showEnd?: boolean;
+  setShowEnd: Dispatch<SetStateAction<boolean>>;
+  onChangeEndDate: (selectedDate: Date) => void;
 }
 
 export interface PointsSectionProps {
@@ -380,10 +381,31 @@ export interface FieldSectionProps {
   setDescriptionInput: Dispatch<SetStateAction<string>>;
   isImagePickerVisible: boolean;
   toggleModal: () => void;
+  openCamera: () => void;
+  openGallery: () => void;
+  selectedImage: string | null;
+  handleImageModalToggle: () => void;
+  isImageModalVisible: boolean;
 }
 
 export interface FooterSectionProps {
   t: any;
   openTnC: () => void;
   openFaqS: () => void;
+}
+
+export interface PopupContextProps {
+  popUp: boolean;
+  setPopUp: Dispatch<SetStateAction<boolean>>;
+  popUpButtonCount: number;
+  setPopUpButtonCount: Dispatch<SetStateAction<number>>;
+  popUpTitle: string;
+  setPopUpTitle: Dispatch<SetStateAction<string>>;
+  popupText: string;
+  setPopupText: Dispatch<SetStateAction<string>>;
+  popUpIconType: string;
+  setPopUpIconType: Dispatch<SetStateAction<string>>;
+  popUpButton2Text: string;
+  setPopupButton2Text: Dispatch<SetStateAction<string>>;
+  cleanupPopUp: () => void;
 }
