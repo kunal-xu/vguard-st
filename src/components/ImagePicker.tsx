@@ -15,9 +15,9 @@ import { useData } from "../hooks/useData";
 import { showToast } from "../utils/showToast";
 import Loader from "./Loader";
 import NewPopUp from "./NewPopup";
-import usePopup from "../hooks/usePopup";
 import { useTranslation } from "react-i18next";
 import * as FileSystem from "expo-file-system";
+import { usePopup } from "../hooks/usePopup";
 
 interface ImagePickerModalProps {
   isVisible: boolean;
@@ -33,17 +33,7 @@ const ImagePickerModal = ({
   const { t } = useTranslation();
   const [loader, showLoader] = useState(false);
   const { state, dispatch } = useData();
-  const {
-    popUp,
-    setPopUp,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    cleanupPopUp,
-  } = usePopup();
+  const { data: popup, setData: setPopup } = usePopup();
 
   const fileUpload = async (
     type: string,
@@ -80,10 +70,13 @@ const ImagePickerModal = ({
           showLoader(false);
           toggleModal();
           if (responseData.code == 200) {
-            setPopUp(true);
-            setPopUpIconType("Info");
-            setPopUpTitle(t("Profile"));
-            setPopupText(responseData.message);
+            setPopup({
+              visible: true,
+              numberOfButtons: 1,
+              iconType: "Info",
+              title: "Profile",
+              text: responseData.message,
+            });
           } else {
             showToast(responseData.message);
           }
@@ -156,14 +149,7 @@ const ImagePickerModal = ({
       onRequestClose={toggleModal}
     >
       {loader && <Loader isLoading={loader} />}
-      <NewPopUp
-        visible={popUp}
-        button1Action={() => cleanupPopUp()}
-        button1Text={"Dismiss"}
-        text={popupText}
-        iconType={popUpIconType}
-        title={popUpTitle}
-      />
+      <NewPopUp {...popup} />
       <TouchableWithoutFeedback onPress={toggleModal}>
         <View style={styles.modalContainer}>
           <TouchableWithoutFeedback>

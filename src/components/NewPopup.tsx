@@ -1,45 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   Modal,
   StyleSheet,
   Pressable,
-  Image,
   Linking,
 } from "react-native";
 import colors from "../utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { usePopup } from "../hooks/usePopup";
 
 interface NewPopUp {
-  visible: boolean;
+  visible?: boolean;
   numberOfButtons?: number;
-  button1Action: () => void;
   button2Action?: () => void;
-  button1Text: string;
   button2Text?: string;
-  text: string;
-  iconType: string;
-  title: string;
+  text?: string;
+  iconType?: string;
+  title?: string;
 }
 
 const NewPopUp = ({
   visible,
   numberOfButtons = 1,
-  button1Action,
   button2Action,
-  button1Text,
   button2Text,
   text,
   iconType,
   title,
 }: NewPopUp) => {
+  const { resetData: resetPopupData } = usePopup();
   const replaceLinkWithComponent = (content: string) => {
     const textContent = String(content);
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = textContent.split(urlRegex);
-
     return (
       <Text style={styles.text}>
         {parts.map((part, index) => {
@@ -119,9 +115,9 @@ const NewPopUp = ({
               marginBottom: 20,
             }}
           >
-            {getIcon(iconType)}
+            {getIcon(iconType as string)}
           </View>
-          {replaceLinkWithComponent(text)}
+          {replaceLinkWithComponent(text as string)}
           <View style={styles.buttonContainer}>
             <Pressable
               style={({ pressed }) => [
@@ -129,10 +125,10 @@ const NewPopUp = ({
                 styles.button,
                 styles.button1,
               ]}
-              onPress={button1Action}
+              onPress={resetPopupData}
             >
               <Text style={[styles.buttonText, styles.button1Text]}>
-                {button1Text}
+                {"Dismiss"}
               </Text>
             </Pressable>
             {numberOfButtons === 2 && (
@@ -142,7 +138,12 @@ const NewPopUp = ({
                   styles.button,
                   styles.button2,
                 ]}
-                onPress={button2Action}
+                onPress={() => {
+                  if (button2Action) {
+                    resetPopupData();
+                    button2Action();
+                  }
+                }}
               >
                 <Text style={styles.buttonText}>{button2Text}</Text>
               </Pressable>

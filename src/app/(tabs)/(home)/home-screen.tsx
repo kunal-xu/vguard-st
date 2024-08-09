@@ -15,24 +15,23 @@ import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
-import useProfile from "@/src/hooks/useProfile";
-import { useData } from "@/src/hooks/useData";
 import Constants from "expo-constants";
 import { TabBarIcon } from "@/src/components/TabBarIcon";
-import { useAuth } from "@/src/hooks/useAuth";
 import NewPopUp from "@/src/components/NewPopup";
 import OpenPopupOnOpeningApp from "@/src/components/OpenPopupOnOpeningApp";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useUserData } from "@/src/hooks/useUserData";
+
+interface Item {
+  type: "header" | "dashboard" | "needHelp";
+}
 
 const HomeScreen = () => {
   const { t } = useTranslation();
-  const { state } = useData();
+  const { data: user } = useUserData();
   const { logout } = useAuth();
   const [logoutPopup, setLogoutPopup] = useState(false);
-  useProfile();
 
-  interface Item {
-    type: "header" | "dashboard" | "needHelp";
-  }
   const data: Item[] = [
     { type: "header" },
     { type: "dashboard" },
@@ -49,9 +48,7 @@ const HomeScreen = () => {
             <NewPopUp
               visible={logoutPopup}
               numberOfButtons={2}
-              button1Action={() => setLogoutPopup(false)}
               button2Action={() => logout()}
-              button1Text={"Dismiss"}
               button2Text={"Yes"}
               text={"Are you sure you want to Log out?"}
               iconType={"Alert"}
@@ -61,7 +58,7 @@ const HomeScreen = () => {
               <View style={styles.ImageProfile}>
                 <Image
                   source={{
-                    uri: state.Selfie as string,
+                    uri: user?.Selfie as string,
                   }}
                   placeholder={{
                     uri: "https://th.bing.com/th/id/OIG4.nmrti4QcluTglrqH8vtp",
@@ -73,10 +70,10 @@ const HomeScreen = () => {
               </View>
               <View style={styles.profileText}>
                 <Text style={styles.textDetail}>
-                  {state.Name || "ST Account"}
+                  {user?.Name || "ST Account"}
                 </Text>
                 <Text style={{ fontSize: responsiveFontSize(1.7) }}>
-                  Rishta ID: {state.RishtaID || "VGIL30000"}
+                  Rishta ID: {user?.RishtaID || "VGIL30000"}
                 </Text>
               </View>
               <Pressable onPress={() => setLogoutPopup(true)}>
@@ -94,14 +91,14 @@ const HomeScreen = () => {
               >
                 <Feather name="check-circle" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(state.EarnedPoints)?.toFixed(2) || 0}
+                  {Number(user?.EarnedPoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Total Earnings</Text>
               </Pressable>
               <Pressable style={styles.middlePoint}>
                 <MaterialIcons name="currency-rupee" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(state.RedeemablePoints)?.toFixed(2) || 0}
+                  {Number(user?.RedeemablePoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Redeemable Points</Text>
               </Pressable>
@@ -114,7 +111,7 @@ const HomeScreen = () => {
               >
                 <MaterialIcons name="redeem" size={40} color="black" />
                 <Text style={styles.point}>
-                  {Number(state.RedeemedPoints)?.toFixed(2) || 0}
+                  {Number(user?.RedeemedPoints)?.toFixed(2) || 0}
                 </Text>
                 <Text style={styles.greyText}>Redeemed Points</Text>
               </Pressable>

@@ -9,21 +9,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   StatusBar,
+  Linking,
 } from "react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import arrowIcon from "@/src/assets/images/arrow.png";
-import { Linking } from "react-native";
 import selectedTickImage from "@/src/assets/images/tick_1.png";
 import notSelectedTickImage from "@/src/assets/images/tick_1_notSelected.png";
 import language from "@/src/assets/images/language.png";
 import { loginWithPassword } from "@/src/utils/apiservice";
 import React from "react";
 import Buttons from "@/src/components/Buttons";
-import { useAuth } from "@/src/hooks/useAuth";
 import Loader from "@/src/components/Loader";
 import LanguagePicker from "@/src/components/LanguagePicker";
-import { useData } from "@/src/hooks/useData";
 import colors from "@/src/utils/colors";
 import { height } from "@/src/utils/dimensions";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
@@ -32,6 +30,10 @@ import { showToast } from "@/src/utils/showToast";
 import NewPopUp from "@/src/components/NewPopup";
 import { useRouter } from "expo-router";
 import Constants from "expo-constants";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { LoginCreds } from "@/src/utils/types";
+import { usePopup } from "@/src/hooks/usePopup";
 
 const LoginScreen = () => {
   const { t } = useTranslation();
@@ -40,14 +42,10 @@ const LoginScreen = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [selectedOption, setSelectedOption] = useState(true);
-  const [popUp, setPopUp] = useState(false);
-  const [popUpButtonCount, setPopUpButtonCount] = useState(1);
-  const [popUpTitle, setPopUpTitle] = useState("");
-  const [popupText, setPopupText] = useState("");
-  const [popUpIconType, setPopUpIconType] = useState("");
+  const { data: popup, setData: setPopup } = usePopup();
   const { login } = useAuth();
-  const { dispatch } = useData();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const placeholderColor = colors.grey;
   const pkg = require("../../../package.json");
@@ -72,62 +70,50 @@ const LoginScreen = () => {
     );
   };
 
-  function cleanupPopUp() {
-    setPopUp(false);
-    setPopUpButtonCount(1);
-    setPopUpTitle("");
-    setPopupText("");
-    setPopUpIconType("");
-  }
+  const mutation = useMutation({
+    mutationFn: (loginCreds: LoginCreds) => {
+      return loginWithPassword(loginCreds.Contact, loginCreds.Password);
+    },
+    onSuccess: (response) => {
+      queryClient.setQueryData(["user"], response.data);
+      login(response.data);
+    },
+  });
 
   const handleLogin = async () => {
     if (!username.trim().length || !password.trim().length) {
       showToast(t("Please enter a username and password."));
       return;
     }
-
     if (selectedOption === false) {
       showToast(t("strings:please_accept_terms"));
       return;
     }
-
     showLoader(true);
-
+    const loginCreds = new LoginCreds();
+    loginCreds.Contact = username;
+    loginCreds.Password = password;
     try {
-      const response = await loginWithPassword(username, password);
-      showLoader(false);
-      const responseData = response.data;
-      dispatch({
-        type: "GET_ALL_FIELDS",
-        payload: {
-          value: responseData.stUser,
-        },
-      });
-      login(responseData);
+      await mutation.mutateAsync(loginCreds);
     } catch (error: any) {
+      setPopup({
+        visible: true,
+        numberOfButtons: 1,
+        text:
+          error.response.data.message ||
+          "Internal Server Error. Please try again.",
+        iconType: "Alert",
+        title: "Verification Failed",
+      });
+    } finally {
       showLoader(false);
-      setPopUp(true);
-      setPopUpTitle(t("Verification Failed"));
-      setPopupText(
-        error.response.data.message ||
-          "Internal Server Error. Please try again."
-      );
-      setPopUpIconType("Alert");
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <NewPopUp
-        visible={popUp}
-        numberOfButtons={popUpButtonCount}
-        button1Action={() => cleanupPopUp()}
-        button1Text={"Dismiss"}
-        text={popupText}
-        iconType={popUpIconType}
-        title={popUpTitle}
-      />
+      <NewPopUp {...popup} />
       <View style={styles.loginScreen}>
         <View style={styles.mainWrapper}>
           <View style={styles.buttonLanguageContainer}>
@@ -350,7 +336,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: height / 16,
     backgroundColor: colors.white,
-    borderRadius: 5,
+    borderWidth: 0.1,
     flexDirection: "row",
     alignItems: "center",
     // padding: 5,

@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import { useTranslation } from "react-i18next";
-import arrowIcon from "../../../../assets/images/arrow.png";
+import arrowIcon from "@/src/assets/images/arrow.png";
 import { sendCustomerData } from "@/src/utils/apiservice";
 import { customerData } from "./fields/customerData";
 import { RegistrationCustomerDetailsSchema } from "@/src/utils/schemas/Registration";

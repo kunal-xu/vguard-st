@@ -1,4 +1,3 @@
-import { Picker, PickerProps } from "@react-native-picker/picker";
 import {
   StyleProp,
   StyleSheet,
@@ -16,10 +15,8 @@ import {
   FloatingLabelInput,
 } from "react-native-floating-label-input";
 import { useTranslation } from "react-i18next";
-import { ButtonsProps } from "../utils/interfaces";
 import { height } from "../utils/dimensions";
-import { useState } from "react";
-import React from "react";
+import React, { useState } from "react";
 import {
   getDetailsByPinCode,
   getPincodeList,
@@ -29,7 +26,6 @@ import {
   updateProfile,
 } from "../utils/apiservice";
 import Buttons from "./Buttons";
-import { useData } from "../hooks/useData";
 import {
   AddressDetail,
   BankDetail,
@@ -41,20 +37,20 @@ import {
   WelcomeBanner,
 } from "../utils/types";
 import Loader from "./Loader";
-
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NewPopUp from "./NewPopup";
-import usePopup from "../hooks/usePopup";
 import { showToast } from "../utils/showToast";
+import { usePopup } from "../hooks/usePopup";
+import { useCustomerData } from "../hooks/useCustomerData";
+import { useRegUserData } from "../hooks/useRegUserData";
+import { Picker, PickerProps } from "@react-native-picker/picker";
 
 interface BaseFieldProps {
-  id: string | number;
+  id: string;
   type?: string;
   label?: string;
   data?: string;
   items?: string[];
-  hasLink?: boolean;
-  links?: BaseFieldProps[];
   source?: string;
 }
 
@@ -78,70 +74,28 @@ type FieldProps =
   | FloatingLabelInputField
   | DropDownPickerField
   | PickerField
-  | TextField
-  | ButtonsProps;
+  | TextField;
 
 const Field = (props: FieldProps) => {
   const { type, source } = props;
   const { t } = useTranslation();
-  const { state, dispatch, customerState, customerDispatch } = useData();
-  const [loader, showLoader] = useState(false);
   const {
-    popUp,
-    setPopUp,
-    popUpButtonCount,
-    setPopUpButtonCount,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    popUpButton2Text,
-    setPopupButton2Text,
-    cleanupPopUp,
-  } = usePopup();
-
-  const handleFormInputChange = (
-    field: keyof STUser,
-    subfield:
-      | keyof (AddressDetail | BankDetail | PaytmDetail | WelcomeBanner)
-      | string
-      | undefined,
-    value: string | number | boolean
-  ) => {
-    if (subfield) {
-      dispatch({
-        type: "UPDATE_SUB_FIELD",
-        payload: { field, subfield, value },
-      });
-    } else {
-      dispatch({
-        type: "UPDATE_FIELD",
-        payload: { field, value },
-      });
-    }
-  };
-
-  const handleCustomerInputChange = (
-    field: keyof RegisterCustomerDetails,
-    subfield: keyof (CouponRedeemResponse | ProductDetail) | string | undefined,
-    value: string | number
-  ) => {
-    if (subfield) {
-      customerDispatch({
-        type: "UPDATE_SUB_FIELD",
-        payload: { field, subfield, value },
-      });
-    } else {
-      customerDispatch({
-        type: "UPDATE_FIELD",
-        payload: { field, value },
-      });
-    }
-  };
+    data: state,
+    resetData: resetState,
+    setData: setState,
+    setField: setStateField,
+  } = useRegUserData();
+  const {
+    data: customerState,
+    resetData: resetCustomerData,
+    setData: setCustomerData,
+    setField: setCustomerField,
+  } = useCustomerData();
+  const [loader, showLoader] = useState(false);
+  const { data: popup, setData: setPopup } = usePopup();
 
   let properties;
+
   switch (type) {
     case "floatingLabelInput":
       properties = (props as FloatingLabelInputField).properties;
@@ -169,12 +123,8 @@ const Field = (props: FieldProps) => {
           onChangeText={
             source && source === "customer"
               ? (text) =>
-                  handleCustomerInputChange(
-                    customerField,
-                    customerSubfield,
-                    text
-                  )
-              : (text) => handleFormInputChange(field, subfield, text)
+                  setCustomerField(text, customerField, customerSubfield)
+              : (text) => setStateField(text, field, subfield)
           }
           label={t(props.label || "")}
         />
@@ -307,16 +257,17 @@ const Field = (props: FieldProps) => {
 
     case "floatingLabelInputWithButton":
       function tdsPopUp() {
-        setPopUp(true);
-        setPopUpTitle(t("TDS Consent"));
-        setPopUpButtonCount(2);
-        setPopupButton2Text(t("Proceed"));
-        setPopUpIconType("Info");
-        setPopupText(
-          t(
+        setPopup({
+          visible: true,
+          numberOfButtons: 2,
+          button2Text: t("Proceed"),
+          button2Action: () => tds(),
+          iconType: "Info",
+          text: t(
             "Dear User, please review your PAN & Aadhar details and provide your consent and authorize V Guard Industries Ltd. to deduct TDS under section 194R which can be credited back at the FY end if the redemption amount is less than 20000.\n\nTDS percentages can be 10% or 20% depending on PAN information (Pan Status, Aadhar & PAN Link Status, ITR Status)."
-          )
-        );
+          ),
+          title: "TDS Consent",
+        });
       }
 
       async function tds() {
@@ -327,10 +278,13 @@ const Field = (props: FieldProps) => {
           });
           showLoader(false);
           const responseData = response.data;
-          setPopUp(true);
-          setPopUpIconType("Info");
-          setPopUpTitle(t("TDS Percentage"));
-          setPopupText(responseData.message);
+          setPopup({
+            visible: true,
+            numberOfButtons: 1,
+            iconType: "Info",
+            text: responseData.message,
+            title: "TDS Percentage",
+          });
           dispatch({
             type: "UPDATE_FIELD",
             payload: {
@@ -341,32 +295,34 @@ const Field = (props: FieldProps) => {
           });
         } catch (error: any) {
           showLoader(false);
-          setPopUp(true);
-          setPopUpIconType("Info");
-          setPopUpTitle(t("TDS Percentage"));
-          setPopupText(
-            error.response.data.message ||
-              "Something went wrong. Please try again"
-          );
+          setPopup({
+            visible: true,
+            numberOfButtons: 1,
+            iconType: "Info",
+            text:
+              error.response.data.message ||
+              "Something went wrong. Please try again",
+            title: "TDS Percentage",
+          });
         }
       }
 
       async function vpa() {
         showLoader(true);
         try {
-          console.log(state.UniqueId)
           const response = await getVPAData({
             UniqueId: state.UniqueId,
           });
           showLoader(false);
           const responseData = response.data;
-          
-          setPopUp(true);
           if (responseData.code === 1) {
-            setPopUpIconType("Check");
-            setPopUpButtonCount(1);
-            setPopUpTitle(t("Verification Successful"));
-            setPopupText(response.data.message);
+            setPopup({
+              visible: true,
+              numberOfButtons: 1,
+              iconType: "Check",
+              text: response.data.message,
+              title: "Verification Successful",
+            });
             dispatch({
               type: "UPDATE_SUB_FIELD",
               payload: {
@@ -386,35 +342,25 @@ const Field = (props: FieldProps) => {
             const payload = { ...state, Selfie: null };
             await updateProfile(payload);
           } else {
-            setPopUpIconType("Alert");
-            setPopUpButtonCount(2);
-            setPopUpTitle(t("Verification Failed"));
-            setPopupText(response.data.message);
-            setPopupButton2Text(t("Verify Again"));
+            setPopup({
+              visible: true,
+              numberOfButtons: 2,
+              iconType: "Alert",
+              button2Text: t("Verify Again"),
+              button2Action: () => vpa(),
+              text: response.data.message,
+              title: "Verification Failed",
+            });
           }
         } catch (error: any) {
           showLoader(false);
           showToast("Something went wrong. Please try again");
-          console.log(error);
         }
       }
       return (
         <View style={styles.container}>
           {loader && <Loader isLoading={loader} />}
-          <NewPopUp
-            visible={popUp}
-            numberOfButtons={popUpButtonCount}
-            button1Action={() => cleanupPopUp()}
-            button2Action={() => {
-              cleanupPopUp();
-              source && source === "upi" ? vpa() : tds();
-            }}
-            button1Text={"Dismiss"}
-            button2Text={popUpButton2Text}
-            text={popupText}
-            iconType={popUpIconType}
-            title={popUpTitle}
-          />
+          <NewPopUp {...popup} />
           <Text style={styles.label}>{t(props.label || "")}</Text>
           <View style={styles.inputContainer}>
             <TextInput
@@ -519,10 +465,13 @@ const Field = (props: FieldProps) => {
           }
         } catch (error: any) {
           showLoader(false);
-          setPopUp(true);
-          setPopUpIconType("Alert");
-          setPopUpTitle(t("Not Found"));
-          setPopupText("Customer details not found");
+          setPopup({
+            visible: true,
+            numberOfButtons: 1,
+            iconType: "Alert",
+            title: t("Not Found"),
+            text: "Customer details not found",
+          });
           customerDispatch({
             type: "UPDATE_FIELD",
             payload: {
@@ -585,17 +534,7 @@ const Field = (props: FieldProps) => {
           }}
         >
           {loader && <Loader isLoading={loader} />}
-          <NewPopUp
-            visible={popUp}
-            numberOfButtons={popUpButtonCount}
-            button1Action={() => cleanupPopUp()}
-            button2Action={() => {}}
-            button1Text={"Dismiss"}
-            button2Text={popUpButton2Text}
-            text={popupText}
-            iconType={popUpIconType}
-            title={popUpTitle}
-          />
+          <NewPopUp {...popup} />
           <Buttons
             label={t("Get Customer Details")}
             variant="filled"

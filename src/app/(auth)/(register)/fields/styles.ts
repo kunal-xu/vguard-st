@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { height } from "@/src/utils/dimensions";
+import { CustomLabelProps } from "react-native-floating-label-input";
 
 export const styles = StyleSheet.create({
   container: {
@@ -10,21 +11,22 @@ export const styles = StyleSheet.create({
     borderRadius: 6,
     margin: 18,
     marginTop: 4,
-    borderCurve: "circular"
+    borderCurve: "circular",
   },
   labelStyles: {
     backgroundColor: "#fff",
     paddingHorizontal: 4,
     marginLeft: 8,
   },
-  customLabelStyles: {
-    colorFocused: "black",
-    colorBlurred: "black",
-    fontSizeFocused: 16,
-  },
   inputStyles: {
     color: "black",
     backgroundColor: "#fff",
-    paddingHorizontal: 14
+    paddingHorizontal: 14,
   },
 });
+
+export const customLabelStyles: CustomLabelProps = {
+  colorFocused: "black",
+  colorBlurred: "black",
+  fontSizeFocused: 16,
+};

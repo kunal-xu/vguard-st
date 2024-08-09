@@ -332,11 +332,7 @@ export interface ImagePickerSectionInterface {
 
 export interface PopupSectionInterface {
   loader: boolean;
-  popUp: boolean;
-  cleanupPopUp: () => void;
-  popupText: string;
-  popUpIconType: string;
-  popUpTitle: string;
+  popup: Popup;
 }
 
 export interface ProfileFields {

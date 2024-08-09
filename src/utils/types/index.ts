@@ -65,6 +65,7 @@ import { STBlockingStatus } from "./STBlockingStatus";
 import { CategoryWiseBlock } from "./STBlockingStatus";
 import { TaggedCategoryDetail } from "./STInviteDetail";
 import { RangeWiseEarning } from "./RangeWiseEarning";
+import { Popup } from "./Popup";
 
 export {
   AddLeadHistory,
@@ -134,4 +135,5 @@ export {
   CategoryWiseBlock,
   TaggedCategoryDetail,
   RangeWiseEarning,
+  Popup,
 };

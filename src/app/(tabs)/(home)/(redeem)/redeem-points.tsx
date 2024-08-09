@@ -7,18 +7,16 @@ import {
   responsiveWidth,
 } from "react-native-responsive-dimensions";
 import NeedHelp from "@/src/components/NeedHelp";
-import { useData } from "@/src/hooks/useData";
 import CustomTouchableOption from "@/src/components/CustomTouchableOption";
 import colors from "@/src/utils/colors";
 import PagerView from "react-native-pager-view";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import useProfile from "@/src/hooks/useProfile";
+import { useUserData } from "@/src/hooks/useUserData";
 
 const RedeemPoints = () => {
-  useProfile();
-  const { state } = useData();
+  const { data: user } = useUserData();
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer}>
       <View
@@ -44,7 +42,7 @@ const RedeemPoints = () => {
             key="1"
           >
             <Image
-              source={require("../../../../assets/images/redemption-screen.jpeg")}
+              source={require("@/src/assets/images/redemption-screen.jpeg")}
               style={{ height: "100%", width: "90%" }}
             />
           </View>
@@ -56,14 +54,14 @@ const RedeemPoints = () => {
           <Pressable style={styles.leftPoint}>
             <MaterialIcons name="currency-rupee" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(state.RedeemablePoints)?.toFixed(2) || 0}
+              {Number(user.RedeemablePoints)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Redeemable Points</Text>
           </Pressable>
           <Pressable style={styles.middlePoint}>
             <MaterialIcons name="redeem" size={40} color="black" />
             <Text style={styles.point}>
-              {Number(state.RedeemedPoints)?.toFixed(2) || 0}
+              {Number(user.RedeemedPoints)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Redeemed Points</Text>
           </Pressable>
@@ -74,7 +72,7 @@ const RedeemPoints = () => {
               color="black"
             />
             <Text style={styles.point}>
-              {Number(state.DeductedTDS)?.toFixed(2) || 0}
+              {Number(user.DeductedTDS)?.toFixed(2) || 0}
             </Text>
             <Text style={styles.greyText}>Deducted TDS</Text>
           </Pressable>
@@ -83,19 +81,19 @@ const RedeemPoints = () => {
           <View style={styles.row}>
             <CustomTouchableOption
               text="strings:bank_transfer"
-              iconSource={require("../../../../assets/images/ic_bank_transfer.webp")}
+              iconSource={require("@/src/assets/images/ic_bank_transfer.webp")}
               screenName="bank-transfer"
               disabled={false}
             />
             <CustomTouchableOption
               text="UPI Transfer"
-              iconSource={require("../../../../assets/images/upi_transfer.webp")}
+              iconSource={require("@/src/assets/images/upi_transfer.webp")}
               screenName="UPI Transfer"
               disabled={true}
             />
             <CustomTouchableOption
               text="strings:redemption_history"
-              iconSource={require("../../../../assets/images/ic_redemption_history.webp")}
+              iconSource={require("@/src/assets/images/ic_redemption_history.webp")}
               screenName="redemption-history"
               disabled={false}
             />

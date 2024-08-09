@@ -1,14 +1,21 @@
 import { SplashScreen, Slot } from "expo-router";
 import { useEffect, useState } from "react";
-import { AuthProvider } from "../hooks/useAuth";
-import { DataProvider } from "../hooks/useData";
 import { RootSiblingParent } from "react-native-root-siblings";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useReactQueryDevTools } from "@dev-plugins/react-query";
+import { AuthProvider } from "../hooks/useAuth";
+import Registration from "./(auth)/(register)/registration";
 
 SplashScreen.preventAutoHideAsync();
 
+const queryClient = new QueryClient();
+
 export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false);
+
+  useReactQueryDevTools(queryClient);
+
   useEffect(() => {
     async function prepare() {
       try {
@@ -28,18 +35,21 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <DataProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
         <RootSiblingParent>
-          <View
-            style={{
-              flex: 1,
-            }}
-          >
+          <View style={styles.container}>
             {/* <Slot /> */}
+            <Registration />
           </View>
         </RootSiblingParent>
-      </DataProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

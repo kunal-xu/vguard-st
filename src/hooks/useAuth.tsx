@@ -11,54 +11,26 @@ import { User } from "../utils/interfaces";
 import { api, logoutUser, newTokens } from "../utils/apiservice";
 import { getItemAsync, setItemAsync, deleteItemAsync } from "expo-secure-store";
 import { useRouter } from "expo-router";
-import { useData } from "./useData";
+import { useUserData } from "./useUserData";
 
 interface AuthContextProps {
   setIsUserAuthenticated: Dispatch<SetStateAction<boolean>>;
   isUserAuthenticated: boolean;
   login: (user: User) => Promise<void>;
   logout: () => Promise<void>;
-  popUp: boolean;
-  setPopUp: Dispatch<SetStateAction<boolean>>;
-  popUpButtonCount: number;
-  setPopUpButtonCount: Dispatch<SetStateAction<number>>;
-  popUpTitle: string;
-  setPopUpTitle: Dispatch<SetStateAction<string>>;
-  popupText: string;
-  setPopupText: Dispatch<SetStateAction<string>>;
-  popUpIconType: string;
-  setPopUpIconType: Dispatch<SetStateAction<string>>;
-  popUpButton2Text: string;
-  setPopupButton2Text: Dispatch<SetStateAction<string>>;
-  cleanupPopUp: () => void;
 }
-
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isUserAuthenticated, setIsUserAuthenticated] =
     useState<boolean>(false);
-  const [popUp, setPopUp] = useState(false);
-  const [popUpButtonCount, setPopUpButtonCount] = useState(1);
-  const [popUpTitle, setPopUpTitle] = useState("");
-  const [popupText, setPopupText] = useState("");
-  const [popUpIconType, setPopUpIconType] = useState("");
-  const [popUpButton2Text, setPopupButton2Text] = useState("");
   const router = useRouter();
-  function cleanupPopUp() {
-    setPopUp(false);
-    setPopUpButtonCount(1);
-    setPopUpTitle("");
-    setPopupText("");
-    setPopUpIconType("");
-    setPopupButton2Text("");
-  }
-
-  const { dispatch } = useData();
+  const { clearData } = useUserData(isUserAuthenticated);
 
   async function login(user: User) {
     await setItemAsync(
@@ -73,10 +45,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await logoutUser();
       await deleteItemAsync("refreshToken");
-      dispatch({
-        type: "CLEAR_ALL_FIELDS",
-        payload: {},
-      });
+      clearData();
       setIsUserAuthenticated(false);
       router.replace("/(auth)/login-with-number");
     } catch (error) {
@@ -92,13 +61,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         )) as string;
         if (refreshToken) {
           const refreshTokenData = JSON.parse(refreshToken);
-          const { accessToken, newRefreshToken } = await newTokens(
-            refreshTokenData
-          );
+          const { newRefreshToken } = await newTokens(refreshTokenData);
           await setItemAsync("refreshToken", JSON.stringify(newRefreshToken));
-          api.defaults.headers.common[
-            "Authorization"
-          ] = `Bearer ${accessToken}`;
+          // api.defaults.headers.common[
+          //   "Authorization"
+          // ] = `Bearer ${accessToken}`;
           setIsUserAuthenticated(true);
           router.replace("/(tabs)/(home)/home-screen");
         } else {
@@ -150,19 +117,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsUserAuthenticated,
         login,
         logout,
-        popUp,
-        setPopUp,
-        popUpButtonCount,
-        setPopUpButtonCount,
-        popUpTitle,
-        setPopUpTitle,
-        popupText,
-        setPopupText,
-        popUpIconType,
-        setPopUpIconType,
-        popUpButton2Text,
-        setPopupButton2Text,
-        cleanupPopUp,
       }}
     >
       {children}

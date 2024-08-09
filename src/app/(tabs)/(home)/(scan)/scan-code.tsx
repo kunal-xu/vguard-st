@@ -1,39 +1,33 @@
 import React, { useState, useEffect } from "react";
-import {
-  Pressable,
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-} from "react-native";
+import { Pressable, View, Text, StyleSheet, TextInput } from "react-native";
 import { useTranslation } from "react-i18next";
 import {
   responsiveFontSize,
   responsiveHeight,
 } from "react-native-responsive-dimensions";
-import {
-  BarcodeScanningResult,
-  Camera,
-  CameraType,
-  CameraView,
-} from "expo-camera";
+import { BarcodeScanningResult, Camera, CameraView } from "expo-camera";
 import { validateCoupon } from "@/src/utils/apiservice";
 import colors from "@/src/utils/colors";
 import Loader from "@/src/components/Loader";
 import NeedHelp from "@/src/components/NeedHelp";
 import Buttons from "@/src/components/Buttons";
-import { useData } from "@/src/hooks/useData";
 import { Image } from "expo-image";
 import { blurhash } from "@/src/utils/constants";
 import { MaterialIcons } from "@expo/vector-icons";
-import usePopup from "@/src/hooks/usePopup";
 import { CouponRedeemResponse } from "@/src/utils/types";
 import { getLocation } from "@/src/utils/geolocation";
 import { showToast } from "@/src/utils/showToast";
 import { useRouter } from "expo-router";
 import NewPopUp from "@/src/components/NewPopup";
 import { LocationObject, LocationObjectCoords } from "expo-location";
+import { useCustomerData } from "@/src/hooks/useCustomerData";
+import { useUserData } from "@/src/hooks/useUserData";
+import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { usePopup } from "@/src/hooks/usePopup";
+
+interface Item {
+  type: "header" | "scan" | "buttons" | "needHelp";
+}
 
 const ScanCode = () => {
   const { t } = useTranslation();
@@ -42,21 +36,15 @@ const ScanCode = () => {
   const [camera, setCamera] = useState(false);
   const [torch, setTorch] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
-  const { state, customerDispatch } = useData();
-  const {
-    popUp,
-    setPopUp,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    cleanupPopUp,
-  } = usePopup();
-  const router = useRouter();
-
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const { data: popup, setData: setPopup } = usePopup();
+  const router = useRouter();
+  const {
+    data: registerCustomerDetails,
+    setData: setRegisterCustomerDetails,
+    resetData: resetRegisterCustomerDetails,
+  } = useCustomerData();
+  const { data: user } = useUserData();
 
   useEffect(() => {
     (async () => {
@@ -91,86 +79,30 @@ const ScanCode = () => {
         response.data
       );
       if (status.errorCode === 1) {
-        customerDispatch({
-          type: "UPDATE_SUB_FIELD",
-          payload: {
-            field: "cresp",
-            subfield: "couponCode",
-            value: status.couponCode as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_SUB_FIELD",
-          payload: {
-            field: "cresp",
-            subfield: "skuDetail",
-            value: status.partName as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_SUB_FIELD",
-          payload: {
-            field: "cresp",
-            subfield: "couponPoints",
-            value: status.couponPoints as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_SUB_FIELD",
-          payload: {
-            field: "cresp",
-            subfield: "partNumber",
-            value: status.partNumber as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_FIELD",
-          payload: {
-            field: "dealerNumber",
-            subfield: undefined,
-            value: state.Contact as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_FIELD",
-          payload: {
-            field: "dealerAdd",
-            subfield: undefined,
-            value: state.AddressDetail.currentAddressLine1 as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_FIELD",
-          payload: {
-            field: "dealerState",
-            subfield: undefined,
-            value: state.AddressDetail.currentState as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_FIELD",
-          payload: {
-            field: "dealerName",
-            subfield: undefined,
-            value: state.Name as string,
-          },
-        });
-        customerDispatch({
-          type: "UPDATE_FIELD",
-          payload: {
-            field: "dealerPinCode",
-            subfield: undefined,
-            value: state.AddressDetail.currentPincode as string,
-          },
+        const cresp = new CouponRedeemResponse();
+        cresp.couponCode = status.couponCode;
+        cresp.couponPoints = status.couponPoints;
+        cresp.partNumber = status.partNumber;
+        setRegisterCustomerDetails({
+          ...registerCustomerDetails,
+          cresp,
+          dealerName: user.Name,
+          dealerNumber: user.Contact,
+          dealerAdd: user.AddressDetail.currentAddressLine1,
+          dealerState: user.AddressDetail.currentState,
+          dealerPinCode: user.AddressDetail.currentPincode,
         });
         router.push({
           pathname: "add-warranty",
         });
       } else {
-        setPopUp(true);
-        setPopUpIconType("Alert");
-        setPopUpTitle(t("Validation Failed"));
-        setPopupText(status.errorMsg as string);
+        setPopup({
+          visible: true,
+          numberOfButtons: 1,
+          iconType: "Alert",
+          title: "Validation Failed",
+          text: status.errorMsg as string,
+        });
       }
     } catch (error) {
       showLoader(false);
@@ -185,133 +117,161 @@ const ScanCode = () => {
     return <Text>No access to camera</Text>;
   }
 
-  return (
-    <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-      {<Loader isLoading={loader} />}
-      <View style={styles.mainWrapper}>
-        <NewPopUp
-          visible={popUp}
-          button1Action={() => cleanupPopUp()}
-          button1Text={"Dismiss"}
-          text={popupText}
-          iconType={popUpIconType}
-          title={popUpTitle}
-        />
-        <View style={{ marginTop: 16 }}>
-          <Text style={styles.title}>Scan QR Code</Text>
-          <Text style={styles.subtitle}>
-            {t(
-              "Scan QR Code by clicking on QR code icon \n or \n enter the code manually"
-            )}
-          </Text>
-        </View>
-        {camera ? (
-          <CameraView
-            style={styles.camera}
-            enableTorch={torch}
-            barcodeScannerSettings={{
-              barcodeTypes: ["qr"],
-            }}
-            onBarcodeScanned={(scanningResult: BarcodeScanningResult) => {
-              setQrcode(scanningResult.data);
-              setCamera(false);
-            }}
-            onCameraReady={() => setCameraReady(true)}
-          >
-            <View style={styles.cameraControls}>
+  const data: Item[] = [
+    { type: "header" },
+    { type: "scan" },
+    { type: "buttons" },
+    { type: "needHelp" },
+  ];
+
+  const renderItem: ListRenderItem<Item> = ({ item }) => {
+    switch (item.type) {
+      case "header":
+        return (
+          <>
+            {<Loader isLoading={loader} />}
+            <View style={styles.mainWrapper}>
+              <NewPopUp {...popup} />
+              <View style={{ marginTop: 16 }}>
+                <Text style={styles.title}>Scan QR Code</Text>
+                <Text style={styles.subtitle}>
+                  {t(
+                    "Scan QR Code by clicking on QR code icon \n or \n enter the code manually"
+                  )}
+                </Text>
+              </View>
+            </View>
+          </>
+        );
+      case "scan":
+        return (
+          <View style={styles.mainWrapper}>
+            {camera ? (
+              <CameraView
+                style={styles.camera}
+                enableTorch={torch}
+                barcodeScannerSettings={{
+                  barcodeTypes: ["qr"],
+                }}
+                onBarcodeScanned={(scanningResult: BarcodeScanningResult) => {
+                  setQrcode(scanningResult.data);
+                  setCamera(false);
+                }}
+                onCameraReady={() => setCameraReady(true)}
+              >
+                <View style={styles.cameraControls}>
+                  <Pressable
+                    style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+                    onPress={() => {
+                      setTorch(false);
+                      setCamera(!camera);
+                    }}
+                  >
+                    <MaterialIcons
+                      name="cancel"
+                      size={28}
+                      color={colors.white}
+                    />
+                  </Pressable>
+                  <Pressable
+                    style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+                    onPress={() => setTorch(!torch)}
+                  >
+                    {torch ? (
+                      <MaterialIcons
+                        name="flash-off"
+                        size={28}
+                        color={colors.white}
+                      />
+                    ) : (
+                      <MaterialIcons
+                        name="flash-on"
+                        size={28}
+                        color={colors.white}
+                      />
+                    )}
+                  </Pressable>
+                </View>
+              </CameraView>
+            ) : (
               <Pressable
-                style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
+                style={({ pressed }) => [
+                  {
+                    opacity: pressed ? 0.3 : 1,
+                  },
+                  styles.imageContainer,
+                ]}
                 onPress={() => {
                   setTorch(false);
-                  setCamera(!camera);
+                  setCamera(true);
                 }}
               >
-                <MaterialIcons name="cancel" size={28} color={colors.white} />
+                <Image
+                  source={require("@/src/assets/images/ic_scan_code_2-transformed.png")}
+                  style={{ flex: 1, width: "60%" }}
+                  contentFit="contain"
+                  contentPosition="center"
+                  placeholder={blurhash}
+                  transition={100}
+                />
               </Pressable>
-              <Pressable
-                style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1 }]}
-                onPress={() => setTorch(!torch)}
-              >
-                {torch ? (
-                  <MaterialIcons
-                    name="flash-off"
-                    size={28}
-                    color={colors.white}
-                  />
-                ) : (
-                  <MaterialIcons
-                    name="flash-on"
-                    size={28}
-                    color={colors.white}
-                  />
-                )}
-              </Pressable>
+            )}
+            <View style={styles.enterCode}>
+              <TextInput
+                value={qrCode}
+                style={styles.input}
+                onChangeText={(text: string) => setQrcode(text)}
+                placeholder={t("Enter QR Code Manually")}
+                placeholderTextColor={colors.grey}
+                textAlign="center"
+                keyboardType="numeric"
+                maxLength={16}
+              />
             </View>
-          </CameraView>
-        ) : (
-          <Pressable
-            style={({ pressed }) => [
-              {
-                opacity: pressed ? 0.3 : 1,
-              },
-              styles.imageContainer,
-            ]}
-            onPress={() => {
-              setTorch(false);
-              setCamera(true);
-            }}
-          >
-            <Image
-              source={require("@/src/assets/images/ic_scan_code_2-transformed.png")}
-              style={{ flex: 1, width: "60%" }}
-              contentFit="contain"
-              contentPosition="center"
-              placeholder={blurhash}
-              transition={100}
+          </View>
+        );
+      case "buttons":
+        return (
+          <View style={styles.mainWrapper}>
+            <Buttons
+              label={t("strings:proceed")}
+              variant="filled"
+              onPress={async () => await sendBarcode()}
+              width="90%"
             />
-          </Pressable>
-        )}
-        <View style={styles.enterCode}>
-          <TextInput
-            value={qrCode}
-            style={styles.input}
-            onChangeText={(text: string) => setQrcode(text)}
-            placeholder={t("Enter QR Code Manually")}
-            placeholderTextColor={colors.grey}
-            textAlign="center"
-            keyboardType="numeric"
-            maxLength={16}
-          />
-        </View>
-        <Buttons
-          label={t("strings:proceed")}
-          variant="filled"
-          onPress={async () => await sendBarcode()}
-          width="90%"
-        />
-        <Buttons
-          label={t("Go to History")}
-          variant="outlined"
-          onPress={async () =>
-            router.push({
-              pathname: "unique-code-history",
-            })
-          }
-          width="90%"
-        />
-        <NeedHelp />
-      </View>
-    </ScrollView>
+            <Buttons
+              label={t("Go to History")}
+              variant="outlined"
+              onPress={async () =>
+                router.push({
+                  pathname: "unique-code-history",
+                })
+              }
+              width="90%"
+            />
+          </View>
+        );
+      case "needHelp":
+        return <NeedHelp />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <FlashList data={data} renderItem={renderItem} estimatedItemSize={300} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollViewContainer: {
-    flexGrow: 1,
-    backgroundColor: colors.white,
+  container: {
+    flex: 1,
+    backgroundColor: "white",
   },
   mainWrapper: {
-    padding: 15,
+    padding: 8,
     alignItems: "center",
     backgroundColor: colors.white,
     height: "100%",

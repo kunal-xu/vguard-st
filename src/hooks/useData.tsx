@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, ReactNode } from "react";
+/* import React, { createContext, useContext, useReducer, ReactNode } from "react";
 import {
   AddressDetail,
   BankDetail,
@@ -152,3 +152,4 @@ export const useData = () => {
   }
   return { state, dispatch, customerState, customerDispatch };
 };
+ */

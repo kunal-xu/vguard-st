@@ -10,19 +10,20 @@ import { z } from "zod";
 import { RegistrationSchema } from "../../../utils/schemas/Registration";
 import colors from "@/src/utils/colors";
 import { editProfileFields } from "./fields/editProfileFields";
-import usePopup from "@/src/hooks/usePopup";
 import { showToast } from "@/src/utils/showToast";
 import { Image } from "expo-image";
 import NewPopUp from "@/src/components/NewPopup";
 import { Ionicons } from "@expo/vector-icons";
 import ImagePickerModal from "@/src/components/ImagePicker";
-import { useData } from "@/src/hooks/useData";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import {
   ImagePickerSectionInterface,
   PopupSectionInterface,
   SubmitButtonSectionInterface,
 } from "@/src/utils/interfaces";
+import { STUser } from "@/src/utils/types";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { usePopup } from "@/src/hooks/usePopup";
 
 const ImagePickerSection = ({
   profile,
@@ -52,24 +53,10 @@ const ImagePickerSection = ({
   </View>
 );
 
-const PopupSection = ({
-  loader,
-  popUp,
-  cleanupPopUp,
-  popupText,
-  popUpIconType,
-  popUpTitle,
-}: PopupSectionInterface) => (
+const PopupSection = ({ loader, popup }: PopupSectionInterface) => (
   <View>
     {loader && <Loader isLoading={loader} />}
-    <NewPopUp
-      visible={popUp}
-      button1Action={cleanupPopUp}
-      button1Text="Dismiss"
-      text={popupText}
-      iconType={popUpIconType}
-      title={popUpTitle}
-    />
+    <NewPopUp {...popup} />
   </View>
 );
 
@@ -107,18 +94,14 @@ const EditProfile = () => {
   const { t } = useTranslation();
   const [loader, showLoader] = useState(false);
   const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
-  const {
-    popUp,
-    setPopUp,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    cleanupPopUp,
-  } = usePopup();
-  const { state } = useData();
+  const { data: popup, setData: setPopup } = usePopup();
+  const queryClient = useQueryClient();
+  const { data: state } = useQuery({
+    queryKey: ["profile"],
+    initialData: () => {
+      return queryClient.getQueryData(["profile"]) as STUser;
+    },
+  });
 
   const toggleModal = () => {
     setIsImagePickerVisible(!isImagePickerVisible);
@@ -142,16 +125,7 @@ const EditProfile = () => {
           />
         );
       case "popup":
-        return (
-          <PopupSection
-            loader={loader}
-            popUp={popUp}
-            cleanupPopUp={cleanupPopUp}
-            popupText={popupText}
-            popUpIconType={popUpIconType}
-            popUpTitle={popUpTitle}
-          />
-        );
+        return <PopupSection loader={loader} popup={popup} />;
       case "fields":
         return <FieldsSection fields={editProfileFields} />;
       case "submit":
@@ -170,10 +144,13 @@ const EditProfile = () => {
       const responseData = response.data;
       showLoader(false);
       if (responseData.code === 200) {
-        setPopUp(true);
-        setPopUpIconType("Info");
-        setPopUpTitle(t("Profile"));
-        setPopupText(responseData.message);
+        setPopup({
+          visible: true,
+          numberOfButtons: 1,
+          iconType: "Info",
+          title: "Profile",
+          text: responseData.message,
+        });
       } else {
         showToast(responseData.message);
       }

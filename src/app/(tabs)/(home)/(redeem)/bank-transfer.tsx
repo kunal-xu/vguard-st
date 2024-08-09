@@ -17,9 +17,10 @@ import {
 import { height } from "@/src/utils/dimensions";
 import { showToast } from "@/src/utils/showToast";
 import { useRouter } from "expo-router";
-import usePopup from "@/src/hooks/usePopup";
 import NewPopUp from "@/src/components/NewPopup";
 import { useData } from "@/src/hooks/useData";
+import { usePopup } from "@/src/hooks/usePopup";
+import { useUserData } from "@/src/hooks/useUserData";
 
 const InstantBankTransfer = () => {
   const { t } = useTranslation();
@@ -27,21 +28,8 @@ const InstantBankTransfer = () => {
   const [loader, showLoader] = useState(false);
   const router = useRouter();
   const { state } = useData();
-  const {
-    popUp,
-    setPopUp,
-    popUpButtonCount,
-    setPopUpButtonCount,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    popUpButton2Text,
-    setPopupButton2Text,
-    cleanupPopUp,
-  } = usePopup();
+  const { data: popup, setData: setPopup } = usePopup();
+  const { data: user } = useUserData();
 
   const handleProceed = async () => {
     if (!points) {
@@ -53,12 +41,15 @@ const InstantBankTransfer = () => {
       return;
     }
     if (!state.BankDetail.bankDataPresent) {
-      setPopUp(true);
-      setPopUpIconType("Alert");
-      setPopUpTitle(t("Bank Details"));
-      setPopupText(t("Please verify your bank details."));
-      setPopUpButtonCount(2);
-      setPopupButton2Text(t("Verify"));
+      setPopup({
+        visible: true,
+        iconType: "Alert",
+        numberOfButtons: 2,
+        title: "Bank Details",
+        text: "Please verify your bank details.",
+        button2Text: "Verify",
+        button2Action: () => router.push("(home)/update-bank-details"),
+      });
       return;
     }
     if (Number(points) > Number(state.RedeemablePoints)) {
@@ -73,49 +64,43 @@ const InstantBankTransfer = () => {
       };
       const response = await bankTransfer(payload);
       const reponseData = response.data;
-      console.log(reponseData);
       showLoader(false);
-      setPopUp(true);
+      const message = reponseData.message;
       if (reponseData.code === 200) {
-        setPopUpIconType("Check");
-        setPopUpTitle(t("Bank Transfer"));
-        setPopupText(reponseData.message);
+        setPopup({
+          visible: true,
+          numberOfButtons: 1,
+          iconType: "Check",
+          title: "Bank Transfer",
+          text: message,
+        });
       } else if (reponseData.code === 400) {
-        setPopUpIconType("Alert");
-        setPopUpTitle(t("Bank Transfer"));
-        setPopupText(reponseData.message);
+        setPopup({
+          visible: true,
+          numberOfButtons: 1,
+          iconType: "Alert",
+          title: "Bank Transfer",
+          text: message,
+        });
       } else {
-        setPopUpIconType("Alert");
-        setPopUpTitle(t("Bank Transfer"));
-        setPopupText(reponseData.message || "Something went wrong");
+        setPopup({
+          visible: true,
+          numberOfButtons: 1,
+          iconType: "Check",
+          title: "Bank Transfer",
+          text: message || "Something went wrong",
+        });
       }
     } catch (error) {
       showLoader(false);
-      setPopUp(true);
-      setPopUpIconType("Alert");
-      setPopUpTitle(t("Bank Transfer"));
-      setPopupText(t("Something went wrong"));
-      console.log("Error: ", error);
+      showToast(t("Something went wrong"));
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {loader && <Loader isLoading={loader} />}
-      <NewPopUp
-        visible={popUp}
-        numberOfButtons={popUpButtonCount}
-        button1Action={() => cleanupPopUp()}
-        button2Action={() => {
-          cleanupPopUp();
-          router.push("(home)/update-bank-details");
-        }}
-        button1Text={"Dismiss"}
-        button2Text={popUpButton2Text}
-        text={popupText}
-        iconType={popUpIconType}
-        title={popUpTitle}
-      />
+      <NewPopUp {...popup} />
       <View style={styles.mainWrapper}>
         <View style={styles.header}>
           <Text style={styles.textHeader}>{t("strings:bank_details")}</Text>

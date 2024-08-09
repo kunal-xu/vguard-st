@@ -1,22 +1,22 @@
 import React from "react";
 import { View, Text, ScrollView, StatusBar } from "react-native";
 import { RegistrationSchema } from "@/src/utils/schemas/Registration";
-import { useData } from "@/src/hooks/useData";
 import Field from "@/src/components/Field";
 import { registrationFields } from "./fields/registrationFields";
 import Buttons from "@/src/components/Buttons";
 import { height, width } from "@/src/utils/dimensions";
-import { Avatar } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { showToast } from "@/src/utils/showToast";
 import colors from "@/src/utils/colors";
+import { Image } from "expo-image";
+import { useRegUserData } from "@/src/hooks/useRegUserData";
 
 const Registration = () => {
-  const { state } = useData();
   const router = useRouter();
+  const { data: regUserData } = useRegUserData();
   function validateFields() {
     try {
-      RegistrationSchema.parse(state);
+      RegistrationSchema.parse(regUserData);
       router.push("/(register)/registration-bank-details");
     } catch (error: any) {
       showToast(`${error.errors[0].message}`);
@@ -39,10 +39,23 @@ const Registration = () => {
             padding: 5,
           }}
         >
-          <Avatar.Image
-            size={80}
-            source={require("../../../assets/images/ac_icon.png")}
-          />
+          <View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+              overflow: "hidden",
+              backgroundColor: colors.yellow,
+            }}
+          >
+            <Image
+              source={require("@/src/assets/images/ac_icon.png")}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </View>
           <View
             style={{
               backgroundColor: "white",
@@ -52,13 +65,12 @@ const Registration = () => {
               width: width,
             }}
           >
-            <Text style={{ color: "black" }}>Contact: {state.Contact}</Text>
-            <Text style={{ color: "black" }}>Unique ID: {state.UniqueId}</Text>
+            <Text style={{ color: "black" }}>Contact: {regUserData?.Contact}</Text>
+            <Text style={{ color: "black" }}>Unique ID: {regUserData?.UniqueId}</Text>
           </View>
         </View>
         {registrationFields.map((field) => (
           <Field
-            id={field.id}
             key={field.id}
             type={field.type}
             data={field.data}

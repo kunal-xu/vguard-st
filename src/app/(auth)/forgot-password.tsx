@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import arrowIcon from "../../assets/images/arrow.png";
+import arrowIcon from "@/src/assets/images/arrow.png";
 import { forgotPassword, generateOtpForLogin } from "@/src/utils/apiservice";
 import Loader from "@/src/components/Loader";
 import { useData } from "@/src/hooks/useData";

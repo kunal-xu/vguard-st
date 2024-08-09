@@ -10,14 +10,14 @@ import {
 
 import colors from "@/src/utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
-import { useData } from "../hooks/useData";
+import { useUserData } from "../hooks/useUserData";
 
 const OpenPopupOnOpeningApp = () => {
   const [isModalVisible, setModalVisible] = useState(false);
-  const { state } = useData();
+  const { data: user } = useUserData();
 
   useEffect(() => {
-    if (state.firstLogin === 1) {
+    if (user?.firstLogin === 1) {
       setModalVisible(true);
     }
   }, []);

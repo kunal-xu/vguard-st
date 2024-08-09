@@ -10,6 +10,8 @@ import { useData } from "@/src/hooks/useData";
 import CollapsibleSection from "@/src/components/CollapsibleSection";
 import colors from "@/src/utils/colors";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { STUser } from "@/src/utils/types";
 
 function Card({ label, value }: ProfileCard) {
   return (
@@ -48,7 +50,13 @@ function Header({ profile, router }: ProfileHeader) {
 
 export default function Profile() {
   const router = useRouter();
-  const { state } = useData();
+  const queryClient = useQueryClient();
+  const { data: state } = useQuery({
+    queryKey: ["profile"],
+    initialData: () => {
+      return queryClient.getQueryData(["profile"]) as STUser;
+    },
+  });
   const statusMappings = new StatusMappings();
   const data = [{ type: "header" }, { type: "profile" }];
 

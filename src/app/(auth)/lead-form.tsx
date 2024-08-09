@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  FlatList,
   TouchableOpacity,
   StatusBar,
 } from "react-native";
@@ -15,20 +14,26 @@ import Buttons from "@/src//components/Buttons";
 import { addLeadForm } from "@/src//utils/apiservice";
 import NeedHelp from "@/src/components/NeedHelp";
 import colors from "@/src//utils/colors";
-import { Avatar } from "react-native-paper";
 import { responsiveFontSize } from "react-native-responsive-dimensions";
 import {
   CustomLabelProps,
   FloatingLabelInput,
 } from "react-native-floating-label-input";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { showToast } from "@/src/utils/showToast";
 import { Ionicons } from "@expo/vector-icons";
 import Checkbox from "expo-checkbox";
 import NewPopUp from "@/src/components/NewPopup";
-import usePopup from "@/src/hooks/usePopup";
 import Constants from "expo-constants";
 import { FlashList } from "@shopify/flash-list";
+import { usePopup } from "@/src/hooks/usePopup";
+import { Image } from "expo-image";
+
+interface Item {
+  id: string;
+  label: string;
+  value: string;
+}
 
 const LeadForm = () => {
   const { contact } = useLocalSearchParams();
@@ -37,19 +42,8 @@ const LeadForm = () => {
   const [pincode, setPincode] = useState("");
   const [loader, showLoader] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [selected, setSelected] = useState([]);
-  const {
-    popUp,
-    setPopUp,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    cleanupPopUp,
-  } = usePopup();
-  const router = useRouter();
+  const [selected, setSelected] = useState<Item[]>([]);
+  const { data: popup, setData: setPopup } = usePopup();
 
   const handlePress = () => {
     setIsExpanded(!isExpanded);
@@ -82,7 +76,7 @@ const LeadForm = () => {
       const today = new Date();
       const formattedDate = formatDate(today);
       let values = "";
-      selected.map((item: object) => {
+      selected.map((item) => {
         values += item.value;
         values += ", ";
       });
@@ -97,34 +91,32 @@ const LeadForm = () => {
       const validationResponse = await addLeadForm(body);
       showLoader(false);
       const validationResponseData = validationResponse.data;
+      const message = validationResponseData.message;
       if (validationResponseData.code === 200) {
-        const successMessage = validationResponseData.message;
-        setPopUp(true);
-        setPopUpIconType("Check");
-        setPopUpTitle("Lead Form");
-        setPopupText(successMessage);
+        setPopup({
+          visible: true,
+          text: message,
+          iconType: "Check",
+          title: "Lead Form",
+        });
       } else {
-        const errorMessage = validationResponseData.message;
-        setPopUp(true);
-        setPopUpIconType("Alert");
-        setPopUpTitle("Lead Form");
-        setPopupText(errorMessage);
+        setPopup({
+          visible: true,
+          text: message,
+          iconType: "Alert",
+          title: "Lead Form",
+        });
       }
     } catch (error: any) {
       showLoader(false);
-      setPopUp(true);
-      setPopUpIconType("Alert");
-      setPopUpTitle("Lead Form");
-      setPopupText(error.response.data.message || "An error occurred.");
+      showToast(error.response.data.message || "An error occurred.");
       console.error("Error during validation:", error);
     }
   }
 
-  const handleSelectItem = (item) => {
-    if (
-      selected.find((selectedItem: { id: any }) => selectedItem.id === item.id)
-    ) {
-      setSelected(selected.filter((i: { id: any }) => i.id !== item.id));
+  const handleSelectItem = (item: Item) => {
+    if (selected.find((selectedItem) => selectedItem.id === item.id)) {
+      setSelected(selected.filter((i) => i.id !== item.id));
     } else {
       setSelected([...selected, item]);
     }
@@ -137,20 +129,9 @@ const LeadForm = () => {
         paddingTop: Constants.statusBarHeight,
       }}
     >
-      {loader && <Loader isLoading={loader} />}
-      <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <NewPopUp
-        visible={popUp}
-        button1Action={() => {
-          cleanupPopUp();
-          router.replace("(auth)/login-with-number");
-        }}
-        button1Text={"Dismiss"}
-        text={popupText}
-        iconType={popUpIconType}
-        title={popUpTitle}
-      />
       <Loader isLoading={loader} />
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
+      <NewPopUp {...popup} />
       <View style={{ backgroundColor: "white", margin: 25 }}>
         <View
           style={{
@@ -164,10 +145,23 @@ const LeadForm = () => {
             padding: 5,
           }}
         >
-          <Avatar.Image
-            size={80}
-            source={require("../../assets/images/ac_icon.png")}
-          />
+          <View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+              overflow: "hidden",
+              backgroundColor: colors.yellow,
+            }}
+          >
+            <Image
+              source={require("@/src/assets/images/ac_icon.png")}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+            />
+          </View>
           <View
             style={{
               marginLeft: 10,
@@ -192,7 +186,7 @@ const LeadForm = () => {
           staticLabel={true}
           containerStyles={styles.floatingContainer}
           labelStyles={styles.labelStyles}
-          customLabelStyles={styles.customLabelStyles as CustomLabelProps}
+          customLabelStyles={customLabelStyles}
           inputStyles={styles.inputStyles}
           onChangeText={(text: string) => setName(text)}
           value={name}
@@ -204,7 +198,7 @@ const LeadForm = () => {
           editable={false}
           containerStyles={styles.floatingContainer}
           labelStyles={styles.labelStyles}
-          customLabelStyles={styles.customLabelStyles as CustomLabelProps}
+          customLabelStyles={customLabelStyles}
           inputStyles={styles.inputStyles}
           value={contact as string}
           label={t("Contact")}
@@ -215,7 +209,7 @@ const LeadForm = () => {
           keyboardType="number-pad"
           containerStyles={styles.floatingContainer}
           labelStyles={styles.labelStyles}
-          customLabelStyles={styles.customLabelStyles as CustomLabelProps}
+          customLabelStyles={customLabelStyles}
           inputStyles={styles.inputStyles}
           onChangeText={(text: string) => setPincode(text)}
           maxLength={6}
@@ -292,15 +286,15 @@ const LeadForm = () => {
             label="Submit"
             onPress={() => addLead()}
             variant="filled"
-            width="100%"
-            icon={require("../../assets/images/arrow.png")}
+            width="90%"
+            icon={require("@/src/assets/images/arrow.png")}
             iconHeight={10}
             iconWidth={30}
             iconGap={10}
           />
         </View>
-        <NeedHelp />
       </View>
+      <NeedHelp />
     </ScrollView>
   );
 };
@@ -320,11 +314,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 4,
     marginLeft: 8,
-  },
-  customLabelStyles: {
-    colorFocused: "black",
-    colorBlurred: "black",
-    fontSizeFocused: 16,
   },
   itemContainer: {
     flexDirection: "row",
@@ -361,47 +350,18 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "transparent",
   },
-  smallContainer: {
-    backgroundColor: colors.white,
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 10,
-    gap: 10,
-  },
-  textContainer: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  blackDetail: {
-    color: colors.black,
-    fontSize: 14,
-  },
-  smallDetail: {
-    marginLeft: 10,
-    color: colors.black,
-    fontSize: 14,
-  },
-  greyDetail: {
-    color: colors.grey,
-    fontSize: 14,
-  },
-  floatingcontainerstyle: {
-    width: width / 1.05,
-  },
   ac_icon: {
     borderRadius: 50,
     width: 80,
     height: 80,
     backgroundColor: "#ffffff",
   },
-  userDetails: { color: "grey" },
-  textHeader: {
-    fontSize: responsiveFontSize(2.5),
-    fontWeight: "bold",
-    color: "black",
-  },
 });
+
+const customLabelStyles: CustomLabelProps = {
+  colorFocused: "black",
+  colorBlurred: "black",
+  fontSizeFocused: 16,
+};
 
 export default LeadForm;

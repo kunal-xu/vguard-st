@@ -7,32 +7,22 @@ import NeedHelp from "@/src/components/NeedHelp";
 import Loader from "@/src/components/Loader";
 import { credentialsFields } from "./fields/credentialsFIelds";
 import Field from "@/src/components/Field";
-import { useData } from "@/src/hooks/useData";
+
 import { PasswordMatchSchema } from "@/src/utils/schemas/Credentials";
-import { useAuth } from "@/src/hooks/useAuth";
+// import { useAuth } from "@/src/hooks/useAuth";
 import { showToast } from "@/src/utils/showToast";
-import usePopup from "@/src/hooks/usePopup";
+// import usePopup from "@/src/hooks/usePopup";
 import NewPopUp from "@/src/components/NewPopup";
 import { useTranslation } from "react-i18next";
 import colors from "@/src/utils/colors";
+import { useAuth } from "@/src/hooks/useAuth";
 
 const Credentials = () => {
   const { t } = useTranslation();
-  const { state, dispatch } = useData();
   const { login } = useAuth();
   const [loader, showLoader] = useState<boolean>(false);
 
-  const {
-    popUp,
-    setPopUp,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    cleanupPopUp,
-  } = usePopup();
+  
 
   async function register() {
     try {
@@ -58,17 +48,17 @@ const Credentials = () => {
           value: 1,
         },
       });
-      login(loginResponseData);
+      // login(loginResponseData);
     } catch (error: any) {
       if (error instanceof z.ZodError) {
         showToast(`${error.errors[0].message}`);
       } else {
         console.log(error);
-        showLoader(false);
-        setPopUp(true);
-        setPopUpIconType("Alert");
-        setPopUpTitle(t("Server Error"));
-        setPopupText(t("Something went wrong. Please try again."));
+        // showLoader(false);
+        // setPopUp(true);
+        // setPopUpIconType("Alert");
+        // setPopUpTitle(t("Server Error"));
+        // setPopupText(t("Something went wrong. Please try again."));
       }
     }
   }
@@ -85,7 +75,7 @@ const Credentials = () => {
             marginLeft: 1,
           }}
         ></View>
-        {loader && <Loader isLoading={loader} />}
+        {/* {loader && <Loader isLoading={loader} />}
         <NewPopUp
           visible={popUp}
           numberOfButtons={1}
@@ -104,7 +94,7 @@ const Credentials = () => {
             label={field.label}
             properties={field.properties}
           />
-        ))}
+        ))} */}
         <View
           style={{
             display: "flex",
@@ -118,7 +108,7 @@ const Credentials = () => {
             onPress={() => register()}
             variant="filled"
             width={350}
-            icon={require("../../../assets/images/arrow.png")}
+            icon={require("@/src/assets/images/arrow.png")}
             iconWidth={50}
             iconHeight={20}
             iconGap={10}

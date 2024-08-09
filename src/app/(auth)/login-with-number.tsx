@@ -29,34 +29,28 @@ import { Image } from "expo-image";
 import NewPopUp from "@/src/components/NewPopup";
 import { showToast } from "@/src/utils/showToast";
 import Constants from "expo-constants";
-import usePopup from "@/src/hooks/usePopup";
+import { usePopup } from "@/src/hooks/usePopup";
 
 const LoginWithNumber = () => {
   const [number, setNumber] = useState("");
   const [showLanguagePicker, setShowLanguagePicker] = useState(false);
-  const [responseEntity, setResponseEntity] = useState(0);
   const [loader, showLoader] = useState(false);
   const [selectedOption, setSelectedOption] = useState(true);
-
-  const {
-    popUp,
-    setPopUp,
-    popUpButtonCount,
-    setPopUpButtonCount,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    popUpButton2Text,
-    setPopupButton2Text,
-    cleanupPopUp,
-  } = usePopup();
+  const { data: popup, setData: setPopup } = usePopup();
+  const router = useRouter();
+  const { t } = useTranslation();
+  const placeholderColor = colors.grey;
 
   const pkg = require("../../../package.json");
   const version = pkg.version;
-  const router = useRouter();
+
+  const handleLanguageButtonPress = () => {
+    setShowLanguagePicker(true);
+  };
+
+  const handleCloseLanguagePicker = () => {
+    setShowLanguagePicker(false);
+  };
 
   const handleTermsPress = () => {
     setSelectedOption(!selectedOption);
@@ -85,29 +79,48 @@ const LoginWithNumber = () => {
         const validationResponse = await generateOtpForLogin(body);
         showLoader(false);
         const validationResponseData = validationResponse.data;
+        const message = validationResponseData.message;
         if (validationResponseData.entity === 1) {
-          setPopUp(true);
-          setPopUpIconType("Info");
-          setResponseEntity(1);
-          setPopUpTitle(t("Verification Failed"));
-          setPopupButton2Text(t("Proceed"));
-          setPopUpButtonCount(2);
+          setPopup({
+            visible: true,
+            numberOfButtons: 2,
+            button2Action: () => {
+              router.push({
+                pathname: "lead-form",
+                params: { contact: number },
+              });
+            },
+            button2Text: "Proceed",
+            text: message,
+            iconType: "Info",
+            title: "Verification Failed",
+          });
+          return;
         }
         if (validationResponseData.code === 200) {
-          const successMessage = validationResponseData.message;
-          setPopUp(true);
-          setPopUpIconType(t("AccountVerified"));
-          setPopUpButtonCount(2);
-          setPopUpTitle(t("Mobile Number Verified"));
-          setPopupButton2Text(t("Proceed"));
-          setPopupText(successMessage);
+          setPopup({
+            visible: true,
+            numberOfButtons: 2,
+            button2Action: () => {
+              router.push({
+                pathname: "login-with-otp",
+                params: { contact: number },
+              });
+            },
+            button2Text: "Proceed",
+            text: message,
+            iconType: "AccountVerified",
+            title: "Mobile Number Verified",
+          });
           return;
         } else {
-          const errorMessage = validationResponseData.message;
-          setPopUp(true);
-          setPopUpIconType("AccountCancel");
-          setPopUpTitle(t("Verification Failed"));
-          setPopupText(errorMessage);
+          setPopup({
+            visible: true,
+            numberOfButtons: 1,
+            text: message,
+            iconType: "AccountCancel",
+            title: "Verification Failed",
+          });
         }
       } catch (error: any) {
         showLoader(false);
@@ -120,47 +133,10 @@ const LoginWithNumber = () => {
     }
   }
 
-  const placeholderColor = colors.grey;
-
-  const { t } = useTranslation();
-
-  const handleLanguageButtonPress = () => {
-    setShowLanguagePicker(true);
-  };
-
-  const handleCloseLanguagePicker = () => {
-    setShowLanguagePicker(false);
-  };
-
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <NewPopUp
-        visible={popUp}
-        numberOfButtons={popUpButtonCount}
-        button1Action={() => cleanupPopUp()}
-        button2Action={() => {
-          if (responseEntity === 1) {
-            setResponseEntity(0);
-            cleanupPopUp();
-            router.push({
-              pathname: "lead-form",
-              params: { contact: number },
-            });
-          } else {
-            cleanupPopUp();
-            router.push({
-              pathname: "login-with-otp",
-              params: { contact: number },
-            });
-          }
-        }}
-        button1Text={"Dismiss"}
-        button2Text={popUpButton2Text}
-        text={popupText}
-        iconType={popUpIconType}
-        title={popUpTitle}
-      />
+      <NewPopUp {...popup} />
       <View style={styles.registerUser}>
         <Loader isLoading={loader} />
         <View style={styles.mainWrapper}>
@@ -296,17 +272,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingTop: Constants.statusBarHeight,
   },
-  forgotPasswordContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  forgotPassword: {
-    color: colors.grey,
-    fontWeight: "bold",
-    fontSize: 12,
-    textAlign: "right",
-    marginTop: 10,
-  },
   registerUser: {
     height: "100%",
     backgroundColor: colors.white,
@@ -336,7 +301,7 @@ const styles = StyleSheet.create({
     width: 15,
   },
   mainWrapper: {
-    padding: 30,
+    padding: 24,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -353,11 +318,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 8,
     marginTop: 8,
-  },
-  imageSaathi: {
-    width: 216,
-    height: 116,
-    marginBottom: 30,
   },
   imageVguard: {
     width: 100,
@@ -376,17 +336,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: colors.white,
     marginBottom: 2,
-    borderRadius: 5,
+    borderWidth: 0.1,
     shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,
     flexDirection: "row",
-    alignItems: "center",
-  },
-  updateAndForgot: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
     alignItems: "center",
   },
   icon: {
@@ -453,35 +406,16 @@ const styles = StyleSheet.create({
     gap: 5,
     alignItems: "center",
   },
-  radioButtons: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 30,
-    alignItems: "center",
-  },
   containter: {
     display: "flex",
     flexDirection: "column",
     gap: 20,
     marginBottom: 30,
   },
-  phone: {
-    height: 50,
-    width: 50,
-  },
   greyText: {
     fontSize: responsiveFontSize(1.7),
     color: colors.grey,
     fontWeight: "600",
-  },
-  otpPhone: {
-    display: "flex",
-    flexDirection: "row",
-    paddingHorizontal: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 30,
   },
 });
 

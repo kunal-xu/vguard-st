@@ -10,12 +10,8 @@ import {
   StatusBar,
 } from "react-native";
 import { useTranslation } from "react-i18next";
-import arrowIcon from "../../assets/images/arrow.png";
 import { generateOtpForLogin, validateLoginOtp } from "@/src/utils/apiservice";
 import Loader from "@/src/components/Loader";
-import { useAuth } from "@/src/hooks/useAuth";
-import { useData } from "@/src/hooks/useData";
-import { STUser } from "@/src/utils/types";
 import colors from "@/src/utils/colors";
 import Buttons from "@/src/components/Buttons";
 import { height } from "@/src/utils/dimensions";
@@ -23,41 +19,31 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { showToast } from "@/src/utils/showToast";
 import NewPopUp from "@/src/components/NewPopup";
 import Constants from "expo-constants";
+import { useAuth } from "@/src/hooks/useAuth";
+import { usePopup } from "@/src/hooks/usePopup";
+import { useRegUserData } from "@/src/hooks/useRegUserData";
 
 const LoginWithOtp = () => {
   const { contact } = useLocalSearchParams();
   const [otp, setOtp] = useState("");
   const [countdown, setCountdown] = useState(60);
   const [loader, showLoader] = useState(false);
-  const {
-    login,
-    popUp,
-    setPopUp,
-    popUpButtonCount,
-    popUpTitle,
-    setPopUpTitle,
-    popupText,
-    setPopupText,
-    popUpIconType,
-    setPopUpIconType,
-    popUpButton2Text,
-    cleanupPopUp,
-  } = useAuth();
-  const { dispatch } = useData();
+  const { data: popup, setData: setPopup } = usePopup();
+  const { setData: setRegUserData } = useRegUserData();
+
   const router = useRouter();
   const { t } = useTranslation();
+  const { login } = useAuth();
 
   const placeholderColor = colors.grey;
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
-
     if (countdown > 0) {
       timer = setInterval(() => {
         setCountdown((prevCountdown) => prevCountdown - 1);
       }, 1000);
     }
-
     return () => {
       clearInterval(timer);
     };
@@ -71,31 +57,22 @@ const LoginWithOtp = () => {
           Contact: contact,
           OtpType,
         };
-        const validationResponse = await generateOtpForLogin(body);
+        await generateOtpForLogin(body);
         showLoader(false);
-        const validationResponseData = validationResponse.data;
-        if (validationResponseData.code === 200) {
-          const successMessage = validationResponseData.message;
-          setPopUp(true);
-          setPopupText(successMessage);
-        } else {
-          const errorMessage = validationResponseData.message;
-          setPopUp(true);
-          setPopupText(errorMessage);
-        }
         setCountdown(60);
       } catch (error: any) {
         showLoader(false);
-        setPopUp(true);
-        setPopupText(error.message);
         console.error("Error during validation:", error);
       }
     } else {
       showLoader(false);
-      setPopUpIconType("Info");
-      setPopUp(true);
-      setPopUpTitle(t("Error"));
-      setPopupText(`Wait for ${countdown} seconds to send OTP again!`);
+      setPopup({
+        visible: true,
+        numberOfButtons: 1,
+        text: `Wait for ${countdown} seconds to send OTP again!`,
+        iconType: "Info",
+        title: "Error",
+      });
     }
   }
 
@@ -117,27 +94,10 @@ const LoginWithOtp = () => {
       if (verificationResponse.status === 200) {
         login(verificationResponseData);
       } else if (verificationResponse.status === 201) {
-        const keys: string[] = Object.keys(verificationResponseData);
-        for (const key of keys) {
-          dispatch({
-            type: "UPDATE_FIELD",
-            payload: {
-              field: key as keyof STUser,
-              subfield: undefined,
-              value: verificationResponseData[key],
-            },
-          });
-        }
+        setRegUserData(verificationResponseData);
         router.replace("(auth)/registration");
       } else if (verificationResponse.status === 202) {
-        dispatch({
-          type: "UPDATE_FIELD",
-          payload: {
-            field: "Contact",
-            subfield: undefined,
-            value: contact,
-          },
-        });
+        setRegUserData(verificationResponseData);
         router.replace("(auth)/credentials");
       } else {
         showLoader(false);
@@ -156,20 +116,11 @@ const LoginWithOtp = () => {
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       {<Loader isLoading={loader} />}
       <StatusBar backgroundColor="white" barStyle="dark-content" />
-      <NewPopUp
-        visible={popUp}
-        numberOfButtons={popUpButtonCount}
-        button1Action={() => cleanupPopUp()}
-        button1Text={"Dismiss"}
-        button2Text={popUpButton2Text}
-        text={popupText}
-        iconType={popUpIconType}
-        title={popUpTitle}
-      />
+      <NewPopUp {...popup} />
       <View style={styles.registerUser}>
         <View style={styles.mainWrapper}>
           <Image
-            source={require("../../assets/images/ic_rishta_logo.jpg")}
+            source={require("@/src/assets/images/ic_rishta_logo.jpg")}
             style={styles.imageSaathi}
           />
           <Text style={styles.mainHeader}>
@@ -184,7 +135,7 @@ const LoginWithOtp = () => {
                 <Image
                   style={styles.icon}
                   resizeMode="contain"
-                  source={require("../../assets/images/mobile_icon.png")}
+                  source={require("@/src/assets/images/mobile_icon.png")}
                 />
                 <TextInput
                   style={styles.input}
@@ -196,7 +147,7 @@ const LoginWithOtp = () => {
                 <Image
                   style={styles.icon}
                   resizeMode="contain"
-                  source={require("../../assets/images/lock_icon.png")}
+                  source={require("@/src/assets/images/lock_icon.png")}
                 />
                 <TextInput
                   style={styles.input}
@@ -223,7 +174,7 @@ const LoginWithOtp = () => {
                 iconHeight={10}
                 iconWidth={30}
                 iconGap={30}
-                icon={arrowIcon}
+                icon={require("@/src/assets/images/arrow.png")}
               />
             </View>
             <View
@@ -248,8 +199,7 @@ const LoginWithOtp = () => {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <View style={{ flexDirection: "row", gap: 10 }}>
-              </View>
+              <View style={{ flexDirection: "row", gap: 10 }}></View>
             </View>
           </View>
         </View>
@@ -259,7 +209,7 @@ const LoginWithOtp = () => {
               {t("strings:powered_by_v_guard")}
             </Text>
             <Image
-              source={require("../../assets/images/group_910.png")}
+              source={require("@/src/assets/images/group_910.png")}
               style={styles.imageVguard}
             />
           </View>
@@ -320,7 +270,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     backgroundColor: colors.white,
     marginBottom: 10,
-    borderRadius: 5,
+    borderWidth: 0.1,
     shadowColor: "rgba(0, 0, 0, 0.8)",
     elevation: 5,
     flexDirection: "row",
